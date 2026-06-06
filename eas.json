@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "BEBACHAP-MOBILE",
+    "slug": "bebachap-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "icon": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2c76b3"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bebachap.mobile"
+    },
+    "android": {
+      "package": "com.bebachap.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#2c76b3"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}                            
