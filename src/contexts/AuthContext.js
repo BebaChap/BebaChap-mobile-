@@ -3,6 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AuthContext = createContext(undefined);
 
+const ALLOWED_ROLES = ['customer', 'driver', 'vendor', 'garage'];
+const SUPER_ADMIN_EMAIL = "admin@bebachap.co.tz";
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,17 +26,116 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const checkAdminExists = async () => {
+    try {
+      const adminFlag = await AsyncStorage.getItem('admin_exists');
+      return adminFlag === 'true';
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const registerBusiness = async (payload) => {
+    setLoading(true);
+    try {
+      if (payload.role === 'admin') {
+        if (payload.email !== SUPER_ADMIN_EMAIL) {
+          return { success: false, message: "Huna ruhusa ya kujisajili kama admin" };
+        }
+        const exists = await checkAdminExists();
+        if (exists) {
+          return { success: false, message: "Admin tayari yupo, ni mtu mmoja tu" };
+        }
+        await AsyncStorage.setItem('admin_exists', 'true');
+        return { success: true, message: "Super admin ameundwa" };
+      }
+
+      let status = 'active';
+      if (['vendor', 'driver', 'garage'].includes(payload.role)) {
+        status = 'pending';
+      }
+
+      const businessData = {
+        ...payload,
+        status,
+        createdAt: new Date().toISOString(),
+      };
+
+      await AsyncStorage.setItem('last_business_request', JSON.stringify(businessData));
+
+      if (status === 'pending') {
+        return { success: true, pending: true, message: "Maombi yako yamepokelewa, subiri admin akuidhinishe" };
+      }
+
+      return { success: true, message: "Umefanikiwa" };
+    } catch (e) {
+      console.log(e);
+      return { success: false, message: "Imeshindikana kutuma maombi" };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- ONGEZA HIZI NDANI YA AuthProvider ---
+  const loginWithEmail = async (email, password, role) => {
+    setLoading(true);
+    try {
+      console.log('Login email:', email, 'role:', role);
+      await new Promise(r => setTimeout(r, 1000));
+
+      // Zuia mtu asijifanye admin kama email siyo SUPER_ADMIN_EMAIL
+      if (role === 'admin' && email !== SUPER_ADMIN_EMAIL) {
+        return { success: false, message: "Huna ruhusa ya admin" };
+      }
+
+      const newUser = {
+        id: Date.now().toString(),
+        email,
+        name: role === 'admin' ? 'Super Admin' : 'Mtumiaji',
+        role: role,
+        status: ['vendor','driver','garage'].includes(role) ? 'pending' : 'active',
+        token: 'fake-jwt-token',
+      };
+
+      await AsyncStorage.setItem('user', JSON.stringify(newUser));
+      if (role === 'admin') await AsyncStorage.setItem('admin_exists', 'true');
+      setUser(newUser);
+      return { success: true };
+    } catch (e) {
+      return { success: false, message: "Login imeshindikana" };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginWithPhone = async (phone, role) => {
+    return await sendOtp(phone);
+  };
+
   const login = async (email, password) => {
     setLoading(true);
     try {
-      console.log('Inajaribu kulogin:', email);
+      if (email === SUPER_ADMIN_EMAIL) {
+        const newUser = {
+          id: 'admin-001',
+          email,
+          name: 'Super Admin',
+          role: 'admin',
+          token: 'fake-jwt-admin-token',
+        };
+        await AsyncStorage.setItem('user', JSON.stringify(newUser));
+        await AsyncStorage.setItem('admin_exists', 'true');
+        setUser(newUser);
+        return { success: true, message: 'Karibu Admin' };
+      }
+
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const newUser = {
         id: '1',
         email,
         name: 'Juma Mtumiaji',
-        role: 'customer', // login ya email inabaki customer
+        role: 'customer',
         token: 'fake-jwt-token-123',
       };
 
@@ -50,9 +152,10 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, phone, role = 'customer') => {
     setLoading(true);
     try {
+      const safeRole = ALLOWED_ROLES.includes(role) ? role : 'customer';
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const newUser = { id: Date.now().toString(), name, email, phone, role, token: 'fake-jwt-token-123' };
+      const newUser = { id: Date.now().toString(), name, email, phone, role: safeRole, token: 'fake-jwt-token-123' };
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
       return { success: true, message: 'Umefanikiwa kujiunga' };
@@ -66,7 +169,6 @@ export const AuthProvider = ({ children }) => {
   const sendOtp = async (phoneNumber) => {
     setLoading(true);
     try {
-      console.log('OTP imetumwa kwa:', phoneNumber);
       setTempPhone(phoneNumber);
       await new Promise(resolve => setTimeout(resolve, 1000));
       return { success: true, message: 'OTP imetumwa' };
@@ -77,23 +179,23 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // --- HAPA NDIPO TUMEBADELISHA ---
   const verifyOtp = async (otpCode, userData = {}) => {
     setLoading(true);
     try {
       if (otpCode.length !== 6) throw new Error('OTP lazima iwe tarakimu 6');
-
       await new Promise(resolve => setTimeout(resolve, 800));
+
+      const requestedRole = userData.role || 'customer';
+      const safeRole = ALLOWED_ROLES.includes(requestedRole) ? requestedRole : 'customer';
 
       const newUser = {
         id: Date.now().toString(),
         phone: userData.phone || tempPhone,
         name: userData.name || 'Mtumiaji Mpya',
-        role: userData.role || 'customer', // <-- sasa inachukua driver/vendor/admin
+        role: safeRole,
+        status: ['vendor','driver','garage'].includes(safeRole) ? 'pending' : 'active',
         token: 'fake-jwt-token-123',
       };
-
-      console.log('MOCK API: registering', newUser.role, 'na:', newUser.phone);
 
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
@@ -110,6 +212,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await AsyncStorage.removeItem('user');
       setUser(null);
+      setTempPhone('');
     } catch (error) {
       console.log('Error logout:', error);
     }
@@ -118,6 +221,9 @@ export const AuthProvider = ({ children }) => {
   const updateUser = async (newData) => {
     try {
       const updated = { ...user, ...newData };
+      if (updated.role === 'admin' && user?.role !== 'admin') {
+        delete updated.role;
+      }
       await AsyncStorage.setItem('user', JSON.stringify(updated));
       setUser(updated);
       return { success: true };
@@ -130,7 +236,10 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{ 
       user, loading, tempPhone,
       login, register, sendOtp, verifyOtp, 
-      logout, updateUser, checkUser
+      logout, updateUser, checkUser,
+      registerBusiness, checkAdminExists,
+      loginWithEmail, loginWithPhone,
+      SUPER_ADMIN_EMAIL
     }}>
       {children}
     </AuthContext.Provider>

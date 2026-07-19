@@ -1,16 +1,37 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 
-// Tab screens zingine - ziaache hivi hivi
+// Screens za Home
+import HomeScreen from '../screens/customer/HomeScreen';
 import ShopList from '../screens/customer/ShopList';
 import GarageList from '../screens/customer/GarageList';
+import ProductDetail from '../screens/customer/ProductDetail';
+import Cart from '../screens/customer/Cart';
+import RequestRide from '../screens/customer/RequestRide';
+import LiveTracking from '../screens/customer/LiveTracking';
+import TripHistory from '../screens/customer/TripHistory';
 import Wallet from '../screens/customer/Wallet';
-
-// ✅ STACK YA NYUMBANI - hii ndio muhimu
-import CustomerStack from './CustomerStack';
+import CommonStack from './CommonStack';
+import MapScreen from '../screens/common/MapScreen'; // <--- ONGEZO
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+const HomeStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="ShopList" component={ShopList} />
+      <Stack.Screen name="GarageList" component={GarageList} />
+      <Stack.Screen name="ProductDetail" component={ProductDetail} />
+      <Stack.Screen name="Cart" component={Cart} />
+      <Stack.Screen name="RequestRide" component={RequestRide} />
+      <Stack.Screen name="LiveTracking" component={LiveTracking} />
+    </Stack.Navigator>
+  );
+};
 
 export default function CustomerTab() {
   return (
@@ -18,31 +39,37 @@ export default function CustomerTab() {
       screenOptions={{ 
         headerShown: false, 
         tabBarActiveTintColor: '#007aff',
-        tabBarLabelStyle: { fontSize: 12 }
+        tabBarInactiveTintColor: '#999',
+        tabBarLabelStyle: { fontSize: 12 },
+        tabBarStyle: { height: 65, paddingBottom: 8, paddingTop: 8 }
       }}
     >
       <Tab.Screen 
         name="Home" 
-        component={CustomerStack}  // ✅ HII NDIO FIX KUBWA
+        component={HomeStack}
         options={{ 
           tabBarLabel: 'Nyumbani', 
-          tabBarIcon: () => <Text style={{fontSize: 20}}>🏠</Text> 
+          tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />
         }} 
       />
+
+      {/* --- TAB MPYA YA RAMANI --- */}
       <Tab.Screen 
-        name="Shop" 
-        component={ShopList} 
+        name="Map" 
+        component={MapScreen}
         options={{ 
-          tabBarLabel: 'Duka', 
-          tabBarIcon: () => <Text style={{fontSize: 20}}>🛒</Text> 
+          headerShown: false,
+          tabBarLabel: 'Ramani',
+          tabBarIcon: ({ color, size }) => <Ionicons name="map-outline" size={size} color={color} />
         }} 
       />
+
       <Tab.Screen 
-        name="Garage" 
-        component={GarageList} 
+        name="Trips" 
+        component={TripHistory} 
         options={{ 
-          tabBarLabel: 'Gereji', 
-          tabBarIcon: () => <Text style={{fontSize: 20}}>🔧</Text> 
+          tabBarLabel: 'Safari', 
+          tabBarIcon: ({ color, size }) => <Ionicons name="car-outline" size={size} color={color} />
         }} 
       />
       <Tab.Screen 
@@ -50,7 +77,15 @@ export default function CustomerTab() {
         component={Wallet} 
         options={{ 
           tabBarLabel: 'Pochi', 
-          tabBarIcon: () => <Text style={{fontSize: 20}}>💰</Text> 
+          tabBarIcon: ({ color, size }) => <Ionicons name="wallet-outline" size={size} color={color} />
+        }} 
+      />
+      <Tab.Screen 
+        name="ProfileTab" 
+        component={CommonStack} 
+        options={{ 
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />
         }} 
       />
     </Tab.Navigator>

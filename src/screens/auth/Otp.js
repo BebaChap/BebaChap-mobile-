@@ -2,14 +2,20 @@ import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 
+// Roles halali tu - admin hairuhusiwi
+const ALLOWED_ROLES = ['customer', 'driver', 'vendor', 'garage'];
+
 export default function Otp({ navigation, route }) {
-  const { name = '', phone = '', role = 'customer' } = route.params || {};
+  const { name = '', phone = '', role = 'customer', isLogin = false } = route.params || {};
   const [otp, setOtp] = useState('');
   const { verifyOtp, loading, tempPhone } = useAuth();
-  const displayPhone = phone || tempPhone;
+  
+  const displayPhone = phone || tempPhone || '';
 
-  // ONA HAPA - itaonyesha kwenye log
-  console.log('>>> OTP SCREEN: role =', role, '| phone =', displayPhone);
+  // Linda system - kama mtu amejaribu ku-inject admin
+  const safeRole = ALLOWED_ROLES.includes(role) ? role : 'customer';
+
+  console.log('>>> OTP SCREEN: role =', safeRole, '| phone =', displayPhone, '| isLogin:', isLogin);
 
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
@@ -17,21 +23,24 @@ export default function Otp({ navigation, route }) {
       return;
     }
 
-    console.log('>>> NINATUMA verifyOtp na role:', role);
+    console.log('>>> NINATUMA verifyOtp na role:', safeRole);
     
     const result = await verifyOtp(otp, {
-      name,
+      name: name || 'User',
       phone: displayPhone,
-      role
+      role: safeRole
     });
 
-    console.log('>>> RESULT:', result.user);
+    console.log('>>> RESULT:', result);
 
     if (result.success) {
-      Alert.alert('Hongera!', `Umejisajili kama ${role.toUpperCase()}`);
-      // Usinavigate — AppNavigator itabadilisha yenyewe kulingana na role
+      // USIFANYE navigation.navigate - AppNavigator itabadilisha yenyewe
+      // Alert tu
+      if (!isLogin) {
+        Alert.alert('Hongera!', `Umejisajili kama ${safeRole.toUpperCase()}`);
+      }
     } else {
-      Alert.alert('Kosa', result.message);
+      Alert.alert('Kosa', result.message || 'OTP sio sahihi');
       setOtp('');
     }
   };
@@ -45,7 +54,7 @@ export default function Otp({ navigation, route }) {
       <Text style={styles.title}>Weka OTP</Text>
       <Text style={styles.subtitle}>
         Tumetuma code kwenye {displayPhone}{'\n'}
-        Jina: {name} | Role: {role.toUpperCase()}
+        {name ? `Jina: ${name} | ` : ''}Role: {safeRole.toUpperCase()}
       </Text>
 
       <TextInput
@@ -56,6 +65,7 @@ export default function Otp({ navigation, route }) {
         onChangeText={setOtp}
         maxLength={6}
         autoFocus
+        placeholderTextColor="#ccc"
       />
 
       <TouchableOpacity
@@ -77,9 +87,9 @@ const styles = StyleSheet.create({
   backText: { fontSize: 16, color: '#007aff' },
   title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 8 },
   subtitle: { fontSize: 15, textAlign: 'center', color: '#666', marginBottom: 30, lineHeight: 22 },
-  otpInput: { borderWidth: 2, borderColor: '#007aff', borderRadius: 8, fontSize: 24, textAlign: 'center', letterSpacing: 12, paddingVertical: 15, marginBottom: 20 },
-  button: { backgroundColor: '#007aff', padding: 18, borderRadius: 8, alignItems: 'center' },
+  otpInput: { borderWidth: 2, borderColor: '#007aff', borderRadius: 12, fontSize: 24, textAlign: 'center', letterSpacing: 12, paddingVertical: 15, marginBottom: 20, backgroundColor:'#f9f9f9' },
+  button: { backgroundColor: '#007aff', padding: 18, borderRadius: 12, alignItems: 'center' },
   buttonDisabled: { backgroundColor: '#ccc' },
   buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  hint: { textAlign: 'center', marginTop: 20, color: '#999', fontSize: 14 },
+  hint: { textAlign: 'center', marginTop: 20, color: '#999', fontSize: 13 },
 });

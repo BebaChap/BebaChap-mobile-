@@ -1,62 +1,48 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { LanguageContext } from '../../contexts/LanguageContext';
-import { useAuth } from '../../contexts/AuthContext'; // <-- BADILISHA HAPA
+import { useAuth } from '../../contexts/AuthContext';
 import StepButtons from '../../components/StepButtons';
+import { Ionicons } from '@expo/vector-icons'; // <--- 1. ONGEZA HII
 
 export default function Login({ navigation, route }) {
   const { t } = useContext(LanguageContext);
-  const { sendOtp, login } = useAuth(); // <-- tumia hizi
+  const { sendOtp } = useAuth();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // <--- 2. STATE YA KUFICHA/KUONYESHA
+  const [loading, setLoading] = useState(false);
   const role = route.params?.role || 'customer';
 
   const handleNext = async () => {
-    if (!phone) {
+    if (!phone.trim()) {
       Alert.alert('Kosa', 'Tafadhali ingiza namba ya simu');
       return;
     }
     
+    setLoading(true);
     try {
       const cleanPhone = phone.replace(/\D/g, '');
       const fullPhone = cleanPhone.startsWith('255') ? `+${cleanPhone}` : `+255${cleanPhone.replace(/^0+/, '')}`;
       
-      // Tumia sendOtp kutoka AuthContext (sio loginCustomer)
       const res = await sendOtp(fullPhone);
       
       if (res.success) {
-        // Pitisha role kwenda OTP
         navigation.navigate('OTP', { 
           phone: fullPhone,
-          role: role, // <-- muhimu
-          isLogin: true 
+          role: role,
+          isLogin: true,
+          name: ''
         });
       } else {
-        Alert.alert('Imeshindikana', res.message);
+        Alert.alert('Imeshindikana', res.message || 'Jaribu tena');
       }
     } catch (error) {
       console.log('Login error:', error);
       Alert.alert('Imeshindikana', 'Jaribu tena.');
+    } finally {
+      setLoading(false);
     }
-  };
-
-  // ONGEZA HAPA - bila kuathiri code nyingine
-  const handleSendOtp = async () => {
-    await sendOtp(phone);
-    console.log('NAVIGATING TO OTP...');
-    navigation.navigate('OTP', { role, phone }); // role lazima itoke kwenye route.params
-  };
-
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
-  // Kwa login ya email/password (hiari)
-  const handleEmailLogin = async () => {
-    if (!phone || !password) return;
-    const res = await login(phone, password); // login ya AuthContext
-    if (res.success) navigation.replace('Home');
-    else Alert.alert('Login Failed', res.message);
   };
 
   return (
@@ -66,7 +52,7 @@ export default function Login({ navigation, route }) {
 
       <Text style={styles.label}>Namba ya Simu</Text>
       <TextInput 
-        placeholder="0712345678"
+        placeholder="0717084080"
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
@@ -74,15 +60,25 @@ export default function Login({ navigation, route }) {
         placeholderTextColor="#999"
       />
 
-      <Text style={styles.label}>Nenosiri (hiari)</Text>
-      <TextInput 
-        placeholder="Ingiza nenosiri"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-        placeholderTextColor="#999"
-      />
+      {/* --- 3. PASSWORD NA EYE ICON --- */}
+      <Text style={styles.label}>Nenosiri</Text>
+      <View style={styles.passwordContainer}>
+        <TextInput 
+          placeholder="••••••••"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+          style={styles.inputPassword}
+          placeholderTextColor="#999"
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+          <Ionicons 
+            name={showPassword ? "eye-off" : "eye"} 
+            size={22} 
+            color="#666" 
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity 
         style={styles.forgotButton}
@@ -91,12 +87,14 @@ export default function Login({ navigation, route }) {
         <Text style={styles.forgotText}>Umesahau nenosiri?</Text>
       </TouchableOpacity>
 
-      <StepButtons 
-        onNext={handleNext}
-        onBack={handleBack}
-        nextText={t('next') || 'Endelea'}
-        backText={t('back') || 'Rudi'}
-      />
+      {loading ? <ActivityIndicator size="large" color="#007aff" /> : (
+        <StepButtons 
+          onNext={handleNext}
+         
+          nextText={t('next') || 'Endelea'}
+          
+        />
+      )}
 
       <TouchableOpacity 
         style={styles.registerButton}
@@ -111,11 +109,23 @@ export default function Login({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, paddingTop: 60 },
-  title: { fontSize: 32, fontWeight: 'bold', marginBottom: 8, color: '#1a1a1a' },
-  subtitle: { fontSize: 16, color: '#666', marginBottom: 40 },
+  container: { flex: 1, backgroundColor: '#264d35', padding: 20, paddingTop: 60 },
+  title: { fontSize: 32, fontWeight: 'bold', marginBottom: 8, color: '#ffffff' },
+  subtitle: { fontSize: 16, color: '#ffffff', marginBottom: 40 },
   label: { fontSize: 14, fontWeight: '600', marginBottom: 8, color: '#333' },
   input: { borderWidth: 1, borderColor: '#ddd', padding: 16, marginBottom: 20, borderRadius: 12, fontSize: 16, backgroundColor: '#f9f9f9' },
+  // --- 4. STYLE MPYA ---
+  passwordContainer: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    borderWidth: 1, 
+    borderColor: '#080404', 
+    borderRadius: 12, 
+    backgroundColor: '#f9f9f9',
+    marginBottom: 20
+  },
+  inputPassword: { flex: 1, padding: 16, fontSize: 16 },
+  eyeIcon: { padding: 12 },
   forgotButton: { alignSelf: 'flex-end', marginBottom: 30 },
   forgotText: { color: '#007aff', fontSize: 14, fontWeight: '500' },
   registerButton: { marginTop: 20, alignItems: 'center' },

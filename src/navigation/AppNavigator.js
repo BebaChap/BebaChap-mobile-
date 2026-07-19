@@ -21,35 +21,27 @@ const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
   const { user, loading } = useAuth();
 
-  // Debug - angalia role halisi
   console.log('CURRENT USER:', user);
 
   if (loading) return <Splash />;
   if (!user) return <AuthNavigator />;
 
-  const getInitialRoute = () => {
-    switch (user?.role) {
-      case 'admin': return 'AdminApp';
-      case 'driver': return 'DriverApp';
-      case 'vendor': return 'VendorApp';
-      case 'garage': return 'VendorApp'; // kama unatumia VendorTab kwa garage
-      case 'customer': 
-      default: return 'CustomerApp'; // default iwe customer, si admin
-    }
-  };
-
   return (
-    <Stack.Navigator 
-      key={user.role || 'guest'} // force remount role ikibadilika
-      initialRouteName={getInitialRoute()}
+    <Stack.Navigator
+      key={user.role}
       screenOptions={{ headerShown: false }}
+      initialRouteName={
+        user.role === 'admin' ? 'AdminApp' :
+        user.role === 'driver' ? 'DriverApp' :
+        user.role === 'vendor' || user.role === 'garage' ? 'VendorApp' :
+        'CustomerApp'
+      }
     >
       <Stack.Screen name="AdminApp" component={AdminTab} />
       <Stack.Screen name="DriverApp" component={DriverTab} />
       <Stack.Screen name="VendorApp" component={VendorTab} />
       <Stack.Screen name="CustomerApp" component={CustomerTab} />
       
-      {/* Screens za kawaida */}
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="Help" component={Help} />

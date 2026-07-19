@@ -1,12 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
 import VendorHome from '../screens/vendor/VendorHome';
 import VendorOrders from '../screens/vendor/VendorOrders';
-import VendorProducts from '../screens/vendor/VendorProducts';
-import ShopProfile from '../screens/vendor/ShopProfile';
-
-import VendorStack from './VendorStack';
+import CommonStack from './CommonStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +14,7 @@ export default function VendorTab() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#007aff',
+        tabBarInactiveTintColor: '#999',
         tabBarLabelStyle: { fontSize: 12 },
       }}
     >
@@ -24,7 +23,7 @@ export default function VendorTab() {
         component={VendorHome}
         options={{
           tabBarLabel: 'Nyumbani',
-          tabBarIcon: () => <Text style={{fontSize: 20}}>🏠</Text>
+          tabBarIcon: ({ color, size }) => <Ionicons name="storefront-outline" size={size} color={color} />
         }}
       />
       <Tab.Screen 
@@ -32,24 +31,16 @@ export default function VendorTab() {
         component={VendorOrders}
         options={{
           tabBarLabel: 'Oda',
-          tabBarIcon: () => <Text style={{fontSize: 20}}>📦</Text>
+          tabBarIcon: ({ color, size }) => <Ionicons name="receipt-outline" size={size} color={color} />
         }}
       />
       <Tab.Screen 
-        name="Products" 
-        component={VendorProducts}
-        options={{
-          tabBarLabel: 'Bidhaa',
-          tabBarIcon: () => <Text style={{fontSize: 20}}>🛍</Text>
-        }}
-      />
-      <Tab.Screen 
-        name="ShopProfile" 
-        component={ShopProfile}
-        options={{
-          tabBarLabel: 'Duka',
-          tabBarIcon: () => <Text style={{fontSize: 20}}>🏪</Text>
-        }}
+        name="ProfileTab" 
+        component={CommonStack} 
+        options={{ 
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />
+        }} 
       />
     </Tab.Navigator>
   );

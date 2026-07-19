@@ -6,7 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
+    "scheme": "bebachap",
+    "platforms": ["android", "ios", "web"],
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -22,15 +24,40 @@
     "android": {
       "package": "com.bebachap.mobile",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/adaptive-icon.png",
+        "foregroundImage": "./assets/icons/icon.png",
         "backgroundColor": "#2c76b3"
-      }
+      },
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "FOREGROUND_SERVICE"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "bebachap.co.tz"
+            },
+            {
+              "scheme": "bebachap"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Tunahitaji eneo lako kukuonyesha madereva wa karibu.",
+          "isAndroidBackgroundLocationEnabled": false,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ]
     ]
   }
 }

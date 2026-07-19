@@ -1,11 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // badilisha kutoka Text
 import AdminDashboard from '../screens/admin/AdminDashboard';
 import AdminUsers from '../screens/admin/AdminUsers';
 import Disputes from '../screens/admin/Disputes';
-
-import AdminStack from './AdminStack';
+import CommonStack from './CommonStack'; // hii mpya
 
 const Tab = createBottomTabNavigator();
 
@@ -15,6 +14,7 @@ export default function AdminTab() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#007aff',
+        tabBarInactiveTintColor: '#999',
         tabBarLabelStyle: { fontSize: 12 },
       }}
     >
@@ -23,7 +23,7 @@ export default function AdminTab() {
         component={AdminDashboard}
         options={{
           tabBarLabel: 'Dashibodi',
-          tabBarIcon: () => <Text style={{fontSize: 20}}>📊</Text>
+          tabBarIcon: ({ color, size }) => <Ionicons name="grid-outline" size={size} color={color} />
         }}
       />
       <Tab.Screen 
@@ -31,7 +31,7 @@ export default function AdminTab() {
         component={AdminUsers}
         options={{
           tabBarLabel: 'Watumiaji',
-          tabBarIcon: () => <Text style={{fontSize: 20}}>👥</Text>
+          tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color} />
         }}
       />
       <Tab.Screen 
@@ -39,7 +39,16 @@ export default function AdminTab() {
         component={Disputes}
         options={{
           tabBarLabel: 'Migogoro',
-          tabBarIcon: () => <Text style={{fontSize: 20}}>⚖️</Text>
+          tabBarIcon: ({ color, size }) => <Ionicons name="scale-outline" size={size} color={color} />
+        }}
+      />
+      {/* HII NDIO ULIYOSEMAUI-ONGEZE - SASA IPO NDANI SAHI */}
+      <Tab.Screen 
+        name="ProfileTab" 
+        component={CommonStack}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />
         }}
       />
     </Tab.Navigator>
