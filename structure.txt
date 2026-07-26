@@ -9,6 +9,7 @@ C:.
 |   index.js
 |   package-lock.json
 |   package.json
+|   structure.js
 |   structure.txt
 |   
 +---.claude
@@ -24,6 +25,13 @@ C:.
 |           \---production
 |               \---images
 |                   +---android-adaptive-foreground
+|                   |   +---android-adaptive-foreground-1c7c9751b85c6c87868749b3f8cfc959fcd6f46c6263d79b1d282c13cb68f2cd-cover-transparent
+|                   |   |       icon_108.png
+|                   |   |       icon_162.png
+|                   |   |       icon_216.png
+|                   |   |       icon_324.png
+|                   |   |       icon_432.png
+|                   |   |       
 |                   |   \---android-adaptive-foreground-ef2feb7fee494e8ac6bb9164f475692438e159d5e31f6a04501d117961661834-cover-transparent
 |                   |           icon_108.png
 |                   |           icon_162.png
@@ -32,6 +40,13 @@ C:.
 |                   |           icon_432.png
 |                   |           
 |                   +---android-standard-circle
+|                   |   +---android-standard-circle-1c7c9751b85c6c87868749b3f8cfc959fcd6f46c6263d79b1d282c13cb68f2cd-cover-#2c76b3
+|                   |   |       icon_144.png
+|                   |   |       icon_192.png
+|                   |   |       icon_48.png
+|                   |   |       icon_72.png
+|                   |   |       icon_96.png
+|                   |   |       
 |                   |   \---android-standard-circle-ef2feb7fee494e8ac6bb9164f475692438e159d5e31f6a04501d117961661834-cover-#2c76b3
 |                   |           icon_144.png
 |                   |           icon_192.png
@@ -40,6 +55,13 @@ C:.
 |                   |           icon_96.png
 |                   |           
 |                   +---android-standard-square
+|                   |   +---android-standard-square-1c7c9751b85c6c87868749b3f8cfc959fcd6f46c6263d79b1d282c13cb68f2cd-cover-#2c76b3
+|                   |   |       icon_144.png
+|                   |   |       icon_192.png
+|                   |   |       icon_48.png
+|                   |   |       icon_72.png
+|                   |   |       icon_96.png
+|                   |   |       
 |                   |   \---android-standard-square-ef2feb7fee494e8ac6bb9164f475692438e159d5e31f6a04501d117961661834-cover-#2c76b3
 |                   |           icon_144.png
 |                   |           icon_192.png
@@ -63,35 +85,6 @@ C:.
 |   |   gradlew.bat
 |   |   settings.gradle
 |   |   
-|   +---.gradle
-|   |   +---8.14.3
-|   |   |   |   gc.properties
-|   |   |   |   
-|   |   |   +---checksums
-|   |   |   |       checksums.lock
-|   |   |   |       md5-checksums.bin
-|   |   |   |       sha1-checksums.bin
-|   |   |   |       
-|   |   |   +---expanded
-|   |   |   +---fileChanges
-|   |   |   |       last-build.bin
-|   |   |   |       
-|   |   |   +---fileHashes
-|   |   |   |       fileHashes.bin
-|   |   |   |       fileHashes.lock
-|   |   |   |       resourceHashesCache.bin
-|   |   |   |       
-|   |   |   \---vcsMetadata
-|   |   +---buildOutputCleanup
-|   |   |       buildOutputCleanup.lock
-|   |   |       cache.properties
-|   |   |       
-|   |   +---noVersion
-|   |   |       buildLogic.lock
-|   |   |       
-|   |   \---vcs-1
-|   |           gc.properties
-|   |           
 |   +---app
 |   |   |   build.gradle
 |   |   |   debug.keystore
@@ -120,20 +113,10 @@ C:.
 |   |               |       rn_edit_text_material.xml
 |   |               |       
 |   |               +---drawable-hdpi
-|   |               |       splashscreen_logo.png
-|   |               |       
 |   |               +---drawable-mdpi
-|   |               |       splashscreen_logo.png
-|   |               |       
 |   |               +---drawable-xhdpi
-|   |               |       splashscreen_logo.png
-|   |               |       
 |   |               +---drawable-xxhdpi
-|   |               |       splashscreen_logo.png
-|   |               |       
 |   |               +---drawable-xxxhdpi
-|   |               |       splashscreen_logo.png
-|   |               |       
 |   |               +---mipmap-anydpi-v26
 |   |               |       ic_launcher.xml
 |   |               |       ic_launcher_round.xml
@@ -163,25 +146,11 @@ C:.
 |   |               |       ic_launcher_foreground.webp
 |   |               |       ic_launcher_round.webp
 |   |               |       
-|   |               +---values
-|   |               |       colors.xml
-|   |               |       strings.xml
-|   |               |       styles.xml
-|   |               |       
-|   |               \---values-night
+|   |               \---values
 |   |                       colors.xml
+|   |                       strings.xml
+|   |                       styles.xml
 |   |                       
-|   +---build
-|   |   +---generated
-|   |   |   \---autolinking
-|   |   |           autolinking.json
-|   |   |           package-lock.json.sha
-|   |   |           package.json.sha
-|   |   |           
-|   |   \---reports
-|   |       \---problems
-|   |               problems-report.html
-|   |               
 |   \---gradle
 |       \---wrapper
 |               gradle-wrapper.jar
@@ -190,13 +159,17 @@ C:.
 +---assets
 |   +---icons
 |   |       adaptive-icon.png
+|   |       bajaji.png
+|   |       boda.png
+|   |       bodaboda.png
+|   |       garage.png
 |   |       icon.png
+|   |       shop.png
+|   |       taxi.png
 |   |       
 |   \---images
-|           bajaji.png
-|           boda.png
+|           favicon.png
 |           splash.png
-|           taxi.png
 |           
 +---node_modules
 |   |   .package-lock.json
@@ -12585,6 +12558,12 @@ C:.
 |   |   |       package.json
 |   |   |       README.md
 |   |   |       
+|   |   +---geojson
+|   |   |       index.d.ts
+|   |   |       LICENSE
+|   |   |       package.json
+|   |   |       README.md
+|   |   |       
 |   |   +---graceful-fs
 |   |   |       index.d.ts
 |   |   |       LICENSE
@@ -19362,6 +19341,214 @@ C:.
 |   |       \---ts-declarations
 |   |               react-native-assets.d.ts
 |   |               
+|   +---expo-image-loader
+|   |   |   CHANGELOG.md
+|   |   |   expo-module.config.json
+|   |   |   index.js
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   
+|   |   +---android
+|   |   |   |   build.gradle
+|   |   |   |   
+|   |   |   \---src
+|   |   |       \---main
+|   |   |           |   AndroidManifest.xml
+|   |   |           |   
+|   |   |           \---java
+|   |   |               \---expo
+|   |   |                   \---modules
+|   |   |                       \---imageloader
+|   |   |                               ImageLoaderModule.kt
+|   |   |                               ImageLoaderPackage.kt
+|   |   |                               SimpleSettableFuture.java
+|   |   |                               
+|   |   +---ios
+|   |   |   |   EXImageLoader.podspec
+|   |   |   |   
+|   |   |   \---EXImageLoader
+|   |   |           EXImageLoader.h
+|   |   |           EXImageLoader.m
+|   |   |           
+|   |   \---local-maven-repo
+|   |       \---host
+|   |           \---exp
+|   |               \---exponent
+|   |                   \---expo.modules.imageloader
+|   |                       |   maven-metadata.xml
+|   |                       |   maven-metadata.xml.md5
+|   |                       |   maven-metadata.xml.sha1
+|   |                       |   maven-metadata.xml.sha256
+|   |                       |   maven-metadata.xml.sha512
+|   |                       |   
+|   |                       \---6.0.0
+|   |                               expo.modules.imageloader-6.0.0-sources.jar
+|   |                               expo.modules.imageloader-6.0.0-sources.jar.md5
+|   |                               expo.modules.imageloader-6.0.0-sources.jar.sha1
+|   |                               expo.modules.imageloader-6.0.0-sources.jar.sha256
+|   |                               expo.modules.imageloader-6.0.0-sources.jar.sha512
+|   |                               expo.modules.imageloader-6.0.0.aar
+|   |                               expo.modules.imageloader-6.0.0.aar.md5
+|   |                               expo.modules.imageloader-6.0.0.aar.sha1
+|   |                               expo.modules.imageloader-6.0.0.aar.sha256
+|   |                               expo.modules.imageloader-6.0.0.aar.sha512
+|   |                               expo.modules.imageloader-6.0.0.module
+|   |                               expo.modules.imageloader-6.0.0.module.md5
+|   |                               expo.modules.imageloader-6.0.0.module.sha1
+|   |                               expo.modules.imageloader-6.0.0.module.sha256
+|   |                               expo.modules.imageloader-6.0.0.module.sha512
+|   |                               expo.modules.imageloader-6.0.0.pom
+|   |                               expo.modules.imageloader-6.0.0.pom.md5
+|   |                               expo.modules.imageloader-6.0.0.pom.sha1
+|   |                               expo.modules.imageloader-6.0.0.pom.sha256
+|   |                               expo.modules.imageloader-6.0.0.pom.sha512
+|   |                               
+|   +---expo-image-picker
+|   |   |   .eslintrc.js
+|   |   |   app.plugin.js
+|   |   |   CHANGELOG.md
+|   |   |   expo-module.config.json
+|   |   |   package.json
+|   |   |   README.md
+|   |   |   tsconfig.json
+|   |   |   
+|   |   +---android
+|   |   |   |   build.gradle
+|   |   |   |   
+|   |   |   \---src
+|   |   |       \---main
+|   |   |           |   AndroidManifest.xml
+|   |   |           |   
+|   |   |           +---java
+|   |   |           |   \---expo
+|   |   |           |       \---modules
+|   |   |           |           \---imagepicker
+|   |   |           |               |   ExpoCropImageActivity.kt
+|   |   |           |               |   ExpoCropImageUtils.kt
+|   |   |           |               |   ImagePickerConstants.kt
+|   |   |           |               |   ImagePickerExceptions.kt
+|   |   |           |               |   ImagePickerModule.kt
+|   |   |           |               |   ImagePickerOptions.kt
+|   |   |           |               |   ImagePickerResponse.kt
+|   |   |           |               |   ImagePickerUtils.kt
+|   |   |           |               |   MediaHandler.kt
+|   |   |           |               |   
+|   |   |           |               +---contracts
+|   |   |           |               |       CameraContract.kt
+|   |   |           |               |       ContractsUtils.kt
+|   |   |           |               |       CropImageContract.kt
+|   |   |           |               |       ImageLibraryContract.kt
+|   |   |           |               |       
+|   |   |           |               +---exporters
+|   |   |           |               |       CompressionImageExporter.kt
+|   |   |           |               |       DimensionsExporter.kt
+|   |   |           |               |       ImageExporter.kt
+|   |   |           |               |       RawImageExporter.kt
+|   |   |           |               |       
+|   |   |           |               \---fileprovider
+|   |   |           |                       ImagePickerFileProvider.kt
+|   |   |           |                       
+|   |   |           \---res
+|   |   |               +---values
+|   |   |               |       attrs.xml
+|   |   |               |       colors.xml
+|   |   |               |       
+|   |   |               +---values-night
+|   |   |               |       colors.xml
+|   |   |               |       
+|   |   |               \---xml
+|   |   |                       image_picker_provider_paths.xml
+|   |   |                       
+|   |   +---build
+|   |   |       ExponentImagePicker.d.ts
+|   |   |       ExponentImagePicker.d.ts.map
+|   |   |       ExponentImagePicker.js
+|   |   |       ExponentImagePicker.js.map
+|   |   |       ExponentImagePicker.web.d.ts
+|   |   |       ExponentImagePicker.web.d.ts.map
+|   |   |       ExponentImagePicker.web.js
+|   |   |       ExponentImagePicker.web.js.map
+|   |   |       ImagePicker.d.ts
+|   |   |       ImagePicker.d.ts.map
+|   |   |       ImagePicker.js
+|   |   |       ImagePicker.js.map
+|   |   |       ImagePicker.types.d.ts
+|   |   |       ImagePicker.types.d.ts.map
+|   |   |       ImagePicker.types.js
+|   |   |       ImagePicker.types.js.map
+|   |   |       utils.d.ts
+|   |   |       utils.d.ts.map
+|   |   |       utils.js
+|   |   |       utils.js.map
+|   |   |       
+|   |   +---ios
+|   |   |       ExpoImagePicker.podspec
+|   |   |       ImagePickerExceptions.swift
+|   |   |       ImagePickerHandler.swift
+|   |   |       ImagePickerModule.swift
+|   |   |       ImagePickerOptions.swift
+|   |   |       ImagePickerPermissionRequesters.swift
+|   |   |       ImagePickerResponse.swift
+|   |   |       ImagePickerUtils.swift
+|   |   |       ImageUtils.swift
+|   |   |       MediaHandler.swift
+|   |   |       NSItemProvider+Async.swift
+|   |   |       StatusBarVisibilityController.swift
+|   |   |       UIImage+fixOrientation.swift
+|   |   |       UIImagePickerControllerExtentsion.swift
+|   |   |       VideoUtils.swift
+|   |   |       
+|   |   +---local-maven-repo
+|   |   |   \---host
+|   |   |       \---exp
+|   |   |           \---exponent
+|   |   |               \---expo.modules.imagepicker
+|   |   |                   |   maven-metadata.xml
+|   |   |                   |   maven-metadata.xml.md5
+|   |   |                   |   maven-metadata.xml.sha1
+|   |   |                   |   maven-metadata.xml.sha256
+|   |   |                   |   maven-metadata.xml.sha512
+|   |   |                   |   
+|   |   |                   \---17.0.11
+|   |   |                           expo.modules.imagepicker-17.0.11-sources.jar
+|   |   |                           expo.modules.imagepicker-17.0.11-sources.jar.md5
+|   |   |                           expo.modules.imagepicker-17.0.11-sources.jar.sha1
+|   |   |                           expo.modules.imagepicker-17.0.11-sources.jar.sha256
+|   |   |                           expo.modules.imagepicker-17.0.11-sources.jar.sha512
+|   |   |                           expo.modules.imagepicker-17.0.11.aar
+|   |   |                           expo.modules.imagepicker-17.0.11.aar.md5
+|   |   |                           expo.modules.imagepicker-17.0.11.aar.sha1
+|   |   |                           expo.modules.imagepicker-17.0.11.aar.sha256
+|   |   |                           expo.modules.imagepicker-17.0.11.aar.sha512
+|   |   |                           expo.modules.imagepicker-17.0.11.module
+|   |   |                           expo.modules.imagepicker-17.0.11.module.md5
+|   |   |                           expo.modules.imagepicker-17.0.11.module.sha1
+|   |   |                           expo.modules.imagepicker-17.0.11.module.sha256
+|   |   |                           expo.modules.imagepicker-17.0.11.module.sha512
+|   |   |                           expo.modules.imagepicker-17.0.11.pom
+|   |   |                           expo.modules.imagepicker-17.0.11.pom.md5
+|   |   |                           expo.modules.imagepicker-17.0.11.pom.sha1
+|   |   |                           expo.modules.imagepicker-17.0.11.pom.sha256
+|   |   |                           expo.modules.imagepicker-17.0.11.pom.sha512
+|   |   |                           
+|   |   +---plugin
+|   |   |   |   jest.config.js
+|   |   |   |   tsconfig.json
+|   |   |   |   
+|   |   |   +---build
+|   |   |   |       withImagePicker.d.ts
+|   |   |   |       withImagePicker.js
+|   |   |   |       
+|   |   |   \---src
+|   |   |           withImagePicker.ts
+|   |   |           
+|   |   \---src
+|   |           ExponentImagePicker.ts
+|   |           ExponentImagePicker.web.ts
+|   |           ImagePicker.ts
+|   |           ImagePicker.types.ts
+|   |           utils.ts
+|   |           
 |   +---expo-localization
 |   |   |   .eslintrc.js
 |   |   |   app.plugin.js
@@ -36080,6 +36267,257 @@ C:.
 |   |       \---specs
 |   |               NativeRNLocalize.ts
 |   |               
+|   +---react-native-maps
+|   |   |   LICENSE
+|   |   |   package.json
+|   |   |   react-native-google-maps.podspec
+|   |   |   react-native-maps.podspec
+|   |   |   README.md
+|   |   |   
+|   |   +---android
+|   |   |   |   build.gradle
+|   |   |   |   gradlew
+|   |   |   |   gradlew.bat
+|   |   |   |   
+|   |   |   +---gradle
+|   |   |   |   \---wrapper
+|   |   |   |           gradle-wrapper.jar
+|   |   |   |           gradle-wrapper.properties
+|   |   |   |           
+|   |   |   \---src
+|   |   |       \---main
+|   |   |           |   AndroidManifest.xml
+|   |   |           |   
+|   |   |           \---java
+|   |   |               \---com
+|   |   |                   \---rnmaps
+|   |   |                       \---maps
+|   |   |                               FileUtil.java
+|   |   |                               FusedLocationSource.java
+|   |   |                               ImageReadable.java
+|   |   |                               ImageReader.java
+|   |   |                               ImageUtil.java
+|   |   |                               LatLngBoundsUtils.java
+|   |   |                               MapCallout.java
+|   |   |                               MapCalloutManager.java
+|   |   |                               MapCircle.java
+|   |   |                               MapCircleManager.java
+|   |   |                               MapFeature.java
+|   |   |                               MapGradientPolyline.java
+|   |   |                               MapGradientPolylineManager.java
+|   |   |                               MapHeatmap.java
+|   |   |                               MapHeatmapManager.java
+|   |   |                               MapLocalTile.java
+|   |   |                               MapLocalTileManager.java
+|   |   |                               MapManager.java
+|   |   |                               MapMarker.java
+|   |   |                               MapMarkerManager.java
+|   |   |                               MapModule.java
+|   |   |                               MapOverlay.java
+|   |   |                               MapOverlayManager.java
+|   |   |                               MapPolygon.java
+|   |   |                               MapPolygonManager.java
+|   |   |                               MapPolyline.java
+|   |   |                               MapPolylineManager.java
+|   |   |                               MapsPackage.java
+|   |   |                               MapTileProvider.java
+|   |   |                               MapTileWorker.java
+|   |   |                               MapUIBlock.java
+|   |   |                               MapUrlTile.java
+|   |   |                               MapUrlTileManager.java
+|   |   |                               MapView.java
+|   |   |                               MapWMSTile.java
+|   |   |                               MapWMSTileManager.java
+|   |   |                               RegionChangeEvent.java
+|   |   |                               SizeReportingShadowNode.java
+|   |   |                               ViewAttacherGroup.java
+|   |   |                               ViewChangesTracker.java
+|   |   |                               
+|   |   +---ios
+|   |   |   |   PrivacyInfo.xcprivacy
+|   |   |   |   
+|   |   |   +---AirGoogleMaps
+|   |   |   |   |   AIRDummyView.h
+|   |   |   |   |   AIRDummyView.m
+|   |   |   |   |   AIRGMSMarker.h
+|   |   |   |   |   AIRGMSMarker.m
+|   |   |   |   |   AIRGMSPolygon.h
+|   |   |   |   |   AIRGMSPolygon.m
+|   |   |   |   |   AIRGMSPolyline.h
+|   |   |   |   |   AIRGMSPolyline.m
+|   |   |   |   |   AIRGoogleMap.h
+|   |   |   |   |   AIRGoogleMap.m
+|   |   |   |   |   AIRGoogleMapCallout.h
+|   |   |   |   |   AIRGoogleMapCallout.m
+|   |   |   |   |   AIRGoogleMapCalloutManager.h
+|   |   |   |   |   AIRGoogleMapCalloutManager.m
+|   |   |   |   |   AIRGoogleMapCalloutSubview.h
+|   |   |   |   |   AIRGoogleMapCalloutSubview.m
+|   |   |   |   |   AIRGoogleMapCalloutSubviewManager.h
+|   |   |   |   |   AIRGoogleMapCalloutSubviewManager.m
+|   |   |   |   |   AIRGoogleMapCircle.h
+|   |   |   |   |   AIRGoogleMapCircle.m
+|   |   |   |   |   AIRGoogleMapCircleManager.h
+|   |   |   |   |   AIRGoogleMapCircleManager.m
+|   |   |   |   |   AIRGoogleMapHeatmap.h
+|   |   |   |   |   AIRGoogleMapHeatmap.m
+|   |   |   |   |   AIRGoogleMapHeatmapManager.h
+|   |   |   |   |   AIRGoogleMapHeatmapManager.m
+|   |   |   |   |   AIRGoogleMapManager.h
+|   |   |   |   |   AIRGoogleMapManager.m
+|   |   |   |   |   AIRGoogleMapMarker.h
+|   |   |   |   |   AIRGoogleMapMarker.m
+|   |   |   |   |   AIRGoogleMapMarkerManager.h
+|   |   |   |   |   AIRGoogleMapMarkerManager.m
+|   |   |   |   |   AIRGoogleMapOverlay.h
+|   |   |   |   |   AIRGoogleMapOverlay.m
+|   |   |   |   |   AIRGoogleMapOverlayManager.h
+|   |   |   |   |   AIRGoogleMapOverlayManager.m
+|   |   |   |   |   AIRGoogleMapPolygon.h
+|   |   |   |   |   AIRGoogleMapPolygon.m
+|   |   |   |   |   AIRGoogleMapPolygonManager.h
+|   |   |   |   |   AIRGoogleMapPolygonManager.m
+|   |   |   |   |   AIRGoogleMapPolyline.h
+|   |   |   |   |   AIRGoogleMapPolyline.m
+|   |   |   |   |   AIRGoogleMapPolylineManager.h
+|   |   |   |   |   AIRGoogleMapPolylineManager.m
+|   |   |   |   |   AIRGoogleMapUrlTile.h
+|   |   |   |   |   AIRGoogleMapUrlTile.m
+|   |   |   |   |   AIRGoogleMapUrlTileManager.h
+|   |   |   |   |   AIRGoogleMapURLTileManager.m
+|   |   |   |   |   AIRGoogleMapWMSTile.h
+|   |   |   |   |   AIRGoogleMapWMSTile.m
+|   |   |   |   |   AIRGoogleMapWMSTileManager.h
+|   |   |   |   |   AIRGoogleMapWMSTileManager.m
+|   |   |   |   |   RCTConvert+GMSMapViewType.h
+|   |   |   |   |   RCTConvert+GMSMapViewType.m
+|   |   |   |   |   
+|   |   |   |   \---Resources
+|   |   |   |       \---GoogleMapsPrivacy.bundle
+|   |   |   |               PrivacyInfo.xcprivacy
+|   |   |   |               
+|   |   |   +---AirMaps
+|   |   |   |   |   AIRMap.h
+|   |   |   |   |   AIRMap.m
+|   |   |   |   |   AIRMapCallout.h
+|   |   |   |   |   AIRMapCallout.m
+|   |   |   |   |   AIRMapCalloutManager.h
+|   |   |   |   |   AIRMapCalloutManager.m
+|   |   |   |   |   AIRMapCalloutSubview.h
+|   |   |   |   |   AIRMapCalloutSubview.m
+|   |   |   |   |   AIRMapCalloutSubviewManager.h
+|   |   |   |   |   AIRMapCalloutSubviewManager.m
+|   |   |   |   |   AIRMapCircle.h
+|   |   |   |   |   AIRMapCircle.m
+|   |   |   |   |   AIRMapCircleManager.h
+|   |   |   |   |   AIRMapCircleManager.m
+|   |   |   |   |   AIRMapCoordinate.h
+|   |   |   |   |   AIRMapCoordinate.m
+|   |   |   |   |   AIRMapLocalTile.h
+|   |   |   |   |   AIRMapLocalTile.m
+|   |   |   |   |   AIRMapLocalTileManager.h
+|   |   |   |   |   AIRMapLocalTileManager.m
+|   |   |   |   |   AIRMapLocalTileOverlay.h
+|   |   |   |   |   AIRMapLocalTileOverlay.m
+|   |   |   |   |   AIRMapManager.h
+|   |   |   |   |   AIRMapManager.m
+|   |   |   |   |   AIRMapMarker.h
+|   |   |   |   |   AIRMapMarker.m
+|   |   |   |   |   AIRMapMarkerManager.h
+|   |   |   |   |   AIRMapMarkerManager.m
+|   |   |   |   |   AIRMapOverlay.h
+|   |   |   |   |   AIRMapOverlay.m
+|   |   |   |   |   AIRMapOverlayManager.h
+|   |   |   |   |   AIRMapOverlayManager.m
+|   |   |   |   |   AIRMapOverlayRenderer.h
+|   |   |   |   |   AIRMapOverlayRenderer.m
+|   |   |   |   |   AIRMapPolygon.h
+|   |   |   |   |   AIRMapPolygon.m
+|   |   |   |   |   AIRMapPolygonManager.h
+|   |   |   |   |   AIRMapPolygonManager.m
+|   |   |   |   |   AIRMapPolyline.h
+|   |   |   |   |   AIRMapPolyline.m
+|   |   |   |   |   AIRMapPolylineManager.h
+|   |   |   |   |   AIRMapPolylineManager.m
+|   |   |   |   |   AIRMapPolylineRenderer.h
+|   |   |   |   |   AIRMapPolylineRenderer.m
+|   |   |   |   |   AIRMapSnapshot.h
+|   |   |   |   |   AIRMapUrlTile.h
+|   |   |   |   |   AIRMapUrlTile.m
+|   |   |   |   |   AIRMapUrlTileCachedOverlay.h
+|   |   |   |   |   AIRMapUrlTileCachedOverlay.m
+|   |   |   |   |   AIRMapUrlTileManager.h
+|   |   |   |   |   AIRMapUrlTileManager.m
+|   |   |   |   |   AIRMapWMSTile.h
+|   |   |   |   |   AIRMapWMSTile.m
+|   |   |   |   |   AIRMapWMSTileManager.h
+|   |   |   |   |   AIRMapWMSTileManager.m
+|   |   |   |   |   AIRWeakMapReference.h
+|   |   |   |   |   AIRWeakMapReference.m
+|   |   |   |   |   AIRWeakTimerReference.h
+|   |   |   |   |   AIRWeakTimerReference.m
+|   |   |   |   |   RCTComponentData+Maps.h
+|   |   |   |   |   RCTComponentData+Maps.m
+|   |   |   |   |   RCTConvert+AirMap.h
+|   |   |   |   |   RCTConvert+AirMap.m
+|   |   |   |   |   
+|   |   |   |   \---Callout
+|   |   |   |           SMCalloutView.h
+|   |   |   |           SMCalloutView.m
+|   |   |   |           
+|   |   |   \---AirMaps.xcodeproj
+|   |   |           project.pbxproj
+|   |   |           
+|   |   \---lib
+|   |           AnimatedRegion.d.ts
+|   |           AnimatedRegion.js
+|   |           decorateMapComponent.d.ts
+|   |           decorateMapComponent.js
+|   |           Geojson.d.ts
+|   |           Geojson.js
+|   |           index.d.ts
+|   |           index.js
+|   |           MapCallout.d.ts
+|   |           MapCallout.js
+|   |           MapCalloutSubview.d.ts
+|   |           MapCalloutSubview.js
+|   |           MapCircle.d.ts
+|   |           MapCircle.js
+|   |           MapHeatmap.d.ts
+|   |           MapHeatmap.js
+|   |           MapLocalTile.d.ts
+|   |           MapLocalTile.js
+|   |           MapMarker.d.ts
+|   |           MapMarker.js
+|   |           MapMarkerNativeComponent.d.ts
+|   |           MapMarkerNativeComponent.js
+|   |           MapOverlay.d.ts
+|   |           MapOverlay.js
+|   |           MapPolygon.d.ts
+|   |           MapPolygon.js
+|   |           MapPolygon.types.d.ts
+|   |           MapPolygon.types.js
+|   |           MapPolyline.d.ts
+|   |           MapPolyline.js
+|   |           MapUrlTile.d.ts
+|   |           MapUrlTile.js
+|   |           MapView.d.ts
+|   |           MapView.js
+|   |           MapView.types.d.ts
+|   |           MapView.types.js
+|   |           MapView.web.d.ts
+|   |           MapView.web.js
+|   |           MapViewNativeComponent.d.ts
+|   |           MapViewNativeComponent.js
+|   |           MapWMSTile.d.ts
+|   |           MapWMSTile.js
+|   |           ProviderConstants.d.ts
+|   |           ProviderConstants.js
+|   |           sharedTypes.d.ts
+|   |           sharedTypes.js
+|   |           sharedTypesInternal.d.ts
+|   |           sharedTypesInternal.js
+|   |           
 |   +---react-native-reanimated
 |   |   |   compatibility.json
 |   |   |   LICENSE
@@ -44700,107 +45138,108 @@ C:.
 |           package.json
 |           readme.md
 |           
-+---src
-|   +---api
-|   |       auth.js
-|   |       payments.js
-|   |       rides.js
-|   |       
-|   +---components
-|   |       Input.js
-|   |       LanguageSwitcher.js
-|   |       LogoutButton.js
-|   |       ProductCard.js
-|   |       RideCard.js
-|   |       StepButtons.js
-|   |       
-|   +---constants
-|   |       colors.js
-|   |       fonts.js
-|   |       languages.js
-|   |       
-|   +---contexts
-|   |       AuthContext.js
-|   |       LanguageContext.js
-|   |       
-|   +---hooks
-|   |       UseAuth.js
-|   |       UsePayment.js
-|   |       
-|   +---i18n
-|   |       en.js
-|   |       sw.js
-|   |       
-|   +---lib
-|   |       supabase.js
-|   |       
-|   +---navigation
-|   |       AdminStack.js
-|   |       AdminTab.js
-|   |       AppNavigator.js
-|   |       AuthNavigator.js
-|   |       CustomerStack.js
-|   |       CustomerTab.js
-|   |       DriverStack.js
-|   |       DriverTab.js
-|   |       VendorStack.js
-|   |       VendorTab.js
-|   |       
-|   +---screens
-|   |   +---admin
-|   |   |       AdminDashboard.js
-|   |   |       AdminUsers.js
-|   |   |       Disputes.js
-|   |   |       
-|   |   +---auth
-|   |   |       ForgotPassword.js
-|   |   |       Login.js
-|   |   |       Onboarding.js
-|   |   |       Otp.js
-|   |   |       Register.js
-|   |   |       
-|   |   +---common
-|   |   |       Help.js
-|   |   |       LanguageSelect.js
-|   |   |       Notification.js
-|   |   |       Profile.js
-|   |   |       Settings.js
-|   |   |       ShareApp.js
-|   |   |       Splash.js
-|   |   |       
-|   |   +---customer
-|   |   |       BookService.js
-|   |   |       Cart.js
-|   |   |       GarageList.js
-|   |   |       HomeScreen.js
-|   |   |       LiveTracking.js
-|   |   |       ProductDetail.js
-|   |   |       ProfileScreen.js
-|   |   |       RequestRide.js
-|   |   |       ShopList.js
-|   |   |       Trips.js
-|   |   |       Wallet.js
-|   |   |       
-|   |   +---driver
-|   |   |       ActiveTrip.js
-|   |   |       DocumentsUploads.js
-|   |   |       DriverEarnings.js
-|   |   |       DriverHome.js
-|   |   |       DriverRequests.js
-|   |   |       
-|   |   \---vendor
-|   |           ShopProfile.js
-|   |           VendorHome.js
-|   |           VendorOrders.js
-|   |           VendorProducts.js
-|   |           
-|   +---services
-|   |       LocationService.js
-|   |       NotificationService.js
-|   |       StorageService.js
-|   |       
-|   \---utils
-|           formatcurrency.js
-|           validators.js
-|           
-\---temp-fix
+\---src
+    +---api
+    |       auth.js
+    |       payments.js
+    |       rides.js
+    |       
+    +---components
+    |       Input.js
+    |       LanguageSwitcher.js
+    |       LogoutButton.js
+    |       ProductCard.js
+    |       RideCard.js
+    |       SafariCard.js
+    |       StepButtons.js
+    |       
+    +---constants
+    |       colors.js
+    |       fonts.js
+    |       languages.js
+    |       
+    +---contexts
+    |       AuthContext.js
+    |       LanguageContext.js
+    |       
+    +---hooks
+    |       UseAuth.js
+    |       UsePayment.js
+    |       
+    +---i18n
+    |       en.js
+    |       sw.js
+    |       
+    +---lib
+    |       supabase.js
+    |       
+    +---navigation
+    |       AdminTab.js
+    |       AppNavigator.js
+    |       AuthNavigator.js
+    |       CommonStack.js
+    |       CustomerTab.js
+    |       DriverTab.js
+    |       VendorTab.js
+    |       
+    +---screens
+    |   +---admin
+    |   |       AdminDashboard.js
+    |   |       AdminUsers.js
+    |   |       Disputes.js
+    |   |       
+    |   +---auth
+    |   |       ForgotPassword.js
+    |   |       Login.js
+    |   |       Onboarding.js
+    |   |       Otp.js
+    |   |       Register.js
+    |   |       
+    |   +---common
+    |   |       Help.js
+    |   |       LanguageSelect.js
+    |   |       MapScreen.js
+    |   |       Notification.js
+    |   |       Profile.js
+    |   |       Settings.js
+    |   |       ShareApp.js
+    |   |       Splash.js
+    |   |       
+    |   +---customer
+    |   |       BookService.js
+    |   |       Cart.js
+    |   |       GarageList.js
+    |   |       HomeScreen.js
+    |   |       LiveTracking.js
+    |   |       ProductDetail.js
+    |   |       RequestRide.js
+    |   |       ShopList.js
+    |   |       Trips.js
+    |   |       Wallet.js
+    |   |       
+    |   +---driver
+    |   |       ActiveTrip.js
+    |   |       DocumentsUploads.js
+    |   |       DriverEarnings.js
+    |   |       DriverHome.js
+    |   |       DriverRequests.js
+    |   |       
+    |   \---vendor
+    |           AddProduct.js
+    |           ShopProfile.js
+    |           VendorHome.js
+    |           VendorOrders.js
+    |           VendorProducts.js
+    |           
+    +---services
+    |       LocationService.js
+    |       NotificationService.js
+    |       StorageService.js
+    |       
+    +---theme
+    |       colors.js
+    |       
+    \---utils
+            formatcurrency.js
+            validators.js
+            

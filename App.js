@@ -2,25 +2,23 @@ import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
-import { LanguageProvider } from './src/contexts/LanguageContext';
+import { LanguageProvider, useLanguage } from './src/contexts/LanguageContext';
 import AppNavigator from './src/navigation/AppNavigator';
 
 function RootNavigation() {
   const { user, loading } = useAuth();
+  const { t } = useLanguage(); // <-- TUMIA T() HAPA
 
-  // HII NDIO FIX YA CURRENT USER: null
+  // HII NDIO FIX YA CURRENT USER: null - IMEBAKI KAMA ILIVYO
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>BeBaChap Inapakia...</Text>
+        <Text style={styles.loadingText}>{t('loading')}...</Text>
       </View>
     );
   }
 
-  // Baada ya loading kuisha ndipo tunaamua
-  // AppNavigator yako ndani tayari ina logic ya user ? VendorStack : AuthStack
-  // Kwa hiyo tunaipitishia user kama prop au tunaiacha ijisort yenyewe
   return <AppNavigator />;
 }
 

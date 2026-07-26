@@ -1,21 +1,23 @@
+import { useLanguage } from '../../contexts/LanguageContext';
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../contexts/AuthContext';
 
 const ROLES = [
-  { key: 'customer', label: 'Mteja', emoji: '👤' },
-  { key: 'driver', label: 'Dereva', emoji: '🏍' },
-  { key: 'vendor', label: 'Muuzaji / Duka', emoji: '🛒' },
-  { key: 'garage', label: 'Fundi Gereji', emoji: '🔧' },
+  { key: 'customer', label: 'Mteja', emoji: '👤', labelKey: 'role_customer' },
+  { key: 'driver', label: 'Dereva', emoji: '🏍', labelKey: 'role_driver' },
+  { key: 'vendor', label: 'Muuzaji / Duka', emoji: '🛒', labelKey: 'role_vendor' },
+  { key: 'garage', label: 'Fundi Gereji', emoji: '🔧', labelKey: 'role_garage' },
 ];
 
 const VENDOR_TYPES = [
-  { key: 'shop', label: 'Duka / Supermarket', emoji: '🛒' },
-  { key: 'restaurant', label: 'Restaurant / Fast Food', emoji: '🍽' },
+  { key: 'shop', label: 'Duka / Supermarket', emoji: '🛒', labelKey: 'shop' },
+  { key: 'restaurant', label: 'Restaurant / Fast Food', emoji: '🍽', labelKey: 'restaurant' },
 ];
 
 export default function Register({ navigation, route }) {
+  const { t, language } = useLanguage();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -37,19 +39,19 @@ export default function Register({ navigation, route }) {
 
   const pickDoc = async (type) => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) return Alert.alert('Ruhusa', 'Ruhusu kuchagua picha');
+    if (!perm.granted) return Alert.alert(t('permission'), t('allow_photo'));
     const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.5 });
     if (!res.canceled) setDocs(prev => ({...prev, [type]: res.assets[0].uri}));
   };
 
   const handleRegister = async () => {
-    if (name.trim().length < 3) return Alert.alert('Kosa','Jaza jina kamili');
+    if (name.trim().length < 3) return Alert.alert(t('error'), t('fill_full_name'));
     const cleanPhone = `+255${phone.replace(/\D/g,'').replace(/^0+/,'').replace(/^255/,'')}`;
 
     // MTEJA - BADO ANA OTP
     if (current.key === 'customer') {
       const raw = phone.replace(/\D/g,'').replace(/^0+/, '').replace(/^255/,'');
-      if (raw.length!== 9) return Alert.alert('Kosa','Weka namba sahihi');
+      if (raw.length!== 9) return Alert.alert(t('error'), t('enter_valid_phone'));
       setLoading(true);
       try {
         const fullPhone = `+255${raw}`;
@@ -57,18 +59,18 @@ export default function Register({ navigation, route }) {
         if(otpRes.success){
           navigation.navigate('OTP', { name, phone: fullPhone, role: 'customer', vendorType: 'shop', isLogin: false });
         } else {
-          Alert.alert('Kosa', otpRes.message);
+          Alert.alert(t('error'), otpRes.message);
         }
       } finally { setLoading(false); }
       return;
     }
 
     // BIASHARA - HAKUNA OTP, INAFUNGUKA MOJA KWA MOJA
-    if (!email.includes('@')) return Alert.alert('Kosa','Email si sahihi');
-    if (nida.length < 15) return Alert.alert('Kosa','NIDA namba sio sahihi');
-    if (current.key === 'driver' && licenseNo.length < 5) return Alert.alert('Kosa','Weka leseni');
-    if ((current.key === 'vendor' || current.key === 'garage') && tin.length < 5) return Alert.alert('Kosa','Weka TIN');
-    if (!docs.nidaFile) return Alert.alert('Kosa','Ambatisha NIDA');
+    if (!email.includes('@')) return Alert.alert(t('error'), t('invalid_email'));
+    if (nida.length < 15) return Alert.alert(t('error'), t('invalid_nida'));
+    if (current.key === 'driver' && licenseNo.length < 5) return Alert.alert(t('error'), t('enter_license'));
+    if ((current.key === 'vendor' || current.key === 'garage') && tin.length < 5) return Alert.alert(t('error'), t('enter_tin'));
+    if (!docs.nidaFile) return Alert.alert(t('error'), t('attach_nida'));
 
     setLoading(true);
     try {
@@ -84,66 +86,64 @@ export default function Register({ navigation, route }) {
       console.log("REGISTER RESULT:", res);
 
       if (res.success) {
-        // USIENDE OTP TENA - IMEFUNGUKA MOJA KWA MOJA
         console.log("Amefunguka moja kwa moja kama", res.user.role);
-        Alert.alert('Hongera', `Karibu ${res.user.role}!`);
-        // AppNavigator atamfungua mwenyewe VendorApp/DriverApp kwa sababu setUser imeshatokea
+        Alert.alert(t('congrats'), `${t('welcome')} ${res.user.role}!`);
       } else {
-        Alert.alert('Imeshindikana', res.message);
+        Alert.alert(t('failed'), res.message);
       }
     } catch(e){
       console.log(e);
-      Alert.alert('Kosa','Mtandao');
+      Alert.alert(t('error'), t('network_error'));
     } finally { setLoading(false); }
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{paddingBottom:50}}>
-      <Text style={styles.title}>Jisajili</Text>
-      <Text style={styles.label}>Aina ya Akaunti</Text>
+      <Text style={styles.title}>{t('register_title')}</Text>
+      <Text style={styles.label}>{t('account_type')}</Text>
       <TouchableOpacity style={styles.roleBox} onPress={() => setRoleIndex((i) => (i+1)%ROLES.length)}>
         <Text style={styles.emoji}>{current.emoji}</Text>
-        <Text style={styles.roleText}>{current.label}</Text>
-        <Text style={styles.badge}>{roleIndex+1}/{ROLES.length} • Bonyeza kubadilisha</Text>
+        <Text style={styles.roleText}>{t(current.labelKey)}</Text>
+        <Text style={styles.badge}>{roleIndex+1}/{ROLES.length} • {t('tap_to_change')}</Text>
       </TouchableOpacity>
       {current.key === 'vendor' && (
         <>
-          <Text style={styles.label}>Aina ya Biashara</Text>
+          <Text style={styles.label}>{t('business_type')}</Text>
           <View style={styles.vendorTypeRow}>
             {VENDOR_TYPES.map(vt => (
               <TouchableOpacity key={vt.key} style={[styles.typeCard, vendorType === vt.key && styles.typeCardActive]} onPress={() => setVendorType(vt.key)}>
                 <Text style={styles.typeEmoji}>{vt.emoji}</Text>
-                <Text style={[styles.typeLabel, vendorType === vt.key && styles.typeLabelActive]}>{vt.label}</Text>
+                <Text style={[styles.typeLabel, vendorType === vt.key && styles.typeLabelActive]}>{t(vt.labelKey)}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </>
       )}
-      <Text style={styles.label}>Jina Kamili</Text>
-      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Juma Mzuri" />
+      <Text style={styles.label}>{t('full_name')}</Text>
+      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder={t('full_name_placeholder')} />
       {current.key === 'customer'? (
         <>
-          <Text style={styles.label}>Namba ya Simu</Text>
+          <Text style={styles.label}>{t('phone_number')}</Text>
           <TextInput style={styles.input} value={phone} onChangeText={setPhone} placeholder="712345678" keyboardType="phone-pad" />
         </>
       ) : (
         <>
-          <Text style={styles.label}>Email ya Biashara</Text>
+          <Text style={styles.label}>{t('business_email')}</Text>
           <TextInput style={styles.input} value={email} onChangeText={setEmail} placeholder="duka@gmail.com" keyboardType="email-address" autoCapitalize="none" />
-          <Text style={styles.label}>Simu</Text>
+          <Text style={styles.label}>{t('phone')}</Text>
           <TextInput style={styles.input} value={phone} onChangeText={setPhone} placeholder="712345678" keyboardType="phone-pad" />
-          <Text style={styles.label}>NIDA Namba</Text>
+          <Text style={styles.label}>{t('nida_number')}</Text>
           <TextInput style={styles.input} value={nida} onChangeText={setNida} placeholder="1990XXXXXXXXXXXXXXX" keyboardType="number-pad" />
-          {current.key === 'driver' && <><Text style={styles.label}>Leseni Namba</Text><TextInput style={styles.input} value={licenseNo} onChangeText={setLicenseNo} placeholder="4001234567" /></>}
-          {(current.key === 'vendor' || current.key === 'garage') && <><Text style={styles.label}>TIN Namba</Text><TextInput style={styles.input} value={tin} onChangeText={setTin} placeholder="123-456-789" /></>}
-          <Text style={styles.section}>Ambatisha Nyaraka</Text>
-          <TouchableOpacity style={styles.docBtn} onPress={() => pickDoc('nidaFile')}><Text>{docs.nidaFile? '✅ NIDA Imeambatishwa' : '📎 Pakia Kitambulisho NIDA'}</Text></TouchableOpacity>
-          {current.key === 'driver' && <TouchableOpacity style={styles.docBtn} onPress={() => pickDoc('licenseFile')}><Text>{docs.licenseFile? '✅ Leseni Imeambatishwa' : '📎 Pakia Leseni ya Udereva'}</Text></TouchableOpacity>}
-          {(current.key === 'vendor' || current.key === 'garage') && <TouchableOpacity style={styles.docBtn} onPress={() => pickDoc('tinFile')}><Text>{docs.tinFile? '✅ TIN Imeambatishwa' : '📎 Pakia Cheti cha TIN'}</Text></TouchableOpacity>}
+          {current.key === 'driver' && <><Text style={styles.label}>{t('license_number')}</Text><TextInput style={styles.input} value={licenseNo} onChangeText={setLicenseNo} placeholder="4001234567" /></>}
+          {(current.key === 'vendor' || current.key === 'garage') && <><Text style={styles.label}>{t('tin_number')}</Text><TextInput style={styles.input} value={tin} onChangeText={setTin} placeholder="123-456-789" /></>}
+          <Text style={styles.section}>{t('attach_documents')}</Text>
+          <TouchableOpacity style={styles.docBtn} onPress={() => pickDoc('nidaFile')}><Text>{docs.nidaFile? `✅ ${t('nida_attached')}` : `📎 ${t('upload_nida')}`}</Text></TouchableOpacity>
+          {current.key === 'driver' && <TouchableOpacity style={styles.docBtn} onPress={() => pickDoc('licenseFile')}><Text>{docs.licenseFile? `✅ ${t('license_attached')}` : `📎 ${t('upload_license')}`}</Text></TouchableOpacity>}
+          {(current.key === 'vendor' || current.key === 'garage') && <TouchableOpacity style={styles.docBtn} onPress={() => pickDoc('tinFile')}><Text>{docs.tinFile? `✅ ${t('tin_attached')}` : `📎 ${t('upload_tin')}`}</Text></TouchableOpacity>}
         </>
       )}
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-        {loading? <ActivityIndicator color="#fff"/> : <Text style={styles.btnText}>{current.key==='customer'? 'Tuma OTP' : 'Fungua Akaunti Moja kwa Moja'}</Text>}
+        {loading? <ActivityIndicator color="#fff"/> : <Text style={styles.btnText}>{current.key==='customer'? t('send_otp') : t('open_account')}</Text>}
       </TouchableOpacity>
     </ScrollView>
   );

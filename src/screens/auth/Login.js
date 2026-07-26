@@ -1,12 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ActivityIndicator, Modal, FlatList, Image } from 'react-native';
-import { LanguageContext } from '../../contexts/LanguageContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import StepButtons from '../../components/StepButtons';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Login({ navigation, route }) {
-  const { t, currentLanguage, languages, changeLanguage } = useContext(LanguageContext);
+  const { t, language, setLanguage, languages } = useLanguage();
+  const currentLanguage = languages.find(l => l.code === language) || languages[0];
   const { sendOtp } = useAuth();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -17,36 +18,35 @@ export default function Login({ navigation, route }) {
 
   const handleNext = async () => {
     if (!phone.trim()) {
-      Alert.alert('Kosa', t('enter_phone') || 'Tafadhali ingiza namba ya simu');
+      Alert.alert(t('error'), t('enter_phone'));
       return;
     }
 
-    // Kama password ipo lakini ni login ya OTP - tunaendelea na OTP (logic yako ya awali)
     if (phone.trim().length < 9) {
-      Alert.alert('Kosa', 'Namba ya simu sio sahihi');
+      Alert.alert(t('error'), t('invalid_phone'));
       return;
     }
-    
+
     setLoading(true);
     try {
       const cleanPhone = phone.replace(/\D/g, '');
-      const fullPhone = cleanPhone.startsWith('255') ? `+${cleanPhone}` : `+255${cleanPhone.replace(/^0+/, '')}`;
-      
+      const fullPhone = cleanPhone.startsWith('255')? `+${cleanPhone}` : `+255${cleanPhone.replace(/^0+/, '')}`;
+
       const res = await sendOtp(fullPhone);
-      
+
       if (res.success) {
-        navigation.navigate('OTP', { 
+        navigation.navigate('OTP', {
           phone: fullPhone,
           role: role,
           isLogin: true,
           name: ''
         });
       } else {
-        Alert.alert('Imeshindikana', res.message || 'Jaribu tena');
+        Alert.alert(t('failed'), res.message || t('try_again'));
       }
     } catch (error) {
       console.log('Login error:', error);
-      Alert.alert('Imeshindikana', 'Jaribu tena.');
+      Alert.alert(t('failed'), t('try_again'));
     } finally {
       setLoading(false);
     }
@@ -60,17 +60,17 @@ export default function Login({ navigation, route }) {
         <Ionicons name="chevron-down" size={14} color="#fff" />
       </TouchableOpacity>
 
-      <Image 
-        source={require('../../../assets/icons/icon.png')} 
+      <Image
+        source={require('../../../assets/icons/icon.png')}
         style={styles.logo}
         resizeMode="contain"
       />
 
-      <Text style={styles.title}>{t('login') || 'Ingia'}</Text>
-      <Text style={styles.subtitle}>{t('welcome_back') || 'Karibu tena! Ingiza taarifa zako'}</Text>
+      <Text style={styles.title}>{t('login')}</Text>
+      <Text style={styles.subtitle}>{t('welcome_back')}</Text>
 
-      <Text style={styles.label}>{t('phone') || 'Namba ya Simu'}</Text>
-      <TextInput 
+      <Text style={styles.label}>{t('phone')}</Text>
+      <TextInput
         placeholder="07167084080"
         value={phone}
         onChangeText={setPhone}
@@ -79,9 +79,9 @@ export default function Login({ navigation, route }) {
         placeholderTextColor="#999"
       />
 
-      <Text style={styles.label}>{t('password') || 'Nenosiri'}</Text>
+      <Text style={styles.label}>{t('password')}</Text>
       <View style={styles.passwordContainer}>
-        <TextInput 
+        <TextInput
           placeholder="••••••••"
           value={password}
           onChangeText={setPassword}
@@ -90,41 +90,41 @@ export default function Login({ navigation, route }) {
           placeholderTextColor="#999"
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-          <Ionicons 
-            name={showPassword ? "eye-off" : "eye"} 
-            size={22} 
-            color="#666" 
+          <Ionicons
+            name={showPassword? "eye-off" : "eye"}
+            size={22}
+            color="#666"
           />
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.forgotButton}
         onPress={() => navigation.navigate('ForgotPassword')}
       >
-        <Text style={styles.forgotText}>{t('forgot_password') || 'Umesahau nenosiri?'}</Text>
+        <Text style={styles.forgotText}>{t('forgot_password')}</Text>
       </TouchableOpacity>
 
-      {loading ? <ActivityIndicator size="large" color="#fff" /> : (
-        <StepButtons 
+      {loading? <ActivityIndicator size="large" color="#fff" /> : (
+        <StepButtons
           onNext={handleNext}
-          nextText={t('next') || 'Endelea'}
+          nextText={t('next')}
         />
       )}
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.registerButton}
         onPress={() => navigation.navigate('Register', { role })}
       >
         <Text style={styles.registerText}>
-          {t('no_account') || 'Huna akaunti?'} <Text style={styles.registerLink}>{t('register') || 'Jisajili'}</Text>
+          {t('no_account')} <Text style={styles.registerLink}>{t('register')}</Text>
         </Text>
       </TouchableOpacity>
 
       <Modal visible={langModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{t('selectLang') || 'Chagua Lugha'}</Text>
+            <Text style={styles.modalTitle}>{t('selectLang')}</Text>
             <FlatList
               data={languages}
               keyExtractor={item => item.code}
@@ -132,7 +132,7 @@ export default function Login({ navigation, route }) {
                 <TouchableOpacity
                   style={[styles.langItem, currentLanguage.code === item.code && styles.langItemActive]}
                   onPress={async () => {
-                    await changeLanguage(item.code);
+                    await setLanguage(item.code);
                     setLangModal(false);
                   }}
                 >
@@ -143,7 +143,7 @@ export default function Login({ navigation, route }) {
               )}
             />
             <TouchableOpacity onPress={() => setLangModal(false)} style={styles.modalClose}>
-              <Text style={styles.modalCloseText}>Funga</Text>
+              <Text style={styles.modalCloseText}>{t('close')}</Text>
             </TouchableOpacity>
           </View>
         </View>
