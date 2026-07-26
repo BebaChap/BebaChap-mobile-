@@ -105,7 +105,7 @@ export default function Home({ navigation }) {
               <Ionicons name="chevron-forward" size={18} color="#ccc" />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('TripHistory')}>
+            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Trips')}>
               <View style={[styles.cardIconBox,{backgroundColor:'#e3f2fd'}]}>
                 <Ionicons name="time-outline" size={22} color={COLORS.primary} />
               </View>
@@ -127,7 +127,7 @@ export default function Home({ navigation }) {
                 <Text style={styles.bannerSub}>Nunua oil, tairi, betri na zaidi</Text>
               </View>
             </SafariCard>
-            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Shop')}>
+            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ShopList')}>
               <Image source={require('../../../assets/icons/shop.png')} style={styles.cardIconImg} />
               <View style={{flex:1}}>
                 <Text style={styles.cardTitle}>Nenda Dukani</Text>
@@ -147,7 +147,7 @@ export default function Home({ navigation }) {
                 <Text style={styles.bannerSub}>Pata huduma ya uhakika</Text>
               </View>
             </SafariCard>
-            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Garage')}>
+            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('GarageList')}>
               <Image source={require('../../../assets/icons/garage.png')} style={styles.cardIconImg} />
               <View style={{flex:1}}>
                 <Text style={styles.cardTitle}>Pata Fundi</Text>

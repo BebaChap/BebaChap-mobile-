@@ -6,7 +6,7 @@ const TRIPS = [
   { id: '2', from: 'Sinza', to: 'Kariakoo', price: '5,000', date: '15 Jun 2026', vehicle: '🛺' },
 ];
 
-export default function TripHistory({ navigation }) {
+export default function Trips({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Safari Zangu</Text>
@@ -16,7 +16,7 @@ export default function TripHistory({ navigation }) {
         renderItem={({ item }) => (
           <TouchableOpacity 
             style={styles.trip}
-            onPress={() => navigation?.navigate('TripDetail', { trip: item })}
+          
           >
             <Text style={styles.icon}>{item.vehicle}</Text>
             <View style={{ flex: 1 }}>

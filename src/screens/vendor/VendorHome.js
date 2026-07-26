@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../contexts/AuthContext';
 
 const NEW_ORDERS = [
   { id: '1', customer: 'Amina J.', items: 'Mchele 5kg x2', total: 24000, time: '5 min ago' },
@@ -9,6 +10,7 @@ const NEW_ORDERS = [
 
 export default function VendorDashboard() {
   const navigation = useNavigation();
+  const { logout } = useAuth();
   const [stats] = useState({
     todaySales: 156000,
     todayOrders: 12,
@@ -16,11 +18,29 @@ export default function VendorDashboard() {
     pendingOrders: 3,
   });
 
+  const handleLogout = () => {
+    Alert.alert('Toka', 'Una uhakika unataka kutoka?', [
+      { text: 'Ghairi', style: 'cancel' },
+      {
+        text: 'Toka',
+        style: 'destructive',
+        onPress: () => {
+          logout();
+        },
+      },
+    ]);
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Duka Langu 📊</Text>
-        <Text style={styles.subtitle}>Juma Store</Text>
+        <View>
+          <Text style={styles.title}>Duka Langu 📊</Text>
+          <Text style={styles.subtitle}>Juma Store</Text>
+        </View>
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Toka 🚪</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.statsGrid}>
@@ -59,12 +79,12 @@ export default function VendorDashboard() {
       </View>
 
       <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('Products')}>
+        <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('CommonStack', { screen: 'VendorProducts' })}>
           <Text style={styles.actionIcon}>📦</Text>
           <Text style={styles.actionText}>Ongeza Bidhaa</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('Shop')}>
-          <Text style={styles.actionIcon}>⚙️</Text>
+        <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('CommonStack', { screen: 'ShopProfile' })}>
+          <Text style={styles.actionIcon}>⚙</Text>
           <Text style={styles.actionText}>Hariri Duka</Text>
         </TouchableOpacity>
       </View>
@@ -74,9 +94,22 @@ export default function VendorDashboard() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5', paddingTop: 60 },
-  header: { paddingHorizontal: 20, marginBottom: 20 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20
+  },
   title: { fontSize: 28, fontWeight: 'bold' },
   subtitle: { fontSize: 16, color: '#666', marginTop: 5 },
+  logoutBtn: {
+    backgroundColor: '#FF3B30',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  logoutText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
   statsGrid: { flexDirection: 'row', paddingHorizontal: 20, gap: 10, marginBottom: 25 },
   statCard: { flex: 1, backgroundColor: '#fff', padding: 20, borderRadius: 12, alignItems: 'center' },
   statValue: { fontSize: 22, fontWeight: 'bold', color: '#007AFF' },

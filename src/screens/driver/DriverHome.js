@@ -55,9 +55,8 @@ export default function DriverDashboard() {
           {/* BUTTON MPYA YA TRIP HISTORY */}
           <TouchableOpacity
             style={styles.historyBtn}
-            onPress={() => navigation.navigate('CustomerTab', {
-              screen: 'CustomerHomeStack',
-              params: { screen: 'TripHistory' }
+            onPress={() => navigation.navigate('CustomerApp', {
+              screen: 'Trips',
             })}
           >
             <Text style={styles.historyBtnText}>📜 Historia ya Safari</Text>

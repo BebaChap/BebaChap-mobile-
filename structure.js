@@ -44779,7 +44779,7 @@ C:.
 |   |   |       ProfileScreen.js
 |   |   |       RequestRide.js
 |   |   |       ShopList.js
-|   |   |       TripHistory.js
+|   |   |       Trips.js
 |   |   |       Wallet.js
 |   |   |       
 |   |   +---driver

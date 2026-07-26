@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 // Screens za Home
 import HomeScreen from '../screens/customer/HomeScreen';
@@ -11,10 +12,11 @@ import ProductDetail from '../screens/customer/ProductDetail';
 import Cart from '../screens/customer/Cart';
 import RequestRide from '../screens/customer/RequestRide';
 import LiveTracking from '../screens/customer/LiveTracking';
-import TripHistory from '../screens/customer/TripHistory';
+import Trips from '../screens/customer/Trips';
 import Wallet from '../screens/customer/Wallet';
 import CommonStack from './CommonStack';
-import MapScreen from '../screens/common/MapScreen'; // <--- ONGEZO
+import MapScreen from '../screens/common/MapScreen';
+import BookService from '../screens/customer/BookService';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -29,11 +31,14 @@ const HomeStack = () => {
       <Stack.Screen name="Cart" component={Cart} />
       <Stack.Screen name="RequestRide" component={RequestRide} />
       <Stack.Screen name="LiveTracking" component={LiveTracking} />
+      <Stack.Screen name="BookService" component={BookService} />
     </Stack.Navigator>
   );
 };
 
 export default function CustomerTab() {
+  const { t } = useTranslation();
+
   return (
     <Tab.Navigator 
       screenOptions={{ 
@@ -48,27 +53,24 @@ export default function CustomerTab() {
         name="Home" 
         component={HomeStack}
         options={{ 
-          tabBarLabel: 'Nyumbani', 
+          tabBarLabel: t('nyumbani'), 
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />
         }} 
       />
-
-      {/* --- TAB MPYA YA RAMANI --- */}
       <Tab.Screen 
         name="Map" 
         component={MapScreen}
         options={{ 
           headerShown: false,
-          tabBarLabel: 'Ramani',
+          tabBarLabel: t('ramani'),
           tabBarIcon: ({ color, size }) => <Ionicons name="map-outline" size={size} color={color} />
         }} 
       />
-
       <Tab.Screen 
         name="Trips" 
-        component={TripHistory} 
+        component={Trips} 
         options={{ 
-          tabBarLabel: 'Safari', 
+          tabBarLabel: t('safari'), 
           tabBarIcon: ({ color, size }) => <Ionicons name="car-outline" size={size} color={color} />
         }} 
       />
@@ -76,7 +78,7 @@ export default function CustomerTab() {
         name="Wallet" 
         component={Wallet} 
         options={{ 
-          tabBarLabel: 'Pochi', 
+          tabBarLabel: t('pochi'), 
           tabBarIcon: ({ color, size }) => <Ionicons name="wallet-outline" size={size} color={color} />
         }} 
       />
@@ -84,7 +86,7 @@ export default function CustomerTab() {
         name="ProfileTab" 
         component={CommonStack} 
         options={{ 
-          tabBarLabel: 'Profile',
+          tabBarLabel: t('profile'),
           tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />
         }} 
       />

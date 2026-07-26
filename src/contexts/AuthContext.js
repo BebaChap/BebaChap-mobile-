@@ -18,9 +18,17 @@ export const AuthProvider = ({ children }) => {
   const checkUser = async () => {
     try {
       const userData = await AsyncStorage.getItem('user');
-      if (userData) setUser(JSON.parse(userData));
+      if (userData) {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        console.log("CURRENT USER:", parsedUser);
+      } else {
+        console.log("CURRENT USER: null - Hakuna user aliye-login");
+        setUser(null);
+      }
     } catch (e) {
       console.log('Error loading user', e);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -44,48 +52,56 @@ export const AuthProvider = ({ children }) => {
         }
         const exists = await checkAdminExists();
         if (exists) {
-          return { success: false, message: "Admin tayari yupo, ni mtu mmoja tu" };
+          return { success: false, message: "Admin tayari yupo" };
         }
         await AsyncStorage.setItem('admin_exists', 'true');
         return { success: true, message: "Super admin ameundwa" };
       }
 
-      let status = 'active';
-      if (['vendor', 'driver', 'garage'].includes(payload.role)) {
-        status = 'pending';
-      }
+      const allUsersRaw = await AsyncStorage.getItem('all_users');
+      let allUsers = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+      allUsers = allUsers.filter(u => u.email !== payload.email && u.phone !== payload.phone);
 
       const businessData = {
+        id: Date.now().toString(),
         ...payload,
-        status,
-        createdAt: new Date().toISOString(),
+        vendorType: payload.vendorType || 'shop',
+        status: 'active',
+        createdAt: new Date().toISOString()
       };
 
-      await AsyncStorage.setItem('last_business_request', JSON.stringify(businessData));
+      allUsers.push(businessData);
+      await AsyncStorage.setItem('all_users', JSON.stringify(allUsers));
+      
+      // HAPA NDIPO SIRI ILIPO - LOGIN MOJA KWA MOJA BILA OTP
+      await AsyncStorage.setItem('user', JSON.stringify(businessData));
+      setUser(businessData);
+      
+      console.log("REGISTER SAVED & LOGGED IN:", businessData.role, businessData.vendorType);
 
-      if (status === 'pending') {
-        return { success: true, pending: true, message: "Maombi yako yamepokelewa, subiri admin akuidhinishe" };
-      }
-
-      return { success: true, message: "Umefanikiwa" };
+      return { success: true, pending: false, message: "Umefanikiwa", user: businessData };
     } catch (e) {
       console.log(e);
-      return { success: false, message: "Imeshindikana kutuma maombi" };
+      return { success: false, message: "Imeshindikana" };
     } finally {
       setLoading(false);
     }
   };
 
-  // --- ONGEZA HIZI NDANI YA AuthProvider ---
   const loginWithEmail = async (email, password, role) => {
     setLoading(true);
     try {
-      console.log('Login email:', email, 'role:', role);
-      await new Promise(r => setTimeout(r, 1000));
-
-      // Zuia mtu asijifanye admin kama email siyo SUPER_ADMIN_EMAIL
       if (role === 'admin' && email !== SUPER_ADMIN_EMAIL) {
         return { success: false, message: "Huna ruhusa ya admin" };
+      }
+      const allUsersRaw = await AsyncStorage.getItem('all_users');
+      let allUsers = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+      const existing = allUsers.find(u => u.email === email);
+
+      if (existing) {
+        await AsyncStorage.setItem('user', JSON.stringify(existing));
+        setUser(existing);
+        return { success: true, user: existing };
       }
 
       const newUser = {
@@ -93,14 +109,14 @@ export const AuthProvider = ({ children }) => {
         email,
         name: role === 'admin' ? 'Super Admin' : 'Mtumiaji',
         role: role,
-        status: ['vendor','driver','garage'].includes(role) ? 'pending' : 'active',
+        vendorType: 'shop',
+        status: 'active',
         token: 'fake-jwt-token',
       };
-
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
       if (role === 'admin') await AsyncStorage.setItem('admin_exists', 'true');
       setUser(newUser);
-      return { success: true };
+      return { success: true, user: newUser };
     } catch (e) {
       return { success: false, message: "Login imeshindikana" };
     } finally {
@@ -116,32 +132,28 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       if (email === SUPER_ADMIN_EMAIL) {
-        const newUser = {
-          id: 'admin-001',
-          email,
-          name: 'Super Admin',
-          role: 'admin',
-          token: 'fake-jwt-admin-token',
-        };
+        const newUser = { id: 'admin-001', email, name: 'Super Admin', role: 'admin', vendorType: 'shop', status: 'active', token: 'fake-jwt-admin-token' };
         await AsyncStorage.setItem('user', JSON.stringify(newUser));
         await AsyncStorage.setItem('admin_exists', 'true');
         setUser(newUser);
-        return { success: true, message: 'Karibu Admin' };
+        return { success: true, message: 'Karibu Admin', user: newUser };
       }
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newUser = {
-        id: '1',
-        email,
-        name: 'Juma Mtumiaji',
-        role: 'customer',
-        token: 'fake-jwt-token-123',
-      };
+      const allUsersRaw = await AsyncStorage.getItem('all_users');
+      let allUsers = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+      const found = allUsers.find(u => u.email === email || u.phone === email);
 
+      if (found) {
+        console.log("LOGIN CHECK:", found.email, found.status);
+        await AsyncStorage.setItem('user', JSON.stringify(found));
+        setUser(found);
+        return { success: true, message: 'Umefanikiwa kuingia', user: found };
+      }
+
+      const newUser = { id: '1', email, name: 'Juma Mtumiaji', role: 'customer', vendorType: 'shop', status: 'active', token: 'fake-jwt-token-123' };
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
-      return { success: true, message: 'Umefanikiwa kuingia' };
+      return { success: true, message: 'Umefanikiwa kuingia', user: newUser };
     } catch (error) {
       return { success: false, message: 'Email au password sio sahihi' };
     } finally {
@@ -153,9 +165,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const safeRole = ALLOWED_ROLES.includes(role) ? role : 'customer';
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newUser = { id: Date.now().toString(), name, email, phone, role: safeRole, token: 'fake-jwt-token-123' };
+      const newUser = {
+        id: Date.now().toString(),
+        name,
+        email,
+        phone,
+        role: safeRole,
+        vendorType: 'shop',
+        status: 'active',
+        token: 'fake-jwt-token-123'
+      };
+      const allUsersRaw = await AsyncStorage.getItem('all_users');
+      let allUsers = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+      allUsers.push(newUser);
+      await AsyncStorage.setItem('all_users', JSON.stringify(allUsers));
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
       return { success: true, message: 'Umefanikiwa kujiunga' };
@@ -170,8 +193,10 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       setTempPhone(phoneNumber);
+      const fakeOtp = '123456';
+      console.log(`\n\n========== OTP YAKO: ${fakeOtp} kwa ${phoneNumber} ==========\n\n`);
       await new Promise(resolve => setTimeout(resolve, 1000));
-      return { success: true, message: 'OTP imetumwa' };
+      return { success: true, message: `OTP imetumwa: ${fakeOtp}`, otp: fakeOtp };
     } catch (error) {
       return { success: false, message: 'Imeshindikana kutuma OTP' };
     } finally {
@@ -184,23 +209,37 @@ export const AuthProvider = ({ children }) => {
     try {
       if (otpCode.length !== 6) throw new Error('OTP lazima iwe tarakimu 6');
       await new Promise(resolve => setTimeout(resolve, 800));
-
+      
       const requestedRole = userData.role || 'customer';
       const safeRole = ALLOWED_ROLES.includes(requestedRole) ? requestedRole : 'customer';
+      
+      const allUsersRaw = await AsyncStorage.getItem('all_users');
+      let allUsers = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+      let existingBusiness = allUsers.find(u => u.phone === (userData.phone || tempPhone));
 
       const newUser = {
-        id: Date.now().toString(),
+        id: existingBusiness?.id || Date.now().toString(),
         phone: userData.phone || tempPhone,
-        name: userData.name || 'Mtumiaji Mpya',
+        name: userData.name || existingBusiness?.name || 'Mtumiaji Mpya',
         role: safeRole,
-        status: ['vendor','driver','garage'].includes(safeRole) ? 'pending' : 'active',
+        vendorType: userData.vendorType || existingBusiness?.vendorType || 'shop',
+        email: userData.email || existingBusiness?.email || '',
+        nida: existingBusiness?.nida || '',
+        status: 'active',
         token: 'fake-jwt-token-123',
+        documents: existingBusiness?.documents || {}
       };
+
+      allUsers = allUsers.filter(u => u.phone !== newUser.phone);
+      allUsers.push(newUser);
+      await AsyncStorage.setItem('all_users', JSON.stringify(allUsers));
 
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
       setUser(newUser);
+      console.log("USER BAADA YA OTP:", newUser);
       setTempPhone('');
-      return { success: true, message: 'Umefanikiwa kuingia', user: newUser };
+      return { success: true, message: 'Umefanikiwa kuingia', user: newUser, pending: false };
+
     } catch (error) {
       return { success: false, message: error.message || 'OTP sio sahihi' };
     } finally {
@@ -211,10 +250,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem('user_token');
       setUser(null);
       setTempPhone('');
-    } catch (error) {
-      console.log('Error logout:', error);
+    } catch (e) {
+      console.log('Logout error', e);
     }
   };
 
@@ -225,20 +265,31 @@ export const AuthProvider = ({ children }) => {
         delete updated.role;
       }
       await AsyncStorage.setItem('user', JSON.stringify(updated));
+      const allUsersRaw = await AsyncStorage.getItem('all_users');
+      let allUsers = allUsersRaw ? JSON.parse(allUsersRaw) : [];
+      allUsers = allUsers.map(u => u.id === updated.id ? updated : u);
+      await AsyncStorage.setItem('all_users', JSON.stringify(allUsers));
       setUser(updated);
+      console.log("USER UPDATED:", updated);
       return { success: true };
     } catch (error) {
       return { success: false };
     }
   };
 
+  const updateVendorType = async (type) => {
+    if (!user) return { success: false };
+    return await updateUser({ vendorType: type });
+  };
+
   return (
-    <AuthContext.Provider value={{ 
+    <AuthContext.Provider value={{
       user, loading, tempPhone,
-      login, register, sendOtp, verifyOtp, 
+      login, register, sendOtp, verifyOtp,
       logout, updateUser, checkUser,
       registerBusiness, checkAdminExists,
       loginWithEmail, loginWithPhone,
+      updateVendorType,
       SUPER_ADMIN_EMAIL
     }}>
       {children}

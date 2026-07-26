@@ -1,21 +1,35 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { TouchableOpacity, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 
-export default function LogoutButton({ label = 'Toka', style, textStyle }) {
+export default function LogoutButton({ label, style, textStyle }) {
   const { logout } = useAuth();
+  const { t } = useLanguage();
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
 
   const handleLogout = () => {
     Alert.alert(
-      'Toka',
-      'Una uhakika unataka kutoka?',
+      t('logout') || 'Toka',
+      t('logout_confirm') || 'Una uhakika unataka kutoka?',
       [
-        { text: 'Ghairi', style: 'cancel' },
+        { text: t('cancel') || 'Ghairi', style: 'cancel' },
         {
-          text: 'Ndio',
+          text: t('yes') || 'Ndio',
           style: 'destructive',
           onPress: async () => {
-            await logout(); // inafuta user na inakurudisha Login
+            setLoading(true);
+            await logout();
+            setLoading(false);
+            // HII NDIO INAYOIFANYA IFANYE KAZI APP NZIMA
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'Auth' }], // Badilisha kuwa 'Login' kama Auth haipo
+              })
+            );
           }
         }
       ]
@@ -23,8 +37,12 @@ export default function LogoutButton({ label = 'Toka', style, textStyle }) {
   };
 
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={handleLogout}>
-      <Text style={[styles.text, textStyle]}>{label}</Text>
+    <TouchableOpacity style={[styles.button, style]} onPress={handleLogout} disabled={loading}>
+      {loading ? (
+        <ActivityIndicator color="#fff" />
+      ) : (
+        <Text style={[styles.text, textStyle]}>{label || t('logout') || 'Toka'}</Text>
+      )}
     </TouchableOpacity>
   );
 }
@@ -32,9 +50,9 @@ export default function LogoutButton({ label = 'Toka', style, textStyle }) {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: '#ff3b30',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 18,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },

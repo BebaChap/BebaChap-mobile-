@@ -17,6 +17,8 @@ import VendorProducts from '../screens/vendor/VendorProducts';
 import VendorOrders from '../screens/vendor/VendorOrders';
 import Wallet from '../screens/customer/Wallet';
 
+import AddProduct from '../screens/vendor/AddProduct';
+
 const Stack = createNativeStackNavigator();
 
 export default function CommonStack() {
@@ -52,6 +54,7 @@ export default function CommonStack() {
       <Stack.Screen name="ShopProfile" component={ShopProfile} options={{ title: 'Duka Langu' }} />
       <Stack.Screen name="VendorProducts" component={VendorProducts} options={{ title: 'Bidhaa Zangu' }} />
       <Stack.Screen name="VendorOrders" component={VendorOrders} options={{ title: 'Oda Zangu' }} />
+      <Stack.Screen name="AddProduct" component={AddProduct} />
       
     </Stack.Navigator>
   );

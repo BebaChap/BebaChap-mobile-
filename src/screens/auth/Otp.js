@@ -2,20 +2,18 @@ import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 
-// Roles halali tu - admin hairuhusiwi
 const ALLOWED_ROLES = ['customer', 'driver', 'vendor', 'garage'];
 
 export default function Otp({ navigation, route }) {
-  const { name = '', phone = '', role = 'customer', isLogin = false } = route.params || {};
+  const { name = '', phone = '', role = 'customer', vendorType = 'shop', isLogin = false } = route.params || {};
   const [otp, setOtp] = useState('');
   const { verifyOtp, loading, tempPhone } = useAuth();
   
   const displayPhone = phone || tempPhone || '';
-
-  // Linda system - kama mtu amejaribu ku-inject admin
   const safeRole = ALLOWED_ROLES.includes(role) ? role : 'customer';
+  const safeVendorType = ['shop', 'restaurant'].includes(vendorType) ? vendorType : 'shop';
 
-  console.log('>>> OTP SCREEN: role =', safeRole, '| phone =', displayPhone, '| isLogin:', isLogin);
+  console.log('>>> OTP SCREEN: role =', safeRole, '| vendorType =', safeVendorType, '| phone =', displayPhone);
 
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
@@ -23,21 +21,21 @@ export default function Otp({ navigation, route }) {
       return;
     }
 
-    console.log('>>> NINATUMA verifyOtp na role:', safeRole);
+    console.log('>>> NINATUMA verifyOtp na role:', safeRole, 'vendorType:', safeVendorType);
     
     const result = await verifyOtp(otp, {
       name: name || 'User',
       phone: displayPhone,
-      role: safeRole
+      role: safeRole,
+      vendorType: safeVendorType
     });
 
     console.log('>>> RESULT:', result);
 
     if (result.success) {
-      // USIFANYE navigation.navigate - AppNavigator itabadilisha yenyewe
-      // Alert tu
       if (!isLogin) {
-        Alert.alert('Hongera!', `Umejisajili kama ${safeRole.toUpperCase()}`);
+        const typeLabel = safeRole === 'vendor' ? (safeVendorType === 'restaurant' ? 'RESTAURANT' : 'DUKA') : safeRole.toUpperCase();
+        Alert.alert('Hongera!', `Umejisajili kama ${typeLabel}`);
       }
     } else {
       Alert.alert('Kosa', result.message || 'OTP sio sahihi');
@@ -55,6 +53,7 @@ export default function Otp({ navigation, route }) {
       <Text style={styles.subtitle}>
         Tumetuma code kwenye {displayPhone}{'\n'}
         {name ? `Jina: ${name} | ` : ''}Role: {safeRole.toUpperCase()}
+        {safeRole === 'vendor' ? ` (${safeVendorType === 'restaurant' ? '🍽️ Restaurant' : '🛒 Duka'})` : ''}
       </Text>
 
       <TextInput
