@@ -8,13 +8,25 @@ import { Ionicons } from '@expo/vector-icons';
 export default function Login({ navigation, route }) {
   const { t, language, setLanguage, languages } = useLanguage();
   const currentLanguage = languages.find(l => l.code === language) || languages[0];
-  const { sendOtp } = useAuth();
+  const { sendOtp, login } = useAuth(); // CHUKUA LOGIN PIA
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [langModal, setLangModal] = useState(false);
   const role = route.params?.role || 'customer';
+
+  // FUNCTION YA KUSAFA SIMU VIZURI
+  const formatPhone = (rawPhone) => {
+    let clean = rawPhone.replace(/\D/g, ''); // toa kila kitu sio namba
+    if (clean.startsWith('255')) {
+      return `+${clean}`;
+    }
+    if (clean.startsWith('0')) {
+      clean = clean.substring(1); // toa 0 ya mwanzo
+    }
+    return `+255${clean}`;
+  };
 
   const handleNext = async () => {
     if (!phone.trim()) {
@@ -27,26 +39,57 @@ export default function Login({ navigation, route }) {
       return;
     }
 
+    if (!password.trim()) {
+      Alert.alert(t('error'), 'Ingiza password');
+      return;
+    }
+
     setLoading(true);
     try {
-      const cleanPhone = phone.replace(/\D/g, '');
-      const fullPhone = cleanPhone.startsWith('255')? `+${cleanPhone}` : `+255${cleanPhone.replace(/^0+/, '')}`;
+      const fullPhone = formatPhone(phone);
+      console.log('Inajaribu ku-login:', fullPhone, 'role:', role);
 
-      const res = await sendOtp(fullPhone);
-
-      if (res.success) {
-        navigation.navigate('OTP', {
-          phone: fullPhone,
-          role: role,
-          isLogin: true,
-          name: ''
-        });
+      // 1. JARIBU KU-LOGIN DIRECT KWA PASSWORD KWANZA
+      if (login) {
+        const resLogin = await login(fullPhone, password, role);
+        if (resLogin.success) {
+          // Umefanikiwa - usiende OTP tena
+          return; // AuthContext itakupeleka Home
+        } else {
+          // Kama login imeshindwa kwa sababu ya OTP inahitajika, ndio peleka OTP
+          if (resLogin.message?.toLowerCase().includes('otp') || resLogin.needOtp) {
+            const resOtp = await sendOtp(fullPhone);
+            if (resOtp.success) {
+              navigation.navigate('OTP', {
+                phone: fullPhone,
+                role: role,
+                isLogin: true,
+                name: ''
+              });
+            } else {
+              Alert.alert(t('failed'), resOtp.message || t('try_again'));
+            }
+          } else {
+            Alert.alert(t('failed'), resLogin.message || 'Namba au password si sahihi');
+          }
+        }
       } else {
-        Alert.alert(t('failed'), res.message || t('try_again'));
+        // KAMA HUNA login FUNCTION - TUMIA OTP TU (kama zamani)
+        const res = await sendOtp(fullPhone);
+        if (res.success) {
+          navigation.navigate('OTP', {
+            phone: fullPhone,
+            role: role,
+            isLogin: true,
+            name: ''
+          });
+        } else {
+          Alert.alert(t('failed'), res.message || t('try_again'));
+        }
       }
     } catch (error) {
       console.log('Login error:', error);
-      Alert.alert(t('failed'), t('try_again'));
+      Alert.alert(t('failed'), error.message || t('try_again'));
     } finally {
       setLoading(false);
     }
@@ -57,7 +100,7 @@ export default function Login({ navigation, route }) {
       <TouchableOpacity style={styles.langButton} onPress={() => setLangModal(true)}>
         <Text style={styles.langFlag}>{currentLanguage.flag}</Text>
         <Text style={styles.langCode}>{currentLanguage.code.toUpperCase()}</Text>
-        <Ionicons name="chevron-down" size={14} color="#fff" />
+        <Ionicons name="chevron-down" size={14} color="#4d2b2b" />
       </TouchableOpacity>
 
       <Image
@@ -67,16 +110,17 @@ export default function Login({ navigation, route }) {
       />
 
       <Text style={styles.title}>{t('login')}</Text>
-      <Text style={styles.subtitle}>{t('welcome_back')}</Text>
+      <Text style={styles.subtitle}>{t('welcome_back')} kama {role}</Text>
 
       <Text style={styles.label}>{t('phone')}</Text>
       <TextInput
-        placeholder="07167084080"
+        placeholder="716708080"
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
         style={styles.input}
         placeholderTextColor="#999"
+        maxLength={12}
       />
 
       <Text style={styles.label}>{t('password')}</Text>
@@ -105,7 +149,7 @@ export default function Login({ navigation, route }) {
         <Text style={styles.forgotText}>{t('forgot_password')}</Text>
       </TouchableOpacity>
 
-      {loading? <ActivityIndicator size="large" color="#fff" /> : (
+      {loading? <ActivityIndicator size="large" color="#fff" style={{marginVertical: 20}} /> : (
         <StepButtons
           onNext={handleNext}
           nextText={t('next')}
@@ -160,7 +204,7 @@ const styles = StyleSheet.create({
   langCode: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
   logo: { width: 120, height: 120, alignSelf: 'center', marginBottom: 10, marginTop: 10 },
   title: { fontSize: 32, fontWeight: 'bold', marginBottom: 8, color: '#ffffff', marginTop: 10 },
-  subtitle: { fontSize: 16, color: '#ffffff', marginBottom: 30 },
+  subtitle: { fontSize: 16, color: '#ffffff', marginBottom: 30, textTransform: 'capitalize' },
   label: { fontSize: 14, fontWeight: '600', marginBottom: 8, color: '#fff' },
   input: { borderWidth: 1, borderColor: '#ddd', padding: 16, marginBottom: 20, borderRadius: 12, fontSize: 16, backgroundColor: '#f9f9f9', color: '#000' },
   passwordContainer: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#ddd', borderRadius: 12, backgroundColor: '#f9f9f9', marginBottom: 20 },

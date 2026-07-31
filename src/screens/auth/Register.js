@@ -33,7 +33,7 @@ export default function Register({ navigation, route }) {
   const [vendorType, setVendorType] = useState('shop');
   const [docs, setDocs] = useState({});
   const [loading, setLoading] = useState(false);
-  const { registerBusiness, sendOtp } = useAuth();
+  const { registerBusiness } = useAuth(); // OTP imeondolewa hapa
 
   const current = ROLES[roleIndex];
 
@@ -48,19 +48,32 @@ export default function Register({ navigation, route }) {
     if (name.trim().length < 3) return Alert.alert(t('error'), t('fill_full_name'));
     const cleanPhone = `+255${phone.replace(/\D/g,'').replace(/^0+/,'').replace(/^255/,'')}`;
 
-    // MTEJA - BADO ANA OTP
+    // MTEJA - SASA HAKUNA OTP, ANAFUNGUKA MOJA KWA MOJA
     if (current.key === 'customer') {
       const raw = phone.replace(/\D/g,'').replace(/^0+/, '').replace(/^255/,'');
       if (raw.length!== 9) return Alert.alert(t('error'), t('enter_valid_phone'));
+
       setLoading(true);
       try {
-        const fullPhone = `+255${raw}`;
-        const otpRes = await sendOtp(fullPhone);
-        if(otpRes.success){
-          navigation.navigate('OTP', { name, phone: fullPhone, role: 'customer', vendorType: 'shop', isLogin: false });
+        const payload = {
+          name,
+          phone: cleanPhone,
+          role: 'customer',
+          vendorType: 'shop',
+        };
+        console.log("REGISTER PAYLOAD CUSTOMER:", payload);
+        const res = await registerBusiness(payload);
+        console.log("REGISTER RESULT:", res);
+
+        if (res.success) {
+          console.log("Amefunguka moja kwa moja kama", res.user.role);
+          Alert.alert(t('congrats'), `${t('welcome')} ${res.user.role}!`);
         } else {
-          Alert.alert(t('error'), otpRes.message);
+          Alert.alert(t('failed'), res.message);
         }
+      } catch(e){
+        console.log(e);
+        Alert.alert(t('error'), t('network_error'));
       } finally { setLoading(false); }
       return;
     }
@@ -143,7 +156,7 @@ export default function Register({ navigation, route }) {
         </>
       )}
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-        {loading? <ActivityIndicator color="#fff"/> : <Text style={styles.btnText}>{current.key==='customer'? t('send_otp') : t('open_account')}</Text>}
+        {loading? <ActivityIndicator color="#fff"/> : <Text style={styles.btnText}>{current.key==='customer'? 'Endelea →' : `${t('open_account')} →`}</Text>}
       </TouchableOpacity>
     </ScrollView>
   );
