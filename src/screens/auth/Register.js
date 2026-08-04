@@ -156,17 +156,17 @@ export default function Register({ navigation, route }) {
         </>
       )}
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-        {loading? <ActivityIndicator color="#fff"/> : <Text style={styles.btnText}>{current.key==='customer'? 'Endelea →' : `${t('open_account')} →`}</Text>}
+        {loading? <ActivityIndicator color="#fff"/> : <Text style={styles.btnText}>{current.key==='customer'? 'Endelea' : `${t('open_account')} →`}</Text>}
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container:{flex:1,backgroundColor:'#fff',padding:20,paddingTop:50},
+  container:{flex:1,backgroundColor:'#264d35',padding:20,paddingTop:50},
   title:{fontSize:26,fontWeight:'bold',marginBottom:10},
   label:{fontWeight:'600',marginTop:15,marginBottom:6},
-  input:{borderWidth:1,borderColor:'#ddd',borderRadius:10,padding:14,backgroundColor:'#f9f9f9'},
+  input:{borderWidth:1,borderColor:'#ddd',borderRadius:10,padding:14,backgroundColor:'#ffffff'},
   roleBox:{flexDirection:'row',alignItems:'center',padding:14,borderWidth:1.5,borderColor:'#007aff',borderRadius:12,backgroundColor:'#e3f2fd'},
   emoji:{fontSize:24,marginRight:10}, roleText:{fontWeight:'700',flex:1}, badge:{fontSize:10,color:'#007aff'},
   vendorTypeRow:{flexDirection:'row',gap:10,marginTop:5},

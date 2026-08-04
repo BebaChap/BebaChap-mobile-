@@ -7,7 +7,6 @@ import BookService from '../screens/customer/BookService';
 import TripHistory from '../screens/customer/TripHistory'; // ✅ Umesha-import
 import Cart from '../screens/customer/Cart';
 import GarageList from '../screens/customer/GarageList';
-import LiveTracking from '../screens/customer/LiveTracking';
 import ProductDetail from '../screens/customer/ProductDetail';
 import RequestRide from '../screens/customer/RequestRide';
 import ShopList from '../screens/customer/ShopList';
@@ -70,14 +69,7 @@ export default function CustomerStack() {
         name="RequestRide" 
         component={RequestRide}
         options={{ title: 'Omba Usafiri' }} 
-      />
-
-      <Stack.Screen 
-        name="LiveTracking" 
-        component={LiveTracking}
-        options={{ title: 'Fuatilia Moja kwa Moja' }} 
-      />
-      
+      />      
     </Stack.Navigator>
   );
 }

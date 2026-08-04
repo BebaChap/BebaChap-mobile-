@@ -8,10 +8,12 @@ import { useTranslation } from 'react-i18next';
 import HomeScreen from '../screens/customer/HomeScreen';
 import ShopList from '../screens/customer/ShopList';
 import GarageList from '../screens/customer/GarageList';
+import RestaurantList from '../screens/customer/RestaurantList';
+import RestaurantDetails from '../screens/customer/RestaurantDetails';
 import ProductDetail from '../screens/customer/ProductDetail';
 import Cart from '../screens/customer/Cart';
+import Checkout from '../screens/customer/Checkout';
 import RequestRide from '../screens/customer/RequestRide';
-import LiveTracking from '../screens/customer/LiveTracking';
 import Trips from '../screens/customer/Trips';
 import Wallet from '../screens/customer/Wallet';
 import CommonStack from './CommonStack';
@@ -27,10 +29,12 @@ const HomeStack = () => {
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="ShopList" component={ShopList} />
       <Stack.Screen name="GarageList" component={GarageList} />
+      <Stack.Screen name="RestaurantList" component={RestaurantList} />
+      <Stack.Screen name="RestaurantDetails" component={RestaurantDetails} />
       <Stack.Screen name="ProductDetail" component={ProductDetail} />
       <Stack.Screen name="Cart" component={Cart} />
+      <Stack.Screen name="Checkout" component={Checkout} />
       <Stack.Screen name="RequestRide" component={RequestRide} />
-      <Stack.Screen name="LiveTracking" component={LiveTracking} />
       <Stack.Screen name="BookService" component={BookService} />
     </Stack.Navigator>
   );
@@ -88,7 +92,7 @@ export default function CustomerTab() {
         options={{ 
           tabBarLabel: t('profile'),
           tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />
-        }} 
+        }}
       />
     </Tab.Navigator>
   );

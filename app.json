@@ -14,9 +14,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#2c76b3"
     },
-    "assetBundlePatterns": [
-      "./assets/**/*"
-    ],
+    "assetBundlePatterns": ["assets/**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bebachap.mobile"
@@ -24,7 +22,7 @@
     "android": {
       "package": "com.bebachap.mobile",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/icon.png",
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#2c76b3"
       },
       "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION", "FOREGROUND_SERVICE"],
@@ -32,21 +30,13 @@
         {
           "action": "VIEW",
           "autoVerify": true,
-          "data": [
-            {
-              "scheme": "https",
-              "host": "bebachap.co.tz"
-            },
-            {
-              "scheme": "bebachap"
-            }
-          ],
+          "data": [{ "scheme": "https", "host": "bebachap.co.tz" }, { "scheme": "bebachap" }],
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icons/icon.png"
     },
     "plugins": [
       "expo-localization",

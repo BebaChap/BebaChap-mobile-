@@ -7,19 +7,17 @@ import { Ionicons } from '@expo/vector-icons';
 import DriverHome from '../screens/driver/DriverHome';
 import DriverRequests from '../screens/driver/DriverRequests';
 import ActiveTrip from '../screens/driver/ActiveTrip';
-import LiveTracking from '../screens/customer/LiveTracking'; // tracking ni common
 import CommonStack from './CommonStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// ✅ HomeStack ya Dereva - ina ActiveTrip na LiveTracking ndani
+
 const DriverHomeStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="DriverHomeMain" component={DriverHome} />
       <Stack.Screen name="ActiveTrip" component={ActiveTrip} />
-      <Stack.Screen name="LiveTracking" component={LiveTracking} />
     </Stack.Navigator>
   );
 };

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../theme/colors';
 import SafariCard from '../../components/SafariCard';
+import { useAuth } from '../../contexts/AuthContext';
 
 const restaurants = [
   { id: '1', name: 'Lina Restaurant', category: 'Pilau', rating: 4.8, time: '20-30 min', deliveryFee: '1,500', image: require('../../../assets/icons/shop.png'), isOpen: true },
@@ -15,6 +16,17 @@ const categories = ['Yote', 'Pilau', 'Biryani', 'Chips', 'Kuku', 'Juice'];
 export default function RestaurantList({ navigation }) {
   const [search, setSearch] = useState('');
   const [activeCat, setActiveCat] = useState('Yote');
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert("Toka","Una uhakika?",[
+      {text:"Ghairi",style:"cancel"},
+      {text:"Toka",style:"destructive",onPress:async()=>{
+        await logout();
+        navigation.reset({index:0,routes:[{name:'Login'}]})
+      }}
+    ])
+  };
 
   const filtered = restaurants.filter(r => {
     const matchCat = activeCat === 'Yote' || r.category === activeCat;
@@ -24,7 +36,16 @@ export default function RestaurantList({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Search */}
+      <View style={styles.topHeader}>
+        <TouchableOpacity style={styles.backCard} onPress={()=>navigation.goBack()}>
+          <Ionicons name="arrow-back" size={22} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Migahawa</Text>
+        <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={20} color="#ff3b30" />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.searchBox}>
         <Ionicons name="search" size={18} color="#999" />
         <TextInput
@@ -36,14 +57,13 @@ export default function RestaurantList({ navigation }) {
         />
       </View>
 
-      {/* Categories */}
       <View style={{height: 50, marginTop:12}}>
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
           data={categories}
           keyExtractor={item => item}
-          contentContainerStyle={{paddingHorizontal:16, gap:8}}
+          contentContainerStyle={{paddingHorizontal:16, gap:10}}
           renderItem={({item}) => (
             <TouchableOpacity 
               onPress={()=>setActiveCat(item)}
@@ -55,11 +75,10 @@ export default function RestaurantList({ navigation }) {
         />
       </View>
 
-      {/* List */}
       <FlatList
         data={filtered}
         keyExtractor={item => item.id}
-        contentContainerStyle={{padding:16}}
+        contentContainerStyle={{padding:16, paddingBottom: 30}}
         showsVerticalScrollIndicator={false}
         renderItem={({item}) => (
           <TouchableOpacity 
@@ -94,23 +113,49 @@ export default function RestaurantList({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex:1, backgroundColor: COLORS.background },
-  searchBox: { flexDirection:'row', alignItems:'center', backgroundColor:'#fff', borderRadius:14, paddingHorizontal:14, height:48, marginHorizontal:16, marginTop:16, borderWidth:1, borderColor: COLORS.border },
-  searchInput: { flex:1, marginLeft:10, fontSize:15, color: COLORS.black },
-  catChip: { backgroundColor:'#fff', paddingHorizontal:16, height:34, borderRadius:20, justifyContent:'center', borderWidth:1, borderColor: COLORS.border },
-  activeChip: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
-  catText: { fontSize:13, fontWeight:'600', color: COLORS.textGray },
+  container: { flex:1, backgroundColor: '#f8f9fa' },
+  topHeader: {
+    flexDirection:'row', justifyContent:'space-between', alignItems:'center',
+    paddingHorizontal: 15, paddingTop: 50, paddingBottom: 15,
+    backgroundColor: '#fff', borderBottomLeftRadius: 22, borderBottomRightRadius: 22,
+    elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10,
+  },
+  headerTitle: { fontSize: 18, fontWeight: '800', color: '#111' },
+  backCard: {
+    width:44,height:44,borderRadius:22, backgroundColor:'rgba(240,240,240,0.9)',
+    alignItems:'center',justifyContent:'center', borderWidth:0.5, borderColor:'#eee',
+  },
+  logoutCard: {
+    width:44,height:44,borderRadius:22, backgroundColor:'rgba(255,255,255,0.92)',
+    alignItems:'center',justifyContent:'center', elevation:6,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.12, shadowRadius: 6,
+    borderWidth:0.5,borderColor:'rgba(255,255,255,0.8)',
+  },
+  searchBox: {
+    flexDirection:'row', alignItems:'center', backgroundColor:'#fff', borderRadius:20,
+    paddingHorizontal:16, height:50, marginHorizontal:16, marginTop:16,
+    borderWidth:0.5, borderColor: 'rgba(0,0,0,0.06)', elevation:3,
+    shadowColor:'#000', shadowOffset:{width:0,height:2}, shadowOpacity:0.06, shadowRadius:8,
+  },
+  searchInput: { flex:1, marginLeft:10, fontSize:14, color: COLORS.black, fontWeight:'500' },
+  catChip: {
+    backgroundColor:'rgba(255,255,255,0.9)', paddingHorizontal:18, height:36, borderRadius:18,
+    justifyContent:'center', borderWidth:0.8, borderColor: 'rgba(0,0,0,0.06)',
+    elevation:2, shadowColor:'#000', shadowOffset:{width:0,height:2}, shadowOpacity:0.05, shadowRadius:4,
+  },
+  activeChip: { backgroundColor: COLORS.primary, borderColor: COLORS.primary, elevation:4 },
+  catText: { fontSize:13, fontWeight:'700', color: COLORS.textGray },
   activeCatText: { color:'#fff' },
   card: { marginBottom:12 },
-  cardInner: { flexDirection:'row', alignItems:'center', padding:12 },
-  cardImg: { width:60, height:60, borderRadius:12, backgroundColor:'#FFF3E0', resizeMode:'contain' },
-  name: { fontSize:15, fontWeight:'bold', color: COLORS.black },
-  category: { fontSize:12, color: COLORS.textGray, marginTop:2 },
-  footer: { flexDirection:'row', alignItems:'center', marginTop:6, gap:10 },
-  ratingBox: { flexDirection:'row', alignItems:'center', backgroundColor:'#FFF8E1', paddingHorizontal:6, paddingVertical:2, borderRadius:10 },
+  cardInner: { flexDirection:'row', alignItems:'center', padding:14, borderRadius: 18 },
+  cardImg: { width:62, height:62, borderRadius:16, backgroundColor:'#FFF3E0', resizeMode:'contain' },
+  name: { fontSize:15, fontWeight:'800', color: COLORS.black },
+  category: { fontSize:12, color: COLORS.textGray, marginTop:3, fontWeight:'500' },
+  footer: { flexDirection:'row', alignItems:'center', marginTop:8, gap:10 },
+  ratingBox: { flexDirection:'row', alignItems:'center', backgroundColor:'#FFF8E1', paddingHorizontal:8, paddingVertical:3, borderRadius:12 },
   rating: { marginLeft:4, fontSize:11, fontWeight:'700' },
-  delivery: { fontSize:11, color: COLORS.textGray },
-  statusDot: { flexDirection:'row', alignItems:'center', gap:4 },
+  delivery: { fontSize:11, color: COLORS.textGray, fontWeight:'500' },
+  statusDot: { flexDirection:'row', alignItems:'center', gap:5, backgroundColor:'#f2f2f7', paddingHorizontal:8, paddingVertical:3, borderRadius:12 },
   dot: { width:6, height:6, borderRadius:3 },
-  statusText: { fontSize:10, color: COLORS.textGray }
+  statusText: { fontSize:10, color: COLORS.textGray, fontWeight:'600' }
 });

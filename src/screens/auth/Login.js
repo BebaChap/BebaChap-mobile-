@@ -104,7 +104,7 @@ export default function Login({ navigation, route }) {
       </TouchableOpacity>
 
       <Image
-        source={require('../../../assets/icons/icon.png')}
+        source={require('../../assets/icons/icon.png')}
         style={styles.logo}
         resizeMode="contain"
       />

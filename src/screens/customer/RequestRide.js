@@ -1,113 +1,212 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
-import  StepButtons  from '../../components/StepButtons';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, Linking } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../../theme/colors';
 
-const vehicles = [
-  { id: 'boda', name: 'Bodaboda', icon: '🏍️', price: '2,000' },
-  { id: 'bajaji', name: 'Bajaji', icon: '🛺', price: '4,000' },
-  { id: 'taxi', name: 'Teksi', icon: '🚗', price: '8,000' },
+const VEHICLES = [
+  { 
+    id: 'boda', 
+    name: 'Bodaboda', 
+    price: 'TSh 2,000', 
+    time: '3-5 min',
+    capacity: 'Mtu 1',
+    image: require('../../../assets/icons/boda.png'),
+    color: '#FFF3E0',
+    driver: 'Juma Boda',
+    phone: '0712345678'
+  },
+  { 
+    id: 'bajaji', 
+    name: 'Bajaji', 
+    price: 'TSh 4,000', 
+    time: '4-6 min',
+    capacity: 'Watu 3',
+    image: require('../../../assets/icons/bajaji.png'),
+    color: '#FFF9C4',
+    driver: 'Issa Bajaji',
+    phone: '0655123456'
+  },
+  { 
+    id: 'taxi', 
+    name: 'Teksi', 
+    price: 'TSh 8,000', 
+    time: '5-8 min',
+    capacity: 'Watu 4',
+    image: require('../../../assets/icons/taxi.png'),
+    color: '#E3F2FD',
+    driver: 'John Taxi',
+    phone: '0767987654'
+  },
+  { 
+    id: 'pickup', 
+    name: 'Pickup', 
+    price: 'TSh 15,000', 
+    time: '8-12 min',
+    capacity: 'Mizigo',
+    image: require('../../../assets/icons/taxi.png'), // badilisha na picha ya pickup ukiwa nayo
+    color: '#E8F5E9',
+    driver: 'Musa Pickup',
+    phone: '0688123456'
+  },
 ];
 
 export default function RequestRide({ navigation }) {
-  const [pickup, setPickup] = useState('');
-  const [destination, setDestination] = useState('');
-  const [vehicle, setVehicle] = useState('boda');
-  const [step, setStep] = useState(1);
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const [selected, setSelected] = useState('bajaji');
+  const [payment, setPayment] = useState('M-Pesa');
 
-  const handleRequest = () => {
-    if (!pickup || !destination) {
-      Alert.alert('Kosa', 'Jaza sehemu zote');
-      return;
-    }
-    Alert.alert('Imefanikiwa', 'Dereva anakuja!', [
-      { text: 'OK', onPress: () => navigation.navigate('LiveTracking', { pickup, destination, vehicle }) }
-    ]);
-  };
+  const selectedVehicle = VEHICLES.find(v => v.id === selected);
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Agiza Usafiri</Text>
-
-      <Text style={styles.label}>Unatoka wapi?</Text>
-      <TextInput 
-        style={styles.input} 
-        placeholder="mf: Mlimani City" 
-        value={pickup} 
-        onChangeText={setPickup} 
-      />
-
-      <Text style={styles.label}>Unaenda wapi?</Text>
-      <TextInput 
-        style={styles.input} 
-        placeholder="mf: Posta" 
-        value={destination} 
-        onChangeText={setDestination} 
-      />
-
-      <Text style={styles.label}>Chagua gari</Text>
-      {vehicles.map((v) => (
-        <TouchableOpacity 
-          key={v.id} 
-          style={[styles.vehicle, vehicle === v.id && styles.vehicleSelected]} 
-          onPress={() => setVehicle(v.id)}
-        >
-          <Text style={styles.vehicleIcon}>{v.icon}</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.vehicleName}>{v.name}</Text>
-            <Text style={styles.vehiclePrice}>TSh {v.price}</Text>
-          </View>
-          {vehicle === v.id && <Text style={styles.check}>✓</Text>}
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Ionicons name="chevron-back" size={24} color="#111" />
         </TouchableOpacity>
-      ))}
-
-      <Text style={styles.label}>Lipa kwa:</Text>
-      <View style={styles.paymentRow}>
-        <TouchableOpacity style={styles.payBtn}><Text>M-Pesa</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.payBtn}><Text>Tigo Pesa</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.payBtn}><Text>Airtel</Text></TouchableOpacity>
+        <View>
+          <Text style={styles.title}>Agiza Usafiri</Text>
+          <Text style={styles.subtitle}>Chagua usafiri unaopenda</Text>
+        </View>
+        <View style={{width:40}} />
       </View>
 
-      <StepButtons 
-        onNext={handleRequest} 
-        onBack={() => navigation.goBack()} 
-        nextText="Agiza Sasa" 
-      />
-    </ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 140}}>
+        <View style={styles.locationCard}>
+          <View style={styles.locationRow}>
+            <View style={[styles.dot, {backgroundColor: '#22c55e'}]}><View style={styles.dotInner} /></View>
+            <View style={{flex:1}}>
+              <Text style={styles.label}>Unatoka wapi?</Text>
+              <TextInput placeholder="mf: Mlimani City" placeholderTextColor="#999" style={styles.input} value={from} onChangeText={setFrom} />
+            </View>
+            <Ionicons name="location-sharp" size={20} color="#22c55e" />
+          </View>
+          <View style={styles.dashedLine} />
+          <View style={styles.locationRow}>
+            <View style={[styles.dot, {backgroundColor: '#ef4444'}]}><Ionicons name="location" size={12} color="#fff" /></View>
+            <View style={{flex:1}}>
+              <Text style={styles.label}>Unaenda wapi?</Text>
+              <TextInput placeholder="mf: Posta" placeholderTextColor="#999" style={styles.input} value={to} onChangeText={setTo} />
+            </View>
+            <Ionicons name="map" size={20} color="#ef4444" />
+          </View>
+        </View>
+
+        {/* FRAME 4 ZA MRABA - 2 JUU 2 CHINI */}
+        <Text style={styles.sectionTitle}>Chagua gari 🛺</Text>
+        <View style={styles.grid}>
+          {VEHICLES.map((v) => {
+            const isSelected = selected === v.id;
+            return (
+              <TouchableOpacity 
+                key={v.id} 
+                onPress={() => setSelected(v.id)}
+                style={[styles.squareCard, isSelected && styles.squareCardActive]}
+              >
+                <View style={[styles.squareImgWrapper, {backgroundColor: v.color}]}>
+                  <Image source={v.image} style={styles.squareImg} resizeMode="contain" />
+                </View>
+                <Text style={styles.squareName}>{v.name}</Text>
+                <Text style={styles.squarePrice}>{v.price}</Text>
+                <View style={{flexDirection:'row', gap:4, marginTop:6}}>
+                  <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{v.time}</Text></View>
+                  <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{v.capacity}</Text></View>
+                </View>
+                {isSelected && <View style={styles.selectedTick}><Ionicons name="checkmark" size={14} color="#fff" /></View>}
+              </TouchableOpacity>
+            )
+          })}
+        </View>
+
+        {/* NAMBA YA SIMU YA DEREVA */}
+        {selectedVehicle && (
+          <View style={styles.driverCard}>
+            <View style={styles.driverAvatar}>
+              <Ionicons name="person" size={26} color={COLORS.primary} />
+            </View>
+            <View style={{flex:1}}>
+              <Text style={styles.driverLabel}>Dereva aliyechaguliwa</Text>
+              <Text style={styles.driverName}>{selectedVehicle.driver} • {selectedVehicle.name}</Text>
+              <View style={{flexDirection:'row', alignItems:'center', gap:6, marginTop:2}}>
+                <Ionicons name="call" size={14} color="#22c55e" />
+                <Text style={styles.driverPhone}>{selectedVehicle.phone}</Text>
+                <View style={styles.onlineDot} />
+                <Text style={styles.onlineText}>Online</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.callBtn} onPress={() => Linking.openURL(`tel:${selectedVehicle.phone}`)}>
+              <Ionicons name="call" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <Text style={styles.sectionTitle}>Lipa kwa 💳</Text>
+        <View style={styles.paymentRow}>
+          {['M-Pesa', 'Tigo Pesa', 'Airtel', 'Cash'].map(p => (
+            <TouchableOpacity key={p} onPress={() => setPayment(p)} style={[styles.payChip, payment === p && styles.payChipActive]}>
+              <Text style={[styles.payText, payment === p && styles.payTextActive]}>{p}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+
+      <View style={styles.bottom}>
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Jumla • {selectedVehicle?.phone}</Text>
+          <Text style={styles.totalPrice}>{selectedVehicle?.price}</Text>
+        </View>
+        <TouchableOpacity style={styles.orderBtn} onPress={() => navigation.navigate('LiveTracking', { vehicle: selectedVehicle, from, to, payment })}>
+          <Text style={styles.orderBtnText}>Agiza {selectedVehicle?.name} Sasa</Text>
+          <Ionicons name="arrow-forward" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20, paddingTop: 60 },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 20 },
-  label: { fontSize: 16, fontWeight: '600', marginTop: 15, marginBottom: 8 },
-  input: { 
-    borderWidth: 1, 
-    borderColor: '#ddd', 
-    borderRadius: 8, 
-    padding: 15, 
-    fontSize: 16 
-  },
-  vehicle: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    padding: 15, 
-    borderWidth: 1, 
-    borderColor: '#ddd', 
-    borderRadius: 8, 
-    marginTop: 10 
-  },
-  vehicleSelected: { borderColor: '#007AFF', backgroundColor: '#E3F2FD' },
-  vehicleIcon: { fontSize: 32, marginRight: 15 },
-  vehicleName: { fontSize: 18, fontWeight: 'bold' },
-  vehiclePrice: { fontSize: 14, color: '#666' },
-  check: { fontSize: 22, color: '#007AFF', fontWeight: 'bold' },
-  paymentRow: { flexDirection: 'row', gap: 10, marginTop: 10 },
-  payBtn: { 
-    flex: 1, 
-    padding: 15, 
-    borderWidth: 1, 
-    borderColor: '#ddd', 
-    borderRadius: 8, 
-    alignItems: 'center' 
-  },
+  container: { flex: 1, backgroundColor: '#F8F9FB' },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 55, paddingBottom: 20, paddingHorizontal: 16, backgroundColor: '#fff' },
+  backBtn: { width: 42, height: 42, borderRadius: 21, backgroundColor: '#F2F2F7', alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 22, fontWeight: '900', color: '#111' },
+  subtitle: { fontSize: 13, color: '#888', marginTop: 2 },
+  locationCard: { margin: 16, backgroundColor: '#fff', borderRadius: 24, padding: 18, elevation: 5, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 15 },
+  locationRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  dot: { width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  dotInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#fff' },
+  label: { fontSize: 12, fontWeight: '700', color: '#888', marginBottom: 2 },
+  input: { fontSize: 16, fontWeight: '600', color: '#111', paddingVertical: 4 },
+  dashedLine: { height: 1, borderWidth: 1, borderColor: '#eee', borderStyle: 'dashed', marginVertical: 14, marginLeft: 14 },
+  sectionTitle: { fontSize: 17, fontWeight: '800', marginTop: 10, marginBottom: 12, marginLeft: 16 },
+  // GRID 2x2
+  grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 12, justifyContent: 'space-between' },
+  squareCard: { width: '48%', backgroundColor: '#fff', borderRadius: 22, padding: 14, borderWidth: 1.5, borderColor: '#eee', alignItems: 'center', position: 'relative' },
+  squareCardActive: { borderColor: COLORS.primary, backgroundColor: '#F0F7FF', borderWidth: 2, shadowColor: COLORS.primary, shadowOpacity: 0.15, shadowRadius: 10, elevation: 6 },
+  squareImgWrapper: { width: '100%', height: 80, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  squareImg: { width: 90, height: 70 },
+  squareName: { fontSize: 15, fontWeight: '800', color: '#111', marginTop: 10 },
+  squarePrice: { fontSize: 13, fontWeight: '700', color: COLORS.primary, marginTop: 2 },
+  miniBadge: { backgroundColor: '#F3F4F6', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
+  miniBadgeText: { fontSize: 10, fontWeight: '600', color: '#666' },
+  selectedTick: { position: 'absolute', top: 10, right: 10, width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center' },
+  // DEREVA CARD
+  driverCard: { marginHorizontal: 16, marginTop: 18, backgroundColor: '#fff', borderRadius: 18, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: '#eee', elevation: 3 },
+  driverAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#EEF5FF', alignItems: 'center', justifyContent: 'center' },
+  driverLabel: { fontSize: 11, color: '#888', fontWeight: '600' },
+  driverName: { fontSize: 14, fontWeight: '800', color: '#111', marginTop: 1 },
+  driverPhone: { fontSize: 13, fontWeight: '700', color: '#111' },
+  onlineDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#22c55e' },
+  onlineText: { fontSize: 11, color: '#22c55e', fontWeight: '700' },
+  callBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#22c55e', alignItems: 'center', justifyContent: 'center' },
+  paymentRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: 16 },
+  payChip: { paddingHorizontal: 18, paddingVertical: 12, borderRadius: 14, backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#eee' },
+  payChipActive: { backgroundColor: '#111', borderColor: '#111' },
+  payText: { fontWeight: '700', color: '#555' },
+  payTextActive: { color: '#fff' },
+  bottom: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#fff', padding: 16, paddingBottom: 28, borderTopLeftRadius: 28, borderTopRightRadius: 28, elevation: 20, flexDirection: 'row', alignItems: 'center', gap: 16 },
+  totalRow: { flex: 1 },
+  totalLabel: { fontSize: 11, color: '#888', fontWeight: '600' },
+  totalPrice: { fontSize: 20, fontWeight: '900', color: '#111' },
+  orderBtn: { flex: 2, backgroundColor: COLORS.primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 18, borderRadius: 18 },
+  orderBtnText: { color: '#fff', fontWeight: '800', fontSize: 15 },
 });

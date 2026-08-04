@@ -17,6 +17,7 @@ import LanguageSelect from '../screens/common/LanguageSelect';
 import ShareApp from '../screens/common/ShareApp';
 import Splash from '../screens/common/Splash';
 import CommonStack from './CommonStack';
+import LiveTracking from '../screens/customer/LiveTracking'; // <-- IMEONGEZWA HAPA JUU
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +73,13 @@ export default function AppNavigator() {
       <Stack.Screen name="LanguageSelect" component={LanguageSelect} />
       <Stack.Screen name="ShareApp" component={ShareApp} />
       <Stack.Screen name="CommonStack" component={CommonStack} />
+      
+      {/* LIVE TRACKING - FULL SCREEN NJE YA TAB ZOTE */}
+      <Stack.Screen 
+        name="LiveTracking" 
+        component={LiveTracking} 
+        options={{ headerShown: false, presentation: 'fullScreenModal' }} 
+      />
     </Stack.Navigator>
   );
 }
