@@ -11,7 +11,7 @@ export default function Cart({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Kikapu Changu</Text>
+      <Text style={styles.title}>{t('my_cart')}</Text>
       
       <FlatList
         data={cartItems}
@@ -30,7 +30,7 @@ export default function Cart({ navigation }) {
           style={styles.button}
           onPress={() => navigation.navigate('Checkout')}
         >
-          <Text style={styles.buttonText}>Lipa Sasa</Text>
+          <Text style={styles.buttonText}>{t('pay_now')}</Text>
         </TouchableOpacity>
       </View>
     </View>

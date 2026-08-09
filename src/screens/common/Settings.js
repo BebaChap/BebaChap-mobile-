@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Switch, Alert, ScrollView } from 'react-native';
-import { useAuth } from '../../contexts/AuthContext'; // ← Hakikisha path iko sahihi
+import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Settings = ({ navigation }) => {
   const [notifications, setNotifications] = useState(true);
-  const { user, logout, updateUser } = useAuth(); // ← Chukua kutoka context
+  const { user, logout, updateUser } = useAuth();
+  const { t } = useLanguage(); // <-- FIX PEKEE HAPA
 
   const deleteAccount = () => {
     Alert.alert('Futa Akaunti', 'Hatua hii haiwezi kurudishwa. Una uhakika?', [
@@ -33,7 +35,7 @@ const Settings = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
+      <Text style={styles.title}>{t('settings')}</Text>
       <Text style={styles.currentRole}>Role: {user?.role}</Text>
 
       <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('LanguageSelect')}>

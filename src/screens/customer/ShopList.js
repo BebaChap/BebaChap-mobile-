@@ -15,10 +15,14 @@ export default function ShopList({ navigation }) {
   const handleLogout = () => {
     Alert.alert("Toka","Una uhakika unataka kutoka?",[
       {text:"Ghairi",style:"cancel"},
-      {text:"Toka",style:"destructive",onPress:async()=>{
-        await logout();
-        navigation.reset({index:0,routes:[{name:'Login'}]})
-      }}
+      {
+        text:"Toka",
+        style:"destructive",
+        onPress: async () => {
+          await logout();
+          // HAKUNA navigation.reset HAPA - logout pekee inatosha
+        }
+      }
     ])
   };
 
@@ -84,7 +88,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', 
     marginHorizontal: 16, 
     padding: 15, 
-    borderRadius: 18, // IPHONE ROUNDED
+    borderRadius: 18,
     marginTop: 16,
     marginBottom: 12,
     fontSize: 15,
@@ -97,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', 
     margin: 8, 
     padding: 18, 
-    borderRadius: 20, // IPHONE ROUNDED
+    borderRadius: 20,
     alignItems: 'center',
     elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 8,
     borderWidth: 0.5, borderColor: 'rgba(0,0,0,0.04)',

@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
-import { COLORS } from '../../constants/colors'; // tumia constant yako
+import { useLanguage } from '../../contexts/LanguageContext';
+import { COLORS } from '../../theme/colors';
 
 const Profile = ({ navigation }) => {
   const auth = useAuth();
+  const { t } = useLanguage(); // <-- ONGEZA HII
   const user = auth?.user || null;
-  const role = auth?.role || user?.role || 'customer'; // chukua kutoka sehemu zote mbili
+  const role = auth?.role || user?.role || 'customer';
   const logout = auth?.logout || (() => {});
 
   if (!user) {
@@ -38,13 +40,11 @@ const Profile = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Common Menu */}
       <MenuItem icon="settings-outline" label="Mipangilio" onPress={() => navigation.navigate('Settings')} />
       <MenuItem icon="help-circle-outline" label="Msaada" onPress={() => navigation.navigate('Help')} />
       <MenuItem icon="notifications-outline" label="Taarifa" onPress={() => navigation.navigate('Notification')} />
       <MenuItem icon="share-social-outline" label="Share App" onPress={() => navigation.navigate('ShareApp')} />
 
-      {/* Role Specific */}
       {role === 'driver' && (
         <>
           <Text style={styles.sectionTitle}>Dereva</Text>
@@ -63,7 +63,7 @@ const Profile = ({ navigation }) => {
 
       <TouchableOpacity style={[styles.menuItem, styles.logout]} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={22} color="red" />
-        <Text style={[styles.menuText, { color: 'red', marginLeft: 12 }]}>Toka</Text>
+        <Text style={[styles.menuText, { color: 'red', marginLeft: 12 }]}>{t('logout')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

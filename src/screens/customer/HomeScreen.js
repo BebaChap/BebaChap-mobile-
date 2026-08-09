@@ -30,13 +30,12 @@ export default function Home({ navigation }) {
         text: "Toka", style: "destructive",
         onPress: async () => {
           await logout();
-          navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+          // FIX: USIWEKE navigation.reset HAPA KABISA
         }
       }
     ]);
   };
 
-  // FUNCTION MPYA - INAZUIA ERROR YA NAVIGATE
   const safeNavigate = (screenName, params = {}) => {
     try {
       navigation.navigate(screenName, params);
@@ -69,7 +68,7 @@ export default function Home({ navigation }) {
           <View>
             <Text style={styles.greeting}>Habari, {user?.name?.split(' ')[0] || 'Juma'} 👋</Text>
             <View style={styles.locationRow}>
-              <Ionicons name="location" size={20} color="#fff" />
+              <Ionicons name="location" size={20} color="#080606" />
               <Text style={styles.locationText}>Tabata, Dar es Salaam</Text>
             </View>
           </View>
@@ -193,9 +192,9 @@ const styles = StyleSheet.create({
   map: {...StyleSheet.absoluteFillObject },
   topContainer: { position: 'absolute', top: 0, left: 0, right: 0, padding: 15, paddingTop: 50 },
   greetingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
-  greeting: { fontSize: 18, fontWeight: '800', color: '#fff', textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: {width:0,height:1}, textShadowRadius: 6 },
+  greeting: { fontSize: 18, fontWeight: '800', color: '#000000', textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: {width:0,height:1}, textShadowRadius: 6 },
   locationRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
-  locationText: { color: '#fff', fontSize: 13, marginLeft: 4, fontWeight: '600', textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: {width:0,height:1}, textShadowRadius: 4 },
+  locationText: { color: '#2d0068', fontSize: 13, marginLeft: 4, fontWeight: '600', textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: {width:0,height:1}, textShadowRadius: 4 },
   logoutCard: {
     width: 44, height: 44, borderRadius: 22,
     backgroundColor: 'rgba(255,255,255,0.92)',

@@ -1,3 +1,4 @@
+import { useLanguage } from '../../contexts/LanguageContext';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Dimensions, ActivityIndicator } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -7,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 const { height } = Dimensions.get('window');
 
 export default function MapScreen({ navigation }) {
+  const { t } = useLanguage();
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -87,19 +89,19 @@ export default function MapScreen({ navigation }) {
       {/* BOTTOM SHEET */}
       <View style={styles.bottomSheet}>
         <View style={styles.handle} />
-        <Text style={styles.sheetTitle}>Karibu BEBACHAP</Text>
-        <Text style={styles.sheetSub}>Chagua huduma unayohitaji karibu nawe</Text>
+        <Text style={styles.sheetTitle}>{t('welcome_bebachap')}</Text>
+        <Text style={styles.sheetSub}>{t('choose_service')}</Text>
 
         <View style={styles.serviceList}>
           <TouchableOpacity style={styles.serviceItem}>
             <View style={styles.serviceIcon}><Text>📍</Text></View>
-            <View style={{flex:1}}><Text style={styles.serviceTitle}>Nyumbani</Text><Text style={styles.serviceDesc}>Tabata, Dar es Salaam</Text></View>
+            <View style={{flex:1}}><Text style={styles.serviceTitle}>{t('nyumbani')}</Text><Text style={styles.serviceDesc}>Tabata, Dar es Salaam</Text></View>
             <Ionicons name="chevron-forward" size={18} color="#ccc" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.serviceItem}>
             <View style={styles.serviceIcon}><Text>🛒</Text></View>
-            <View style={{flex:1}}><Text style={styles.serviceTitle}>Duka la karibu</Text><Text style={styles.serviceDesc}>Spare 5 ziko umbali wa 1.2km</Text></View>
+            <View style={{flex:1}}><Text style={styles.serviceTitle}>{t('nearby_shop')}</Text><Text style={styles.serviceDesc}>Spare 5 ziko umbali wa 1.2km</Text></View>
             <View style={styles.badge}><Text style={styles.badgeText}>OPEN</Text></View>
           </TouchableOpacity>
         </View>

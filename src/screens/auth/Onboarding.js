@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import StepButtons from '../../components/StepButtons';
 
 const { width } = Dimensions.get('window');
@@ -15,11 +16,17 @@ export default function Onboarding({ navigation }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef();
 
-  const goNext = () => {
+  const goNext = async () => {
     if (currentIndex < SLIDES.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      navigation.replace('Auth');
+      // FIX KUBWA HAPA
+      try {
+        await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+      } catch (e) {
+        console.log('Error saving onboarding', e);
+      }
+      navigation.replace('Login');
     }
   };
 

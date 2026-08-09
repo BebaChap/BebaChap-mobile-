@@ -19,19 +19,19 @@ export default function AdminDashboard({ navigation }) {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Admin Dashboard</Text>
-      <Text style={styles.subtitle}>Muhtasari wa Mfumo</Text>
+      <Text style={styles.title}>{t('admin_dashboard')}</Text>
+      <Text style={styles.subtitle}>{t('system_summary')}</Text>
 
       <View style={styles.grid}>
         <View style={[styles.statCard, { backgroundColor: '#e3f2fd' }]}>
           <Text style={styles.statIcon}>👥</Text>
           <Text style={styles.statValue}>{stats.totalUsers.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>Watumiaji Wote</Text>
+          <Text style={styles.statLabel}>{t('all_users')}</Text>
         </View>
         <View style={[styles.statCard, { backgroundColor: '#e8f5e9' }]}>
           <Text style={styles.statIcon}>💰</Text>
           <Text style={styles.statValue}>TSH {(stats.revenue / 1000000).toFixed(1)}M</Text>
-          <Text style={styles.statLabel}>Mapato Jumla</Text>
+          <Text style={styles.statLabel}>{t('total_income')}</Text>
         </View>
       </View>
 
@@ -39,13 +39,13 @@ export default function AdminDashboard({ navigation }) {
         <View style={styles.statCard}>
           <Text style={styles.statIcon}>🛒</Text>
           <Text style={styles.statValue}>{stats.totalOrders.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>Oda Zote</Text>
+          <Text style={styles.statLabel}>{t('all_orders')}</Text>
           <Text style={styles.statSub}>Leo: {stats.todayOrders}</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statIcon}>🚗</Text>
           <Text style={styles.statValue}>{stats.totalRides.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>Safari Zote</Text>
+          <Text style={styles.statLabel}>{t('all_trips')}</Text>
           <Text style={styles.statSub}>Leo: {stats.todayRides}</Text>
         </View>
       </View>

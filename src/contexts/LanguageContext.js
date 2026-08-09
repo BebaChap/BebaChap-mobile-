@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { translations } from '../i18n';
 
@@ -18,21 +18,34 @@ export const LanguageProvider = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      const saved = await AsyncStorage.getItem('app_language');
-      if (saved) setLanguageState(saved);
+      try {
+        const saved = await AsyncStorage.getItem('app_language');
+        if (saved && translations[saved]) {
+          setLanguageState(saved);
+        }
+      } catch (e) {
+        console.log('Language load error', e);
+      }
     })();
   }, []);
 
   const setLanguage = async (code) => {
+    if (!translations[code]) {
+      console.log('Translation missing for', code);
+      return;
+    }
     setLanguageState(code);
     await AsyncStorage.setItem('app_language', code);
     console.log("Lugha imebadilishwa:", code);
   };
 
-  const t = (key) => {
+  const t = useCallback((key) => {
     const langData = translations[language] || translations['sw'];
-    return langData[key] || translations['en'][key] || key;
-  };
+    if (langData && langData[key]) return langData[key];
+    if (translations['en'] && translations['en'][key]) return translations['en'][key];
+    if (translations['sw'] && translations['sw'][key]) return translations['sw'][key];
+    return key;
+  }, [language]);
 
   return (
     <LanguageContext.Provider value={{
@@ -41,7 +54,7 @@ export const LanguageProvider = ({ children }) => {
       setLanguage,
       languages: LANGUAGES,
       currentLanguage: LANGUAGES.find(l => l.code === language) || LANGUAGES[0],
-      changeLanguage: setLanguage, // kwa compatibility ya code ya zamani
+      changeLanguage: setLanguage,
     }}>
       {children}
     </LanguageContext.Provider>

@@ -1,60 +1,62 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../theme/colors';
-
-const VEHICLES = [
-  { 
-    id: 'boda', 
-    name: 'Bodaboda', 
-    price: 'TSh 2,000', 
-    time: '3-5 min',
-    capacity: 'Mtu 1',
-    image: require('../../../assets/icons/bodaboda.png'),
-    color: '#FFF3E0',
-    driver: 'Juma Boda',
-    phone: '0712345678'
-  },
-  { 
-    id: 'bajaji', 
-    name: 'Bajaji', 
-    price: 'TSh 4,000', 
-    time: '4-6 min',
-    capacity: 'Watu 3',
-    image: require('../../../assets/icons/bajaji.png'),
-    color: '#FFF9C4',
-    driver: 'Issa Bajaji',
-    phone: '0655123456'
-  },
-  { 
-    id: 'taxi', 
-    name: 'Teksi', 
-    price: 'TSh 8,000', 
-    time: '5-8 min',
-    capacity: 'Watu 4',
-    image: require('../../../assets/icons/taxi.png'),
-    color: '#E3F2FD',
-    driver: 'John Taxi',
-    phone: '0767987654'
-  },
-  { 
-    id: 'pickup', 
-    name: 'Pickup', 
-    price: 'TSh 15,000', 
-    time: '8-12 min',
-    capacity: 'Mizigo',
-    image: require('../../../assets/icons/pickup.png'), // badilisha na picha ya pickup ukiwa nayo
-    color: '#E8F5E9',
-    driver: 'Musa Pickup',
-    phone: '0688123456'
-  },
-];
+import { COLORS } from '../theme/colors';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function RequestRide({ navigation }) {
+  const { t } = useLanguage();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [selected, setSelected] = useState('bajaji');
   const [payment, setPayment] = useState('M-Pesa');
+
+  const VEHICLES = [
+    { 
+      id: 'boda', 
+      name: t('boda'), 
+      price: 'TSh 2,000', 
+      time: '3-5 min',
+      capacity: `1 ${t('person')}`,
+      image: require('../../assets/icons/bodaboda.png'),
+      color: '#FFF3E0',
+      driver: 'Juma Boda',
+      phone: '0712345678'
+    },
+    { 
+      id: 'bajaji', 
+      name: t('bajaji'), 
+      price: 'TSh 4,000', 
+      time: '4-6 min',
+      capacity: `3 ${t('people')}`,
+      image: require('../../assets/icons/bajaji.png'),
+      color: '#FFF9C4',
+      driver: 'Issa Bajaji',
+      phone: '0655123456'
+    },
+    { 
+      id: 'taxi', 
+      name: t('taxi'), 
+      price: 'TSh 8,000', 
+      time: '5-8 min',
+      capacity: `4 ${t('people')}`,
+      image: require('../../assets/icons/taxi.png'),
+      color: '#E3F2FD',
+      driver: 'John Taxi',
+      phone: '0767987654'
+    },
+    { 
+      id: 'pickup', 
+      name: t('pickup'), 
+      price: 'TSh 15,000', 
+      time: '8-12 min',
+      capacity: t('cargo'),
+      image: require('../../assets/icons/pickup.png'),
+      color: '#E8F5E9',
+      driver: 'Musa Pickup',
+      phone: '0688123456'
+    },
+  ];
 
   const selectedVehicle = VEHICLES.find(v => v.id === selected);
 
@@ -65,8 +67,8 @@ export default function RequestRide({ navigation }) {
           <Ionicons name="chevron-back" size={24} color="#111" />
         </TouchableOpacity>
         <View>
-          <Text style={styles.title}>Agiza Usafiri</Text>
-          <Text style={styles.subtitle}>Chagua usafiri unaopenda</Text>
+          <Text style={styles.title}>{t('order_transport')}</Text>
+          <Text style={styles.subtitle}>{t('choose_transport')}</Text>
         </View>
         <View style={{width:40}} />
       </View>
@@ -76,7 +78,7 @@ export default function RequestRide({ navigation }) {
           <View style={styles.locationRow}>
             <View style={[styles.dot, {backgroundColor: '#22c55e'}]}><View style={styles.dotInner} /></View>
             <View style={{flex:1}}>
-              <Text style={styles.label}>Unatoka wapi?</Text>
+              <Text style={styles.label}>{t('where_from')}</Text>
               <TextInput placeholder="mf: Mlimani City" placeholderTextColor="#999" style={styles.input} value={from} onChangeText={setFrom} />
             </View>
             <Ionicons name="location-sharp" size={20} color="#22c55e" />
@@ -85,15 +87,14 @@ export default function RequestRide({ navigation }) {
           <View style={styles.locationRow}>
             <View style={[styles.dot, {backgroundColor: '#ef4444'}]}><Ionicons name="location" size={12} color="#fff" /></View>
             <View style={{flex:1}}>
-              <Text style={styles.label}>Unaenda wapi?</Text>
+              <Text style={styles.label}>{t('where_to')}</Text>
               <TextInput placeholder="mf: Posta" placeholderTextColor="#999" style={styles.input} value={to} onChangeText={setTo} />
             </View>
             <Ionicons name="map" size={20} color="#ef4444" />
           </View>
         </View>
 
-        {/* FRAME 4 ZA MRABA - 2 JUU 2 CHINI */}
-        <Text style={styles.sectionTitle}>Chagua gari 🛺</Text>
+        <Text style={styles.sectionTitle}>{t('choose_car')}</Text>
         <View style={styles.grid}>
           {VEHICLES.map((v) => {
             const isSelected = selected === v.id;
@@ -118,20 +119,19 @@ export default function RequestRide({ navigation }) {
           })}
         </View>
 
-        {/* NAMBA YA SIMU YA DEREVA */}
         {selectedVehicle && (
           <View style={styles.driverCard}>
             <View style={styles.driverAvatar}>
               <Ionicons name="person" size={26} color={COLORS.primary} />
             </View>
             <View style={{flex:1}}>
-              <Text style={styles.driverLabel}>Dereva aliyechaguliwa</Text>
+              <Text style={styles.driverLabel}>{t('selected_driver')}</Text>
               <Text style={styles.driverName}>{selectedVehicle.driver} • {selectedVehicle.name}</Text>
               <View style={{flexDirection:'row', alignItems:'center', gap:6, marginTop:2}}>
                 <Ionicons name="call" size={14} color="#22c55e" />
                 <Text style={styles.driverPhone}>{selectedVehicle.phone}</Text>
                 <View style={styles.onlineDot} />
-                <Text style={styles.onlineText}>Online</Text>
+                <Text style={styles.onlineText}>{t('online')}</Text>
               </View>
             </View>
             <TouchableOpacity style={styles.callBtn} onPress={() => Linking.openURL(`tel:${selectedVehicle.phone}`)}>
@@ -140,9 +140,9 @@ export default function RequestRide({ navigation }) {
           </View>
         )}
 
-        <Text style={styles.sectionTitle}>Lipa kwa 💳</Text>
+        <Text style={styles.sectionTitle}>{t('pay_with')}</Text>
         <View style={styles.paymentRow}>
-          {['M-Pesa', 'Tigo Pesa', 'Airtel', 'Azam Pesa', 'Cash'].map(p => (
+          {['M-Pesa', 'Tigo Pesa', 'Airtel', 'Cash'].map(p => (
             <TouchableOpacity key={p} onPress={() => setPayment(p)} style={[styles.payChip, payment === p && styles.payChipActive]}>
               <Text style={[styles.payText, payment === p && styles.payTextActive]}>{p}</Text>
             </TouchableOpacity>
@@ -152,11 +152,11 @@ export default function RequestRide({ navigation }) {
 
       <View style={styles.bottom}>
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Jumla • {selectedVehicle?.phone}</Text>
+          <Text style={styles.totalLabel}>{t('total')} • {selectedVehicle?.phone}</Text>
           <Text style={styles.totalPrice}>{selectedVehicle?.price}</Text>
         </View>
         <TouchableOpacity style={styles.orderBtn} onPress={() => navigation.navigate('LiveTracking', { vehicle: selectedVehicle, from, to, payment })}>
-          <Text style={styles.orderBtnText}>Agiza {selectedVehicle?.name} Sasa</Text>
+          <Text style={styles.orderBtnText}>{t('order')} {selectedVehicle?.name} {t('now')}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -178,7 +178,6 @@ const styles = StyleSheet.create({
   input: { fontSize: 16, fontWeight: '600', color: '#111', paddingVertical: 4 },
   dashedLine: { height: 1, borderWidth: 1, borderColor: '#eee', borderStyle: 'dashed', marginVertical: 14, marginLeft: 14 },
   sectionTitle: { fontSize: 17, fontWeight: '800', marginTop: 10, marginBottom: 12, marginLeft: 16 },
-  // GRID 2x2
   grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 12, justifyContent: 'space-between' },
   squareCard: { width: '48%', backgroundColor: '#fff', borderRadius: 22, padding: 14, borderWidth: 1.5, borderColor: '#eee', alignItems: 'center', position: 'relative' },
   squareCardActive: { borderColor: COLORS.primary, backgroundColor: '#F0F7FF', borderWidth: 2, shadowColor: COLORS.primary, shadowOpacity: 0.15, shadowRadius: 10, elevation: 6 },
@@ -189,7 +188,6 @@ const styles = StyleSheet.create({
   miniBadge: { backgroundColor: '#F3F4F6', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   miniBadgeText: { fontSize: 10, fontWeight: '600', color: '#666' },
   selectedTick: { position: 'absolute', top: 10, right: 10, width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center' },
-  // DEREVA CARD
   driverCard: { marginHorizontal: 16, marginTop: 18, backgroundColor: '#fff', borderRadius: 18, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: '#eee', elevation: 3 },
   driverAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#EEF5FF', alignItems: 'center', justifyContent: 'center' },
   driverLabel: { fontSize: 11, color: '#888', fontWeight: '600' },

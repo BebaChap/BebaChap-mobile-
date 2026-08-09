@@ -109,7 +109,7 @@ export default function Checkout({ navigation, route }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Malipo</Text>
+        <Text style={styles.headerTitle}>{t('payment')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -117,34 +117,34 @@ export default function Checkout({ navigation, route }) {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <Ionicons name="location" size={18} color={COLORS.primary} />
-            <Text style={styles.cardTitle}>Anwani ya Delivery</Text>
+            <Text style={styles.cardTitle}>{t('delivery_address')}</Text>
           </View>
           <Text style={styles.addressText}>📍 {address}</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Muhtasari wa Oda</Text>
+          <Text style={styles.cardTitle}>{t('order_summary')}</Text>
           <View style={styles.row}>
             <Text style={styles.label}>Jumla ya Chakula</Text>
             <Text style={styles.value}>TZS {total.toLocaleString() || '12,000'}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.label}>Nauli</Text>
+            <Text style={styles.label}>{t('delivery_fee')}</Text>
             <Text style={[styles.value, { color: deliveryFee === 0? '#22c55e' : '#000' }]}>{deliveryFee === 0? 'FREE' : `TZS ${deliveryFee.toLocaleString()}`}</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.row}>
-            <Text style={styles.totalLabel}>Jumla</Text>
+            <Text style={styles.totalLabel}>{t('total')}</Text>
             <Text style={styles.totalValue}>TZS {grandTotal.toLocaleString()}</Text>
           </View>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Njia ya Malipo</Text>
+          <Text style={styles.cardTitle}>{t('payment_method')}</Text>
 
           <TouchableOpacity style={[styles.payOption, paymentMethod === 'cash' && styles.payActive]} onPress={() => { setPaymentMethod('cash'); setShowNetworkDropdown(false); }}>
             <Ionicons name="cash-outline" size={22} color={paymentMethod === 'cash'? COLORS.primary : '#999'} />
-            <Text style={styles.payText}>Lipa Cash kwa Dereva</Text>
+            <Text style={styles.payText}>{t('pay_cash_driver')}</Text>
             {paymentMethod === 'cash' && <Ionicons name="checkmark-circle" size={22} color={COLORS.primary} />}
           </TouchableOpacity>
 
@@ -199,7 +199,7 @@ export default function Checkout({ navigation, route }) {
 
           <TouchableOpacity style={[styles.payOption, paymentMethod === 'wallet' && styles.payActive]} onPress={() => { setPaymentMethod('wallet'); setShowNetworkDropdown(false); }}>
             <Ionicons name="wallet-outline" size={22} color={paymentMethod === 'wallet'? COLORS.primary : '#999'} />
-            <Text style={styles.payText}>Pochi (TZS 50,000)</Text>
+            <Text style={styles.payText}>{t('wallet')}</Text>
             {paymentMethod === 'wallet' && <Ionicons name="checkmark-circle" size={22} color={COLORS.primary} />}
           </TouchableOpacity>
         </View>

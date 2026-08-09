@@ -1,22 +1,25 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext'; // <-- REKEBISHO 1
 
 const TRIPS = [
-  { id: '1', from: 'Mlimani', to: 'Posta', price: '3,500', date: '16 Jun 2026', vehicle: '🏍️' },
+  { id: '1', from: 'Mlimani', to: 'Posta', price: '3,500', date: '16 Jun 2026', vehicle: '🏍' },
   { id: '2', from: 'Sinza', to: 'Kariakoo', price: '5,000', date: '15 Jun 2026', vehicle: '🛺' },
 ];
 
 export default function Trips({ navigation }) {
+  const { t } = useLanguage(); // <-- REKEBISHO 2: hapa ndipo t inatoka
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Safari Zangu</Text>
+      <Text style={styles.title}>{t('my_trips')}</Text>
       <FlatList
         data={TRIPS}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity 
             style={styles.trip}
-          
+            onPress={() => navigation?.navigate('TripDetails', { trip: item })}
           >
             <Text style={styles.icon}>{item.vehicle}</Text>
             <View style={{ flex: 1 }}>
@@ -27,7 +30,7 @@ export default function Trips({ navigation }) {
           </TouchableOpacity>
         )}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>Huna safari yoyote bado</Text>
+          <Text style={styles.emptyText}>{t('no_trips')}</Text>
         }
       />
     </View>

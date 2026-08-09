@@ -15,7 +15,9 @@ export default function LanguageSelect({ navigation, route }) {
   const { changeLanguage, language } = useContext(LanguageContext);
   const [selected, setSelected] = useState(language || 'sw');
   const [loading, setLoading] = useState(false);
-  const isFirstTime = route?.params?.firstTime ?? true;
+  
+  // FIX KUBWA HAPA: Badilisha true kuwa false
+  const isFirstTime = route?.params?.firstTime ?? false;
 
   useEffect(() => {
     loadSavedLanguage();
@@ -38,11 +40,19 @@ export default function LanguageSelect({ navigation, route }) {
       await AsyncStorage.setItem('app_language', selected);
       await AsyncStorage.setItem('hasSelectedLanguage', 'true');
       await changeLanguage(selected);
+      console.log('Lugha imebadilishwa:', selected);
 
       if (isFirstTime) {
+        // Ipo ndani ya AuthNavigator, Onboarding ipo hapa
         navigation.replace('Onboarding');
       } else {
-        navigation.goBack();
+        // Ipo ndani ya AppNavigator (Settings) - rudi tu nyuma
+        if (navigation.canGoBack()) {
+          navigation.goBack();
+        } else {
+          // Fallback kama haina kwa kurudi
+          navigation.navigate('Settings');
+        }
       }
     } catch (e) {
       Alert.alert('Error', 'Imeshindikana kuhifadhi lugha');
@@ -92,65 +102,14 @@ export default function LanguageSelect({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: '#fff' 
-  },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    textAlign: 'center', 
-    marginBottom: 30, 
-    marginTop: 20,
-    color: '#1a1a1a'
-  },
-  langItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 18,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#e0e0e0',
-    marginBottom: 12,
-    backgroundColor: '#fafafa'
-  },
-  selected: { 
-    borderColor: '#007aff', 
-    backgroundColor: '#e3f2fd' 
-  },
-  flag: { 
-    fontSize: 28, 
-    marginRight: 15 
-  },
-  langName: { 
-    fontSize: 18, 
-    flex: 1, 
-    color: '#333',
-    fontWeight: '500'
-  },
-  check: { 
-    fontSize: 22, 
-    color: '#007aff', 
-    fontWeight: 'bold' 
-  },
-  button: {
-    backgroundColor: '#007aff',
-    padding: 18,
-    borderRadius: 12,
-    marginTop: 10,
-    marginBottom: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 56
-  },
-  buttonDisabled: { 
-    backgroundColor: '#b0b0b0' 
-  },
-  buttonText: { 
-    color: '#fff', 
-    fontSize: 18, 
-    fontWeight: 'bold', 
-    textAlign: 'center' 
-  },
+  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 30, marginTop: 20, color: '#1a1a1a' },
+  langItem: { flexDirection: 'row', alignItems: 'center', padding: 18, borderRadius: 12, borderWidth: 2, borderColor: '#e0e0e0', marginBottom: 12, backgroundColor: '#fafafa' },
+  selected: { borderColor: '#007aff', backgroundColor: '#e3f2fd' },
+  flag: { fontSize: 28, marginRight: 15 },
+  langName: { fontSize: 18, flex: 1, color: '#333', fontWeight: '500' },
+  check: { fontSize: 22, color: '#007aff', fontWeight: 'bold' },
+  button: { backgroundColor: '#007aff', padding: 18, borderRadius: 12, marginTop: 10, marginBottom: 10, alignItems: 'center', justifyContent: 'center', minHeight: 56 },
+  buttonDisabled: { backgroundColor: '#b0b0b0' },
+  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
 });

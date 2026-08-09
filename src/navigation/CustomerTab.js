@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // Screens za Home
 import HomeScreen from '../screens/customer/HomeScreen';
@@ -41,7 +41,7 @@ const HomeStack = () => {
 };
 
 export default function CustomerTab() {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
 
   return (
     <Tab.Navigator 

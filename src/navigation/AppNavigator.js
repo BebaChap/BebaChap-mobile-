@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../contexts/AuthContext';
-import AuthNavigator from './AuthNavigator';
+import { useLanguage } from '../contexts/LanguageContext';
 
 import AdminTab from './AdminTab';
 import DriverTab from './DriverTab';
@@ -15,40 +15,44 @@ import Help from '../screens/common/Help';
 import Notification from '../screens/common/Notification';
 import LanguageSelect from '../screens/common/LanguageSelect';
 import ShareApp from '../screens/common/ShareApp';
-import Splash from '../screens/common/Splash';
 import CommonStack from './CommonStack';
-import LiveTracking from '../screens/customer/LiveTracking'; // <-- IMEONGEZWA HAPA JUU
+import LiveTracking from '../screens/customer/LiveTracking';
+import ForgotPassword from '../screens/auth/ForgotPassword';
 
 const Stack = createNativeStackNavigator();
 
-// Pending Screen ya ndani - bila kuhitaji file mpya
+// Fix: t ilikuwa undefined hapa
 function PendingScreen() {
   const { logout, user } = useAuth();
+  const { t } = useLanguage();
   return (
     <View style={pendingStyles.container}>
       <Text style={pendingStyles.emoji}>⏳</Text>
-      <Text style={pendingStyles.title}>Maombi Yamepokelewa</Text>
+      <Text style={pendingStyles.title}>{t('application_received')}</Text>
       <Text style={pendingStyles.subtitle}>
-        Karibu {user?.name}!
-        {'\n\n'}Akaunti yako ya {user?.role?.toUpperCase()} 
+        Karibu {user?.name}!{'\n\n'}Akaunti yako ya {user?.role?.toUpperCase()} 
         {user?.vendorType ? ` (${user.vendorType === 'restaurant' ? '🍽 Restaurant' : '🏪 Duka'})` : ''} 
         {'\n'}ipo kwenye uhakiki.
       </Text>
-      <Text style={pendingStyles.desc}>Subiri admin akuidhinishe. Utapata taarifa baada ya kuidhinishwa.</Text>
+      <Text style={pendingStyles.desc}>{t('wait_admin_approval')}</Text>
       <TouchableOpacity style={pendingStyles.logoutBtn} onPress={logout}>
-        <Text style={pendingStyles.logoutText}>Toka na Jaribu Baadaye</Text>
+        <Text style={pendingStyles.logoutText}>{t('exit_try_later')}</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 export default function AppNavigator() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
   console.log('CURRENT USER:', user);
 
-  if (loading) return <Splash />;
-  if (!user) return <AuthNavigator />;
+  // HAKUNA tena if (!user) return <AuthNavigator /> hapa
+  // Hiyo logic sasa iko App.js
+
+  if (user?.status === 'pending') {
+    return <PendingScreen />;
+  }
 
   return (
     <Stack.Navigator
@@ -73,13 +77,8 @@ export default function AppNavigator() {
       <Stack.Screen name="LanguageSelect" component={LanguageSelect} />
       <Stack.Screen name="ShareApp" component={ShareApp} />
       <Stack.Screen name="CommonStack" component={CommonStack} />
-      
-      {/* LIVE TRACKING - FULL SCREEN NJE YA TAB ZOTE */}
-      <Stack.Screen 
-        name="LiveTracking" 
-        component={LiveTracking} 
-        options={{ headerShown: false, presentation: 'fullScreenModal' }} 
-      />
+      <Stack.Screen name="LiveTracking" component={LiveTracking} options={{ headerShown: false, presentation: 'fullScreenModal' }} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
     </Stack.Navigator>
   );
 }

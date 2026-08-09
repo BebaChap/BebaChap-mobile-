@@ -6,22 +6,34 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import { LanguageProvider, useLanguage } from './src/contexts/LanguageContext';
 import AppNavigator from './src/navigation/AppNavigator';
+import AuthNavigator from './src/navigation/AuthNavigator';
+import Splash from './src/screens/common/Splash';
 
 function RootNavigation() {
   const { user, loading } = useAuth();
   const { t } = useLanguage();
 
-  // HII NDIO FIX YA CURRENT USER: null - IMEBAKI KAMA ILIVYO
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>{t('loading')}...</Text>
-      </View>
-    );
+    return <Splash /> // tumia Splash yako moja kwa moja
+  }
+
+  // HAPA NDIPO LOGIC INAPOTAKIWA:
+  // Kama hana user -> AuthNavigator (ambayo ina Onboarding ndani)
+  // Kama ana user -> AppNavigator
+  if (!user) {
+    return <AuthNavigator />;
   }
 
   return <AppNavigator />;
+}
+
+function RootNavigationWrapper() {
+  const { language } = useLanguage();
+  return (
+    <NavigationContainer key={language}>
+      <RootNavigation />
+    </NavigationContainer>
+  );
 }
 
 export default function App() {
@@ -29,26 +41,9 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <LanguageProvider>
         <AuthProvider>
-          <NavigationContainer>
-            <RootNavigation />
-          </NavigationContainer>
+          <RootNavigationWrapper />
         </AuthProvider>
       </LanguageProvider>
     </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingContainer: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center',
-    backgroundColor: '#fff'
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '600'
-  }
-});

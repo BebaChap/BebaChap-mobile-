@@ -1,3 +1,4 @@
+import { useLanguage } from '../../contexts/LanguageContext';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -5,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import StepButtons from '../../components/StepButtons';
 
 export default function HomeScreen({ navigation }) {
+  const { t } = useLanguage();
   const [showInfo, setShowInfo] = useState(true);
   const [isTracking, setIsTracking] = useState(false);
   const [pickup] = useState('Tabata, Dar es Salaam');
@@ -68,22 +70,22 @@ export default function HomeScreen({ navigation }) {
 
           {!isTracking? (
             <>
-              <Text style={styles.title}>Karibu BEBACHAP</Text>
-              <Text style={styles.sub}>Chagua huduma unayohitaji karibu nawe</Text>
+              <Text style={styles.title}>{t('welcome_bebachap')}</Text>
+              <Text style={styles.sub}>{t('choose_service')}</Text>
 
               <View style={styles.item}>
                 <Text>📍</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.itemTitle}>Nyumbani</Text>
+                  <Text style={styles.itemTitle}>{t('nyumbani')}</Text>
                   <Text style={styles.itemSub}>{pickup}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color="#ccc" />
+                <Ionicons name="chevron-forward" size={18} color="#160606" />
               </View>
 
               <View style={styles.item}>
                 <Text>🛒</Text>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.itemTitle}>Duka la karibu</Text>
+                  <Text style={styles.itemTitle}>{t('nearby_shop')}</Text>
                   <Text style={styles.itemSub}>Spare 5 ziko umbali wa 1.2km</Text>
                 </View>
                 <View style={styles.open}><Text style={styles.openText}>OPEN</Text></View>

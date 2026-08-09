@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const TXNS = [
   { id: '1', type: 'in', desc: 'Top-up M-Pesa', amount: '50,000', date: '16 Jun' },
@@ -8,10 +9,12 @@ const TXNS = [
 ];
 
 export default function Wallet({ navigation }) {
+  const { t } = useLanguage();
+
   return (
     <View style={styles.container}>
       <View style={styles.balance}>
-        <Text style={styles.balanceLabel}>Salio Lako</Text>
+        <Text style={styles.balanceLabel}>{t('your_balance')}</Text>
         <Text style={styles.balanceAmount}>TSh 34,500</Text>
         <TouchableOpacity 
           style={styles.topupBtn}
