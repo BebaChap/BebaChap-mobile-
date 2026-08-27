@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const INITIAL_ORDERS = [
   // Order za Duka
@@ -20,22 +21,23 @@ const STATUS_COLORS = {
 };
 
 const STATUS_LABELS = {
-  new: 'MPYA',
-  processing: 'INASHUGHULIKIWA',
-  preparing: 'INAANDALIWA',
-  ready: 'TAYARI',
-  shipped: 'ISHATUMWA',
-  delivered: 'IMEFIKISHWA',
+  new: 'status_new',
+  processing: 'status_processing',
+  preparing: 'status_preparing',
+  ready: 'status_ready',
+  shipped: 'status_shipped',
+  delivered: 'status_delivered',
 };
 
 export default function VendorOrders({ route }) {
+  const { t } = useLanguage();
   const vendorType = route?.params?.vendorType || 'shop'; // 'shop' au 'restaurant'
   const [orders, setOrders] = useState(INITIAL_ORDERS);
 
   // Logic yako ya awali - Sijagusa
   const updateStatus = (id, newStatus) => {
     setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
-    Alert.alert('Imesasishwa', `Oda imewekwa: ${STATUS_LABELS[newStatus]}`);
+    Alert.alert(t('updated_alert'), t('order_set_to', { status: t(STATUS_LABELS[newStatus]) || newStatus.toUpperCase() }));
   };
 
   const filteredOrders = orders.filter(o => o.type === (vendorType === 'restaurant' ? 'food' : 'shop'));
@@ -43,8 +45,8 @@ export default function VendorOrders({ route }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{vendorType === 'restaurant' ? 'Oda za Chakula' : 'Oda Zote'}</Text>
-      <Text style={styles.subtitle}>{dataToShow.length} oda {vendorType === 'restaurant' ? 'za jikoni' : ''}</Text>
+      <Text style={styles.title}>{vendorType === 'restaurant' ? t('food_orders') : t('all_orders')}</Text>
+      <Text style={styles.subtitle}>{dataToShow.length} {t('orders_count')}{vendorType === 'restaurant' ? ` ${t('kitchen_suffix')}` : ''}</Text>
 
       <FlatList
         data={dataToShow}
@@ -62,7 +64,7 @@ export default function VendorOrders({ route }) {
                 </View>
               </View>
               <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[item.status] }]}>
-                <Text style={styles.statusText}>{STATUS_LABELS[item.status] || item.status.toUpperCase()}</Text>
+                <Text style={styles.statusText}>{t(STATUS_LABELS[item.status]) || item.status.toUpperCase()}</Text>
               </View>
             </View>
 
@@ -82,39 +84,39 @@ export default function VendorOrders({ route }) {
               {/* FLOW YA DUKA */}
               {item.type === 'shop' && item.status === 'new' && (
                 <TouchableOpacity style={styles.acceptBtn} onPress={() => updateStatus(item.id, 'processing')}>
-                  <Text style={styles.btnText}>Kubali Oda</Text>
+                  <Text style={styles.btnText}>{t('accept_order')}</Text>
                 </TouchableOpacity>
               )}
               {item.type === 'shop' && item.status === 'processing' && (
                 <TouchableOpacity style={styles.shipBtn} onPress={() => updateStatus(item.id, 'shipped')}>
-                  <Text style={styles.btnText}>Imetumwa</Text>
+                  <Text style={styles.btnText}>{t('shipped_btn')}</Text>
                 </TouchableOpacity>
               )}
               {item.type === 'shop' && item.status === 'shipped' && (
                 <TouchableOpacity style={styles.deliverBtn} onPress={() => updateStatus(item.id, 'delivered')}>
-                  <Text style={styles.btnText}>Imefikishwa</Text>
+                  <Text style={styles.btnText}>{t('delivered_btn')}</Text>
                 </TouchableOpacity>
               )}
 
               {/* FLOW YA RESTAURANT */}
               {item.type === 'food' && item.status === 'new' && (
                 <TouchableOpacity style={styles.restaurantAccept} onPress={() => updateStatus(item.id, 'preparing')}>
-                  <Text style={styles.btnText}>Anza Kuandaa 🍳</Text>
+                  <Text style={styles.btnText}>{t('start_preparing')}</Text>
                 </TouchableOpacity>
               )}
               {item.type === 'food' && item.status === 'preparing' && (
                 <TouchableOpacity style={styles.readyBtn} onPress={() => updateStatus(item.id, 'ready')}>
-                  <Text style={styles.btnText}>Chakula Tayari ✅</Text>
+                  <Text style={styles.btnText}>{t('food_ready')}</Text>
                 </TouchableOpacity>
               )}
               {item.type === 'food' && item.status === 'ready' && (
                 <TouchableOpacity style={styles.shipBtn} onPress={() => updateStatus(item.id, 'shipped')}>
-                  <Text style={styles.btnText}>Mpe Dereva 🛵</Text>
+                  <Text style={styles.btnText}>{t('give_driver')}</Text>
                 </TouchableOpacity>
               )}
               {item.type === 'food' && item.status === 'shipped' && (
                 <TouchableOpacity style={styles.deliverBtn} onPress={() => updateStatus(item.id, 'delivered')}>
-                  <Text style={styles.btnText}>Imefikishwa</Text>
+                  <Text style={styles.btnText}>{t('delivered_btn')}</Text>
                 </TouchableOpacity>
               )}
             </View>

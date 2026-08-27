@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const EARNINGS_DATA = {
   today: { amount: 45000, trips: 8 },
@@ -14,23 +15,24 @@ const TRANSACTIONS = [
 ];
 
 export default function Earnings({ navigation }) {
+  const { t } = useLanguage();
   const [period, setPeriod] = useState('today');
   const data = EARNINGS_DATA[period];
 
   const withdraw = () => {
     Alert.alert(
-      'Withdraw Pesa',
-      'Weka kiasi unachotaka kutoa',
+      t('withdraw_money'),
+      t('withdraw_prompt'),
       [
-        { text: 'Ghairi' },
-        { text: 'Toa TSh 20,000', onPress: () => Alert.alert('Imefanikiwa', 'Pesa zimetumwa M-Pesa') },
+        { text: t('cancel') },
+        { text: 'TSh 20,000', onPress: () => Alert.alert(t('success'), t('money_sent')) },
       ]
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mapato Yangu</Text>
+      <Text style={styles.title}>{t('my_earnings')}</Text>
 
       <View style={styles.periodTabs}>
         {['today', 'week', 'month'].map((p) => (
@@ -40,22 +42,22 @@ export default function Earnings({ navigation }) {
             onPress={() => setPeriod(p)}
           >
             <Text style={[styles.tabText, period === p && styles.activeTabText]}>
-              {p === 'today'? 'Leo' : p === 'week'? 'Wiki' : 'Mwezi'}
+              {p === 'today'? t('today') : p === 'week'? t('week') : t('month')}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
       <View style={styles.earningsCard}>
-        <Text style={styles.earningsLabel}>Mapato</Text>
+        <Text style={styles.earningsLabel}>{t('earnings_lbl')}</Text>
         <Text style={styles.earningsAmount}>TSh {data.amount.toLocaleString()}</Text>
-        <Text style={styles.earningsTrips}>{data.trips} Safari</Text>
+        <Text style={styles.earningsTrips}>{data.trips} {t('word_trips')}</Text>
         <TouchableOpacity style={styles.withdrawBtn} onPress={withdraw}>
-          <Text style={styles.withdrawText}>💰 Toa Pesa</Text>
+          <Text style={styles.withdrawText}>💰 {t('withdraw_btn')}</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>Miamala ya Hivi Karibuni</Text>
+      <Text style={styles.sectionTitle}>{t('recent_transactions')}</Text>
       <FlatList
         data={TRANSACTIONS}
         keyExtractor={(item) => item.id}

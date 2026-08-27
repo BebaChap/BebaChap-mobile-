@@ -1,26 +1,17 @@
 import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, Image } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Splash = () => {
-  const auth = useAuth();
-  const checkUser = auth?.checkUser || (() => {});
-
-  useEffect(() => {
-    // Splash inakaa 2sec halafu AuthContext inaamua kupeleka wapi
-    const timer = setTimeout(() => {
-      checkUser();
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const { t } = useLanguage();
 
   return (
     <View style={styles.container}>
       {/* Weka logo yako hapa: <Image source={require('../../assets/icons/logo.png')} style={styles.logoImg} /> */}
       <Text style={styles.logo}>RideSuperApp</Text>
       <ActivityIndicator size="large" color="#007aff" style={styles.loader} />
-      <Text style={styles.text}>Inapakia...</Text>
+      <Text style={styles.text}>{t('loading')}...</Text>
     </View>
   );
 };

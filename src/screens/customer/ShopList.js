@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const products = [
   { id: '1', name: 'Mchele 5kg', price: '12,000', image: '🍚' },
@@ -11,12 +12,13 @@ const products = [
 
 export default function ShopList({ navigation }) {
   const { logout } = useAuth();
+  const { t } = useLanguage();
 
   const handleLogout = () => {
-    Alert.alert("Toka","Una uhakika unataka kutoka?",[
-      {text:"Ghairi",style:"cancel"},
+    Alert.alert(t('logout'),t('logout_confirm'),[
+      {text:t('cancel'),style:"cancel"},
       {
-        text:"Toka",
+        text:t('logout'),
         style:"destructive",
         onPress: async () => {
           await logout();
@@ -33,13 +35,13 @@ export default function ShopList({ navigation }) {
         <TouchableOpacity style={styles.backCard} onPress={()=>navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Duka</Text>
+        <Text style={styles.headerTitle}>{t('shop_title')}</Text>
         <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="#ff3b30" />
         </TouchableOpacity>
       </View>
 
-      <TextInput style={styles.search} placeholder="Tafuta bidhaa..." placeholderTextColor="#999" />
+      <TextInput style={styles.search} placeholder={t('search_product')} placeholderTextColor="#999" />
 
       <FlatList
         data={products}

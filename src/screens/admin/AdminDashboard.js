@@ -1,122 +1,87 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { supabase } from '../../lib/supabase';
 
-export default function AdminDashboard({ navigation }) {
-  const [stats] = useState({
-    totalUsers: 12450,
-    customers: 10200,
-    drivers: 1850,
-    vendors: 320,
-    garages: 80,
-    totalOrders: 45230,
-    totalRides: 38900,
-    todayOrders: 234,
-    todayRides: 189,
-    revenue: 12560000,
-    pendingApprovals: 12,
-    openDisputes: 5,
-  });
+export default function AdminTranslations() {
+  const { t } = useLanguage();
+  const [translations, setTranslations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    fetchTranslations();
+  }, []);
+
+  const fetchTranslations = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from('translations').select('*').order('key');
+    if(error) console.log(error);
+    if(data) setTranslations(data);
+    setLoading(false);
+  };
+
+  // Group kwa key ili uone sw na en pamoja
+  const grouped = translations.reduce((acc, curr) => {
+    if(!acc[curr.key]) acc[curr.key] = { id: curr.key, key: curr.key };
+    acc[curr.key][curr.lang] = curr.value;
+    acc[curr.key][curr.lang + '_id'] = curr.id; // tunahifadhi id kwa update
+    return acc;
+  }, {});
+
+  const groupedArray = Object.values(grouped);
+
+  const updateGrouped = (key, lang, value) => {
+    setTranslations(prev => prev.map(tr => tr.key === key && tr.lang === lang ? {...tr, value} : tr));
+  };
+
+  const saveTranslation = async (item) => {
+    // update sw
+    const { error: err1 } = await supabase.from('translations').update({ value: item.sw }).eq('id', item.sw_id);
+    const { error: err2 } = await supabase.from('translations').update({ value: item.en }).eq('id', item.en_id);
+    
+    if(!err1 && !err2) Alert.alert(t('success'), t('saved'));
+    else Alert.alert(t('error'), (err1 || err2)?.message);
+  };
+
+  const filtered = groupedArray.filter(tr => tr.key.toLowerCase().includes(filter.toLowerCase()));
+
+  if(loading) return <ActivityIndicator style={{marginTop: 100}} size="large" />;
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>{t('admin_dashboard')}</Text>
-      <Text style={styles.subtitle}>{t('system_summary')}</Text>
-
-      <View style={styles.grid}>
-        <View style={[styles.statCard, { backgroundColor: '#e3f2fd' }]}>
-          <Text style={styles.statIcon}>👥</Text>
-          <Text style={styles.statValue}>{stats.totalUsers.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>{t('all_users')}</Text>
+      <Text style={styles.title}>{t('manage_translations')}</Text>
+      <TextInput style={styles.search} placeholder={t('search_key')} value={filter} onChangeText={setFilter} />
+      {filtered.map(tr => (
+        <View key={tr.id} style={styles.card}>
+          <Text style={styles.key}>{tr.key}</Text>
+          <TextInput 
+            style={styles.input} 
+            value={tr.sw || ''} 
+            onChangeText={v => updateGrouped(tr.key, 'sw', v)} 
+            placeholder="Swahili" 
+          />
+          <TextInput 
+            style={styles.input} 
+            value={tr.en || ''} 
+            onChangeText={v => updateGrouped(tr.key, 'en', v)} 
+            placeholder="English" 
+          />
+          <TouchableOpacity style={styles.btn} onPress={() => saveTranslation(tr)}>
+            <Text style={styles.btnText}>{t('save')}</Text>
+          </TouchableOpacity>
         </View>
-        <View style={[styles.statCard, { backgroundColor: '#e8f5e9' }]}>
-          <Text style={styles.statIcon}>💰</Text>
-          <Text style={styles.statValue}>TSH {(stats.revenue / 1000000).toFixed(1)}M</Text>
-          <Text style={styles.statLabel}>{t('total_income')}</Text>
-        </View>
-      </View>
-
-      <View style={styles.grid}>
-        <View style={styles.statCard}>
-          <Text style={styles.statIcon}>🛒</Text>
-          <Text style={styles.statValue}>{stats.totalOrders.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>{t('all_orders')}</Text>
-          <Text style={styles.statSub}>Leo: {stats.todayOrders}</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statIcon}>🚗</Text>
-          <Text style={styles.statValue}>{stats.totalRides.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>{t('all_trips')}</Text>
-          <Text style={styles.statSub}>Leo: {stats.todayRides}</Text>
-        </View>
-      </View>
-
-      <Text style={styles.sectionTitle}>Mgawanyo wa Watumiaji</Text>
-      <View style={styles.userBreakdown}>
-        <View style={styles.breakdownItem}>
-          <Text style={styles.breakdownIcon}>👤</Text>
-          <Text style={styles.breakdownLabel}>Wateja</Text>
-          <Text style={styles.breakdownValue}>{stats.customers.toLocaleString()}</Text>
-        </View>
-        <View style={styles.breakdownItem}>
-          <Text style={styles.breakdownIcon}>🏍</Text>
-          <Text style={styles.breakdownLabel}>Madereva</Text>
-          <Text style={styles.breakdownValue}>{stats.drivers.toLocaleString()}</Text>
-        </View>
-        <View style={styles.breakdownItem}>
-          <Text style={styles.breakdownIcon}>🏪</Text>
-          <Text style={styles.breakdownLabel}>Maduka</Text>
-          <Text style={styles.breakdownValue}>{stats.vendors.toLocaleString()}</Text>
-        </View>
-        <View style={styles.breakdownItem}>
-          <Text style={styles.breakdownIcon}>🔧</Text>
-          <Text style={styles.breakdownLabel}>Gereji</Text>
-          <Text style={styles.breakdownValue}>{stats.garages.toLocaleString()}</Text>
-        </View>
-      </View>
-
-      <View style={styles.alerts}>
-        <TouchableOpacity style={[styles.alertCard, { backgroundColor: '#fff3e0' }]} onPress={() => navigation.navigate('Users')}>
-          <Text style={styles.alertIcon}>⏳</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.alertTitle}>Wanaosubiri Approval</Text>
-            <Text style={styles.alertDesc}>{stats.pendingApprovals} madereva/maduka yanahitaji kuidhinishwa</Text>
-          </View>
-          <Text style={styles.arrow}>›</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.alertCard, { backgroundColor: '#ffebee' }]} onPress={() => navigation.navigate('Disputes')}>
-          <Text style={styles.alertIcon}>⚠</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.alertTitle}>Malalamiko Wazi</Text>
-            <Text style={styles.alertDesc}>{stats.openDisputes} malalamiko yanahitaji kushughulikiwa</Text>
-          </View>
-          <Text style={styles.arrow}>›</Text>
-        </TouchableOpacity>
-      </View>
+      ))}
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', paddingTop: 60 },
-  title: { fontSize: 28, fontWeight: 'bold', paddingHorizontal: 20 },
-  subtitle: { fontSize: 16, color: '#666', paddingHorizontal: 20, marginTop: 5, marginBottom: 20 },
-  grid: { flexDirection: 'row', paddingHorizontal: 20, gap: 15, marginBottom: 15 },
-  statCard: { flex: 1, backgroundColor: '#fff', padding: 20, borderRadius: 12, alignItems: 'center' },
-  statIcon: { fontSize: 32, marginBottom: 8 },
-  statValue: { fontSize: 24, fontWeight: 'bold', color: '#007aff' },
-  statLabel: { fontSize: 14, color: '#666', marginTop: 5 },
-  statSub: { fontSize: 12, color: '#999', marginTop: 3 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', paddingHorizontal: 20, marginTop: 10, marginBottom: 15 },
-  userBreakdown: { paddingHorizontal: 20, marginBottom: 25 },
-  breakdownItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 10 },
-  breakdownIcon: { fontSize: 28, marginRight: 15 },
-  breakdownLabel: { flex: 1, fontSize: 16, fontWeight: '600' },
-  breakdownValue: { fontSize: 18, fontWeight: 'bold', color: '#007aff' },
-  alerts: { paddingHorizontal: 20, marginBottom: 30 },
-  alertCard: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 12, marginBottom: 12 },
-  alertIcon: { fontSize: 32, marginRight: 15 },
-  alertTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
-  alertDesc: { fontSize: 14, color: '#666' },
-  arrow: { fontSize: 28, color: '#999' },
+  container:{flex:1, backgroundColor:'#f5f5f5', paddingTop:60, padding:20},
+  title:{fontSize:22, fontWeight:'bold', marginBottom:15},
+  search:{backgroundColor:'#fff', padding:12, borderRadius:10, marginBottom:15, borderWidth:1, borderColor:'#ddd'},
+  card:{backgroundColor:'#fff', padding:15, borderRadius:12, marginBottom:12},
+  key:{fontWeight:'bold', marginBottom:8, color:'#007aff'},
+  input:{backgroundColor:'#f9f9f9', borderWidth:1, borderColor:'#ddd', borderRadius:8, padding:10, marginBottom:8},
+  btn:{backgroundColor:'#007aff', padding:12, borderRadius:8, alignItems:'center'},
+  btnText:{color:'#fff', fontWeight:'bold'}
 });

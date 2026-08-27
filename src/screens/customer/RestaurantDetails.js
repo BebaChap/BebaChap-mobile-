@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../theme/colors';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const menu = [
   { id: '1', name: 'Pilau Kuku', price: 12000, desc: 'Pilau tamu na kuku wa kukaanga' },
@@ -10,6 +11,7 @@ const menu = [
 ];
 
 export default function RestaurantDetails({ route, navigation }) {
+  const { t } = useLanguage();
   const { restaurant } = route.params || {};
   const [cart, setCart] = useState([]);
 
@@ -26,7 +28,7 @@ export default function RestaurantDetails({ route, navigation }) {
         <View style={styles.ratingRow}>
           <Ionicons name="star" size={14} color="#FFB800" />
           <Text style={styles.rating}>{restaurant?.rating || '4.8'}</Text>
-          <Text style={styles.delivery}> • Delivery {restaurant?.deliveryFee || '1,500'}</Text>
+          <Text style={styles.delivery}> • {t('delivery_fee')}: {restaurant?.deliveryFee || '1,500'}</Text>
         </View>
       </View>
 
@@ -53,7 +55,7 @@ export default function RestaurantDetails({ route, navigation }) {
           style={styles.cartBtn}
           onPress={() => navigation.navigate('Cart', { cart, restaurant })}
         >
-          <Text style={styles.cartText}>Tazama Cart ({cart.length}) - TZS {cart.reduce((s,i)=>s+i.price,0).toLocaleString()}</Text>
+          <Text style={styles.cartText}>{t('view_cart_btn', { count: cart.length, total: cart.reduce((s,i)=>s+i.price,0).toLocaleString() })}</Text>
         </TouchableOpacity>
       )}
     </View>

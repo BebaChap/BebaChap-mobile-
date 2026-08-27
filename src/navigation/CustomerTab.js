@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Screens za Home
 import HomeScreen from '../screens/customer/HomeScreen';
@@ -42,6 +43,7 @@ const HomeStack = () => {
 
 export default function CustomerTab() {
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator 
@@ -50,7 +52,17 @@ export default function CustomerTab() {
         tabBarActiveTintColor: '#007aff',
         tabBarInactiveTintColor: '#999',
         tabBarLabelStyle: { fontSize: 12 },
-        tabBarStyle: { height: 65, paddingBottom: 8, paddingTop: 8 }
+        tabBarStyle: {
+          height: 62 + insets.bottom,
+          paddingTop: 8,
+          paddingBottom: Math.max(insets.bottom, 8),
+          backgroundColor: '#fff',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 4,
+        }
       }}
     >
       <Tab.Screen 

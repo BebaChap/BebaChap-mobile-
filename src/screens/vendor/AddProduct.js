@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function AddProduct({ route, navigation }) {
+  const { t } = useLanguage();
   const vendorType = route?.params?.vendorType || 'shop';
   const editingProduct = route?.params?.product;
 
@@ -14,7 +16,7 @@ export default function AddProduct({ route, navigation }) {
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status!== 'granted') {
-      Alert.alert('Ruhusa inahitajika', 'Ruhusa ya gallery inahitajika kuongeza picha');
+      Alert.alert(t('permission'), t('gallery_permission'));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -30,12 +32,11 @@ export default function AddProduct({ route, navigation }) {
 
   const handleSave = () => {
     if (!name ||!price) {
-      Alert.alert('Jaza taarifa', 'Jina na bei ni lazima');
+      Alert.alert(t('fill_fields'), t('name_price_required'));
       return;
     }
-    // hapa utatuma pamoja na image kwenda backend
     console.log({ name, price, stock, image, vendorType });
-    Alert.alert('Imehifadhiwa', `${name} imeongezwa`);
+    Alert.alert(t('saved'), t('item_added', { name }));
     navigation.goBack();
   };
 
@@ -48,22 +49,22 @@ export default function AddProduct({ route, navigation }) {
         ) : (
           <View style={styles.placeholder}>
             <Text style={styles.icon}>📸</Text>
-            <Text style={styles.placeholderText}>Bonyeza kuongeza picha</Text>
-            <Text style={styles.subText}>ya {vendorType === 'restaurant'? 'chakula' : 'bidhaa'}</Text>
+            <Text style={styles.placeholderText}>{t('tap_add_photo')}</Text>
+            <Text style={styles.subText}>{vendorType === 'restaurant'? t('word_food') : t('word_product')}</Text>
           </View>
         )}
       </TouchableOpacity>
 
       {image && (
         <TouchableOpacity onPress={pickImage} style={styles.changeBtn}>
-          <Text style={styles.changeText}>Badilisha Picha</Text>
+          <Text style={styles.changeText}>{t('change_photo')}</Text>
         </TouchableOpacity>
       )}
 
-      <Text style={styles.label}>Jina la {vendorType === 'restaurant'? 'Chakula' : 'Bidhaa'}</Text>
+      <Text style={styles.label}>{vendorType === 'restaurant'? t('food_name') : t('product_name')}</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="Mf: Mchele 5kg" />
 
-      <Text style={styles.label}>Bei (TSh)</Text>
+      <Text style={styles.label}>{t('price')} (TSh)</Text>
       <TextInput style={styles.input} value={price} onChangeText={setPrice} keyboardType="numeric" placeholder="12000" />
 
       {vendorType!== 'restaurant' && (
@@ -74,7 +75,7 @@ export default function AddProduct({ route, navigation }) {
       )}
 
       <TouchableOpacity style={styles.btn} onPress={handleSave}>
-        <Text style={styles.btnText}>{editingProduct? 'Hariri' : 'Hifadhi'}</Text>
+        <Text style={styles.btnText}>{editingProduct? t('edit') : t('save')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

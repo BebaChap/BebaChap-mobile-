@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, TextInput, Modal } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const DISPUTES_DATA = [
   { id: '1', user: 'Amina J.', type: 'ride', subject: 'Dereva alikataa safari', status: 'open', date: '16 Jun 2026', details: 'Dereva alikubali oda lakini hakufika. Alisema gari limeharibika.' },
@@ -11,25 +12,26 @@ const STATUS_COLORS = { open: '#ff9800', in_progress: '#2196f3', resolved: '#4ca
 const TYPE_ICONS = { ride: '🚗', order: '🛒', payment: '💰' };
 
 export default function Disputes() {
+  const { t } = useLanguage();
   const [disputes, setDisputes] = useState(DISPUTES_DATA);
   const [selected, setSelected] = useState(null);
   const [resolution, setResolution] = useState('');
 
   const resolveDispute = () => {
     if (!resolution.trim()) {
-      Alert.alert('Kosa', 'Andika jinsi ulivyoshughulikia');
+      Alert.alert(t('error'), t('write_resolution'));
       return;
     }
     setDisputes(disputes.map(d => d.id === selected.id? {...d, status: 'resolved' } : d));
-    Alert.alert('Imefanikiwa', 'Lalamiko limeshughulikiwa');
+    Alert.alert(t('success'), t('complaint_handled'));
     setSelected(null);
     setResolution('');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Malalamiko</Text>
-      <Text style={styles.subtitle}>{disputes.filter(d => d.status!== 'resolved').length} yanahitaji kushughulikiwa</Text>
+      <Text style={styles.title}>{t('complaints')}</Text>
+      <Text style={styles.subtitle}>{disputes.filter(d => d.status!== 'resolved').length} {t('need_attention')}</Text>
 
       <FlatList
         data={disputes}
@@ -53,25 +55,25 @@ export default function Disputes() {
       <Modal visible={!!selected} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Shughulikia Lalamiko</Text>
+            <Text style={styles.modalTitle}>{t('handle_complaint')}</Text>
 
             <View style={styles.modalInfo}>
-              <Text style={styles.modalLabel}>Mteja:</Text>
+              <Text style={styles.modalLabel}>{t('customer_label')}:</Text>
               <Text style={styles.modalValue}>{selected?.user}</Text>
             </View>
             <View style={styles.modalInfo}>
-              <Text style={styles.modalLabel}>Suala:</Text>
+              <Text style={styles.modalLabel}>{t('issue')}:</Text>
               <Text style={styles.modalValue}>{selected?.subject}</Text>
             </View>
             <View style={styles.modalInfo}>
-              <Text style={styles.modalLabel}>Maelezo:</Text>
+              <Text style={styles.modalLabel}>{t('description')}:</Text>
               <Text style={styles.modalValue}>{selected?.details}</Text>
             </View>
 
-            <Text style={styles.label}>Suluhisho:</Text>
+            <Text style={styles.label}>{t('resolution')}:</Text>
             <TextInput
               style={styles.textArea}
-              placeholder="Andika jinsi ulivyoshughulikia..."
+              placeholder={t('write_resolution')}
               value={resolution}
               onChangeText={setResolution}
               multiline
@@ -80,10 +82,10 @@ export default function Disputes() {
 
             <View style={styles.modalBtns}>
               <TouchableOpacity style={styles.cancelBtn} onPress={() => setSelected(null)}>
-                <Text style={styles.cancelText}>Ghairi</Text>
+                <Text style={styles.cancelText}>{t('cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.resolveBtn} onPress={resolveDispute}>
-                <Text style={styles.resolveText}>✓ Shughulikia</Text>
+                <Text style={styles.resolveText}>✓ {t('handle')}</Text>
               </TouchableOpacity>
             </View>
           </View>

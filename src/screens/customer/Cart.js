@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const cartItems = [
   { id: '1', name: 'Mchele 5kg', price: 12000, qty: 1 },
@@ -7,6 +8,7 @@ const cartItems = [
 ];
 
 export default function Cart({ navigation }) {
+  const { t } = useLanguage();
   const total = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (
@@ -25,7 +27,7 @@ export default function Cart({ navigation }) {
       />
       
       <View style={styles.footer}>
-        <Text style={styles.total}>Jumla: TSh {total.toLocaleString()}</Text>
+        <Text style={styles.total}>{t('total')}: TSh {total.toLocaleString()}</Text>
         <TouchableOpacity 
           style={styles.button}
           onPress={() => navigation.navigate('Checkout')}

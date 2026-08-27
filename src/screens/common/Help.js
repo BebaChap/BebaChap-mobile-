@@ -1,22 +1,32 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Help = () => {
+  const { t } = useLanguage();
+
   const openWhatsApp = () => {
-    Linking.openURL('whatsapp://send?phone=+255712345678&text=Nahitaji msaada RideSuperApp');
+    const url = `whatsapp://send?phone=+255712345678&text=${encodeURIComponent(t('share_message'))}`;
+    Linking.canOpenURL('whatsapp://send').then(supported => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        Alert.alert(t('error'), t('whatsapp_not_found'));
+      }
+    });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Msaada & Support</Text>
+      <Text style={styles.title}>{t('help')} & {t('support')}</Text>
       <TouchableOpacity style={styles.item}>
-        <Text style={styles.itemText}>❓ Maswali ya Kawaida</Text>
+        <Text style={styles.itemText}>❓ {t('faq')}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.item} onPress={openWhatsApp}>
-        <Text style={styles.itemText}>💬 WhatsApp Support</Text>
+        <Text style={styles.itemText}>💬 WhatsApp {t('support')}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.item}>
-        <Text style={styles.itemText}>🐛 Ripoti Tatizo</Text>
+        <Text style={styles.itemText}>🐛 {t('report_problem')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -30,10 +40,3 @@ const styles = StyleSheet.create({
 });
 
 export default Help;
-Linking.canOpenURL('whatsapp://send?phone=+255712345678').then(supported => {
-  if (supported) {
-    Linking.openURL('whatsapp://send?phone=+255712345678&text=Nahitaji msaada SafariGOApp');
-  } else {
-    Alert.alert('Kosa', 'WhatsApp haijafungwa kwenye simu yako');
-  }
-});

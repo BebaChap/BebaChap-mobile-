@@ -1,39 +1,42 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
-
-const FAKE_NOTIS = [
-  { 
-    id: '1', 
-    title: 'Oda Mpya', 
-    body: 'Umepewa oda ya chips kuku kutoka kwa John', 
-    time: '2m ago',
-    read: false 
-  },
-  { 
-    id: '2', 
-    title: 'Ride Request', 
-    body: 'Mteja yupo Sinza, anataka kwenda Mikocheni', 
-    time: '5m ago',
-    read: false 
-  },
-  { 
-    id: '3', 
-    title: 'Malipo Yamekamilika', 
-    body: 'TSH 15,000 zimeingia kwenye akaunti yako', 
-    time: '1h ago',
-    read: true 
-  },
-  { 
-    id: '4', 
-    title: 'Rating Mpya', 
-    body: 'Umepewa nyota 5 na mteja', 
-    time: '3h ago',
-    read: true 
-  },
-];
+import { useLanguage } from '../../contexts/LanguageContext';
+import { COLORS } from '../../theme/colors';
 
 const Notifications = ({ navigation }) => {
-  
+  const { t, isRTL } = useLanguage();
+
+  const FAKE_NOTIS = [
+    {
+      id: '1',
+      title: t('notif_order_title'),
+      body: t('notif_order_body'),
+      time: t('min_ago', { count: 2 }),
+      read: false
+    },
+    {
+      id: '2',
+      title: t('notif_ride_title'),
+      body: t('notif_ride_body'),
+      time: t('min_ago', { count: 5 }),
+      read: false
+    },
+    {
+      id: '3',
+      title: t('notif_payment_title'),
+      body: t('notif_payment_body'),
+      time: t('hour_ago', { count: 1 }),
+      read: true
+    },
+    {
+      id: '4',
+      title: t('notif_rating_title'),
+      body: t('notif_rating_body'),
+      time: t('hour_ago', { count: 3 }),
+      read: true
+    },
+  ];
+
   const handlePress = (item) => {
     console.log('Clicked:', item.id);
     // navigation.navigate('NotificationDetail', { notification: item })
@@ -46,10 +49,10 @@ const Notifications = ({ navigation }) => {
       activeOpacity={0.7}
     >
       <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text style={[styles.cardTitle, isRTL && styles.rtlText]}>{item.title}</Text>
         {!item.read && <View style={styles.unreadDot} />}
       </View>
-      <Text style={styles.cardBody}>{item.body}</Text>
+      <Text style={[styles.cardBody, isRTL && styles.rtlText]}>{item.body}</Text>
       <Text style={styles.cardTime}>{item.time}</Text>
     </TouchableOpacity>
   );
@@ -57,7 +60,7 @@ const Notifications = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Text style={styles.headerTitle}>Notifications</Text>
+      <Text style={styles.headerTitle}>{t('notifications')}</Text>
       
       <FlatList
         data={FAKE_NOTIS}
@@ -73,7 +76,7 @@ const Notifications = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#f5f5f5' 
+    backgroundColor: COLORS.background || '#f5f5f5' 
   },
   headerTitle: { 
     fontSize: 28, 
@@ -130,6 +133,9 @@ const styles = StyleSheet.create({
   cardTime: { 
     fontSize: 12, 
     color: '#999' 
+  },
+  rtlText: {
+    textAlign: 'right',
   },
 });
 

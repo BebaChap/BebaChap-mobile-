@@ -1,115 +1,81 @@
-import { useState, useEffect, useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LanguageContext } from '../../contexts/LanguageContext';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { LANGUAGES as LANGUAGE_META } from '../../constants/languages';
+import { COLORS } from '../../theme/colors';
 
-const LANGUAGES = [
-  { code: 'sw', name: 'Kiswahili', flag: '🇹🇿' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-];
+export default function LanguageSelect() {
+  const { language, changeLanguage, t, isRTL } = useLanguage();
 
-export default function LanguageSelect({ navigation, route }) {
-  const { changeLanguage, language } = useContext(LanguageContext);
-  const [selected, setSelected] = useState(language || 'sw');
-  const [loading, setLoading] = useState(false);
-  
-  // FIX KUBWA HAPA: Badilisha true kuwa false
-  const isFirstTime = route?.params?.firstTime ?? false;
-
-  useEffect(() => {
-    loadSavedLanguage();
-  }, []);
-
-  const loadSavedLanguage = async () => {
-    try {
-      const savedLang = await AsyncStorage.getItem('app_language');
-      if (savedLang) {
-        setSelected(savedLang);
-      }
-    } catch (e) {
-      console.log('Error loading language', e);
-    }
+  const renderOption = ({ item }) => {
+    const active = language === item.code;
+    return (
+      <TouchableOpacity
+        style={[styles.option, active && styles.activeOption]}
+        onPress={() => changeLanguage(item.code)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.flag}>{item.flag}</Text>
+        <View style={styles.nameWrap}>
+          <Text style={[styles.nativeName, active && styles.activeText]}>
+            {item.name}
+          </Text>
+          <Text style={styles.subtitle}>{item.label}</Text>
+        </View>
+        {active && <Text style={styles.check}>✓</Text>}
+      </TouchableOpacity>
+    );
   };
-
-  const handleContinue = async () => {
-    setLoading(true);
-    try {
-      await AsyncStorage.setItem('app_language', selected);
-      await AsyncStorage.setItem('hasSelectedLanguage', 'true');
-      await changeLanguage(selected);
-      console.log('Lugha imebadilishwa:', selected);
-
-      if (isFirstTime) {
-        // Ipo ndani ya AuthNavigator, Onboarding ipo hapa
-        navigation.replace('Onboarding');
-      } else {
-        // Ipo ndani ya AppNavigator (Settings) - rudi tu nyuma
-        if (navigation.canGoBack()) {
-          navigation.goBack();
-        } else {
-          // Fallback kama haina kwa kurudi
-          navigation.navigate('Settings');
-        }
-      }
-    } catch (e) {
-      Alert.alert('Error', 'Imeshindikana kuhifadhi lugha');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={[styles.langItem, selected === item.code && styles.selected]}
-      onPress={() => setSelected(item.code)}
-      disabled={loading}
-      activeOpacity={0.7}
-    >
-      <Text style={styles.flag}>{item.flag}</Text>
-      <Text style={styles.langName}>{item.name}</Text>
-      {selected === item.code && <Text style={styles.check}>✓</Text>}
-    </TouchableOpacity>
-  );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Chagua Lugha / Choose Language</Text>
-      
+    <View style={styles.container}>
+      <Text style={styles.title}>{t('change_language')}</Text>
+      <Text style={styles.hint}>{t('tap_to_change')}</Text>
       <FlatList
-        data={LANGUAGES}
+        data={LANGUAGE_META}
         keyExtractor={(item) => item.code}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        renderItem={renderOption}
+        contentContainerStyle={styles.list}
       />
-
-      <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
-        onPress={handleContinue}
-        disabled={loading}
-      >
-        {loading? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Endelea / Continue</Text>
-        )}
-      </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 30, marginTop: 20, color: '#1a1a1a' },
-  langItem: { flexDirection: 'row', alignItems: 'center', padding: 18, borderRadius: 12, borderWidth: 2, borderColor: '#e0e0e0', marginBottom: 12, backgroundColor: '#fafafa' },
-  selected: { borderColor: '#007aff', backgroundColor: '#e3f2fd' },
-  flag: { fontSize: 28, marginRight: 15 },
-  langName: { fontSize: 18, flex: 1, color: '#333', fontWeight: '500' },
-  check: { fontSize: 22, color: '#007aff', fontWeight: 'bold' },
-  button: { backgroundColor: '#007aff', padding: 18, borderRadius: 12, marginTop: 10, marginBottom: 10, alignItems: 'center', justifyContent: 'center', minHeight: 56 },
-  buttonDisabled: { backgroundColor: '#b0b0b0' },
-  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  hint: {
+    fontSize: 14,
+    color: COLORS.textGray,
+    marginBottom: 16,
+  },
+  list: { paddingBottom: 40 },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.card,
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 10,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  activeOption: {
+    borderColor: COLORS.primary,
+  },
+  flag: { fontSize: 30, marginRight: 14 },
+  nameWrap: { flex: 1 },
+  nativeName: { fontSize: 18, fontWeight: '700', color: COLORS.text },
+  subtitle: { fontSize: 13, color: COLORS.textGray, marginTop: 2 },
+  check: { fontSize: 22, fontWeight: 'bold', color: COLORS.primary },
 });

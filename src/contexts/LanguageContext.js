@@ -1,68 +1,151 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { translations } from '../i18n';
+import { I18nManager } from 'react-native';
+import RNRestart from 'react-native-restart';
+import * as Localization from 'expo-localization';
+import { supabase } from '../lib/supabase';
 
-export const LANGUAGES = [
-  { code: 'sw', name: 'Kiswahili', flag: '🇹🇿' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-];
+import en from '../locales/en.js';
+import sw from '../locales/sw.js';
+import zh from '../locales/zh.js';
+import ar from '../locales/ar.js';
+import fr from '../locales/fr.js';
+import hi from '../locales/hi.js';
 
-export const LanguageContext = createContext();
+const LanguageContext = createContext();
+const LANGUAGES = ['sw', 'en', 'fr', 'ar', 'zh', 'hi'];
+const dictionaries = { sw, en, fr, ar, zh, hi };
+const RTL_LANGUAGES = ['ar'];
+const STORAGE_KEY = 'app_language';
+const RTL_SYNC_KEY = 'app_language_rtl_sync';
+
+const detectDeviceLanguage = () => {
+  try {
+    const deviceLocales = Localization.getLocales();
+    const code = deviceLocales?.[0]?.languageCode?.toLowerCase();
+    return LANGUAGES.includes(code) ? code : 'sw';
+  } catch (e) {
+    return 'sw';
+  }
+};
+
+const applyLayoutDirection = (lang) => {
+  const isRTL = RTL_LANGUAGES.includes(lang);
+  I18nManager.allowRTL(isRTL);
+  I18nManager.forceRTL(isRTL);
+};
+
+// Layout-direction flags only take effect after a full native restart.
+const hardReload = () => {
+  try {
+    RNRestart.Restart();
+  } catch (e) {}
+};
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguageState] = useState('sw');
+  const [language, setLanguage] = useState('sw');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    const init = async () => {
+      let resolved = null;
       try {
-        const saved = await AsyncStorage.getItem('app_language');
-        if (saved && translations[saved]) {
-          setLanguageState(saved);
-        }
+        resolved = await AsyncStorage.getItem(STORAGE_KEY);
       } catch (e) {
-        console.log('Language load error', e);
+        resolved = null;
       }
-    })();
+
+      if (!resolved || !LANGUAGES.includes(resolved)) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data } = await supabase.from('users').select('language').eq('id', user.id).single();
+            if (data?.language && LANGUAGES.includes(data.language)) {
+              resolved = data.language;
+              await AsyncStorage.setItem(STORAGE_KEY, resolved);
+            }
+          }
+        } catch (e) {
+          resolved = null;
+        }
+      }
+
+      const finalLang = resolved && LANGUAGES.includes(resolved)
+        ? resolved
+        : detectDeviceLanguage();
+
+      const wantsRTL = RTL_LANGUAGES.includes(finalLang);
+      applyLayoutDirection(finalLang);
+
+      // Self-heal: if the native layout direction is out of sync with the
+      // saved language (e.g. leftover RTL from a previous Arabic session),
+      // reload once so the UI is not mirrored.
+      if (I18nManager.isRTL !== wantsRTL) {
+        let lastSync = 0;
+        try {
+          lastSync = Number((await AsyncStorage.getItem(RTL_SYNC_KEY)) || 0);
+        } catch (e) {}
+
+        if (Date.now() - lastSync > 5000) {
+          try { await AsyncStorage.setItem(STORAGE_KEY, finalLang); } catch (e) {}
+          try { await AsyncStorage.setItem(RTL_SYNC_KEY, String(Date.now())); } catch (e) {}
+          setTimeout(hardReload, 200);
+          return; // keep splash visible until reload completes
+        }
+      }
+
+      try { await AsyncStorage.removeItem(RTL_SYNC_KEY); } catch (e) {}
+      setLanguage(finalLang);
+      setLoading(false);
+    };
+    init();
   }, []);
 
-  const setLanguage = async (code) => {
-    if (!translations[code]) {
-      console.log('Translation missing for', code);
-      return;
-    }
-    setLanguageState(code);
-    await AsyncStorage.setItem('app_language', code);
-    console.log("Lugha imebadilishwa:", code);
+  const persistLanguage = async (newLang) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, newLang);
+    } catch (e) {}
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('users').update({ language: newLang }).eq('id', user.id);
+      }
+    } catch (e) {}
   };
 
-  const t = useCallback((key) => {
-    const langData = translations[language] || translations['sw'];
-    if (langData && langData[key]) return langData[key];
-    if (translations['en'] && translations['en'][key]) return translations['en'][key];
-    if (translations['sw'] && translations['sw'][key]) return translations['sw'][key];
-    return key;
-  }, [language]);
+  const changeLanguage = async (newLang) => {
+    if (!LANGUAGES.includes(newLang)) return;
+
+    const wantsRTL = RTL_LANGUAGES.includes(newLang);
+    if (I18nManager.isRTL !== wantsRTL) {
+      setLanguage(newLang);
+      applyLayoutDirection(newLang);
+      await persistLanguage(newLang);
+      setTimeout(hardReload, 100);
+      return;
+    }
+
+    setLanguage(newLang);
+    await persistLanguage(newLang);
+  };
+
+  const t = (key, vars) => {
+    let str = dictionaries[language]?.[key] || dictionaries['en']?.[key] || key;
+    if (vars) {
+      for (const [name, value] of Object.entries(vars)) {
+        str = str.split(`{{${name}}}`).join(String(value));
+      }
+    }
+    return str;
+  };
+
+  const isRTL = RTL_LANGUAGES.includes(language);
 
   return (
-    <LanguageContext.Provider value={{
-      t,
-      language,
-      setLanguage,
-      languages: LANGUAGES,
-      currentLanguage: LANGUAGES.find(l => l.code === language) || LANGUAGES[0],
-      changeLanguage: setLanguage,
-    }}>
+    <LanguageContext.Provider value={{ language, changeLanguage, t, loading, LANGUAGES, isRTL }}>
       {children}
     </LanguageContext.Provider>
   );
 };
 
-export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (!context) throw new Error('useLanguage must be used within LanguageProvider');
-  return context;
-};
+export const useLanguage = () => useContext(LanguageContext);

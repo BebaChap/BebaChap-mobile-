@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../theme/colors';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function Checkout({ navigation, route }) {
+  const { t } = useLanguage();
   const { cartItems = [], total = 0, restaurant, serviceType = 'restaurant' } = route.params || {};
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [selectedNetwork, setSelectedNetwork] = useState('M-Pesa');
@@ -47,8 +49,8 @@ export default function Checkout({ navigation, route }) {
   const grandTotal = total + deliveryFee;
 
   const getPaymentLabel = () => {
-    if (paymentMethod === 'cash') return 'Cash';
-    if (paymentMethod === 'wallet') return 'Pochi';
+    if (paymentMethod === 'cash') return t('word_cash');
+    if (paymentMethod === 'wallet') return t('pochi');
     return selectedNetwork;
   };
 
@@ -56,11 +58,11 @@ export default function Checkout({ navigation, route }) {
     // VALIDATION MPYA
     if (paymentMethod === 'mobile') {
       if (phoneNumber.length < 10) {
-        Alert.alert("Kosa", "Weka namba sahihi ya simu (mf: 0712345678)");
+        Alert.alert(t('error'), t('enter_valid_phone'));
         return;
       }
       if (!accountName) {
-        Alert.alert("Kosa", "Subiri jina lithibitishwe kwanza");
+        Alert.alert(t('error'), t('wait_name_verify'));
         return;
       }
     }
@@ -87,15 +89,15 @@ export default function Checkout({ navigation, route }) {
     console.log('ORDER PAYLOAD:', orderPayload);
 
     Alert.alert(
-      "Thibitisha Oda",
-      `Unalipa TZS ${grandTotal.toLocaleString()} kwa ${getPaymentLabel()}\n${paymentMethod === 'mobile'? `Namba: ${phoneNumber}\nJina: ${accountName}` : ''}`,
+      t('confirm_order'),
+      `${t('paying_amount', { amount: `TZS ${grandTotal.toLocaleString()}`, method: getPaymentLabel() })}\n${paymentMethod === 'mobile'? `${t('network_number')}: ${phoneNumber}\n${t('account_name_found')}: ${accountName}` : ''}`,
       [
-        { text: "Ghairi", style: "cancel" },
+        { text: t('cancel'), style: "cancel" },
         {
-          text: "Lipa Sasa",
+          text: t('pay_now'),
           onPress: () => {
-            Alert.alert("Hongera! 🎉", `Oda yako imepokelewa.\nMalipo kwa ${getPaymentLabel()} - ${accountName || ''}`, [
-              { text: "Sawa", onPress: () => navigation.reset({ index: 0, routes: [{ name: 'Home' }] }) }
+            Alert.alert(`${t('congrats')}! 🎉`, t('order_received', { method: getPaymentLabel(), name: accountName || '' }), [
+              { text: "OK", onPress: () => navigation.reset({ index: 0, routes: [{ name: 'Home' }] }) }
             ]);
           }
         }
@@ -125,7 +127,7 @@ export default function Checkout({ navigation, route }) {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>{t('order_summary')}</Text>
           <View style={styles.row}>
-            <Text style={styles.label}>Jumla ya Chakula</Text>
+            <Text style={styles.label}>{t('food_total')}</Text>
             <Text style={styles.value}>TZS {total.toLocaleString() || '12,000'}</Text>
           </View>
           <View style={styles.row}>
@@ -152,7 +154,7 @@ export default function Checkout({ navigation, route }) {
             <View style={[styles.networkBadge, { backgroundColor: networks.find(n => n.name === selectedNetwork)?.color }]}>
               <Text style={styles.badgeText}>{networks.find(n => n.name === selectedNetwork)?.icon}</Text>
             </View>
-            <Text style={styles.payText}>Mitandao - {selectedNetwork}</Text>
+            <Text style={styles.payText}>{t('mobile_networks')} - {selectedNetwork}</Text>
             <Ionicons name={showNetworkDropdown? "chevron-up" : "chevron-down"} size={20} color="#999" />
           </TouchableOpacity>
 
@@ -171,7 +173,7 @@ export default function Checkout({ navigation, route }) {
           {/* INPUT MPYA - INATOKA BAADA YA KUCHAGUA MTANDAO */}
           {paymentMethod === 'mobile' && (
             <View style={styles.mobileInputs}>
-              <Text style={styles.inputLabel}>Namba ya {selectedNetwork}</Text>
+              <Text style={styles.inputLabel}>{t('network_number')} {selectedNetwork}</Text>
               <View style={styles.phoneInputContainer}>
                 <Text style={styles.prefix}>+255</Text>
                 <TextInput
@@ -185,15 +187,15 @@ export default function Checkout({ navigation, route }) {
                 {isVerifying && <Ionicons name="hourglass-outline" size={18} color={COLORS.primary} />}
               </View>
 
-              <Text style={styles.inputLabel}>Jina linalotokea</Text>
+              <Text style={styles.inputLabel}>{t('account_name_found')}</Text>
               <View style={[styles.nameBox, accountName && styles.nameBoxSuccess]}>
                 <Ionicons name={accountName? "person" : "person-outline"} size={18} color={accountName? "#22c55e" : "#999"} />
                 <Text style={[styles.nameText,!accountName && {color:'#999'}]}>
-                  {isVerifying? "Inathibitisha..." : accountName || "Jina litaonekana hapa baada ya kuweka namba"}
+                  {isVerifying? t('verifying') : accountName || t('name_result_placeholder')}
                 </Text>
                 {accountName && <Ionicons name="checkmark-circle" size={18} color="#22c55e" />}
               </View>
-              <Text style={styles.hintText}>Hakikisha jina linalotokea ni sahihi kabla ya kulipa</Text>
+              <Text style={styles.hintText}>{t('verify_name_hint')}</Text>
             </View>
           )}
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const NEW_ORDERS = [
   { id: '1', customer: 'Amina J.', items: 'Mchele 5kg x2', total: 24000, time: '5 min ago' },
@@ -11,6 +12,7 @@ const NEW_ORDERS = [
 export default function VendorDashboard() {
   const navigation = useNavigation();
   const { logout } = useAuth();
+  const { t } = useLanguage();
   const [stats] = useState({
     todaySales: 156000,
     todayOrders: 12,
@@ -19,10 +21,10 @@ export default function VendorDashboard() {
   });
 
   const handleLogout = () => {
-    Alert.alert('Toka', 'Una uhakika unataka kutoka?', [
-      { text: 'Ghairi', style: 'cancel' },
+    Alert.alert(t('logout'), t('logout_confirm'), [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Toka',
+        text: t('logout'),
         style: 'destructive',
         onPress: () => {
           logout();
@@ -35,34 +37,34 @@ export default function VendorDashboard() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Duka Langu 📊</Text>
+          <Text style={styles.title}>{t('my_shop')} 📊</Text>
           <Text style={styles.subtitle}>Juma Store</Text>
         </View>
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Toka 🚪</Text>
+          <Text style={styles.logoutText}>🚪 {t('logout')}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.statsGrid}>
         <View style={styles.statCard}>
           <Text style={styles.statValue}>TSh {(stats.todaySales / 1000).toFixed(0)}K</Text>
-          <Text style={styles.statLabel}>Mauzo Leo</Text>
+          <Text style={styles.statLabel}>{t('sales_today')}</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statValue}>{stats.todayOrders}</Text>
-          <Text style={styles.statLabel}>Oda Leo</Text>
+          <Text style={styles.statLabel}>{t('orders_today')}</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statValue}>⭐ {stats.rating}</Text>
-          <Text style={styles.statLabel}>Rating</Text>
+          <Text style={styles.statLabel}>{t('rating_lbl')}</Text>
         </View>
       </View>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Oda Mpya ({stats.pendingOrders})</Text>
+          <Text style={styles.sectionTitle}>{t('new_orders_title', { count: stats.pendingOrders })}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Orders')}>
-            <Text style={styles.seeAll}>Ona Zote →</Text>
+            <Text style={styles.seeAll}>{t('see_all')} →</Text>
           </TouchableOpacity>
         </View>
 
@@ -81,11 +83,11 @@ export default function VendorDashboard() {
       <View style={styles.quickActions}>
         <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('CommonStack', { screen: 'VendorProducts' })}>
           <Text style={styles.actionIcon}>📦</Text>
-          <Text style={styles.actionText}>Ongeza Bidhaa</Text>
+          <Text style={styles.actionText}>{t('add_product')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('CommonStack', { screen: 'ShopProfile' })}>
           <Text style={styles.actionIcon}>⚙</Text>
-          <Text style={styles.actionText}>Hariri Duka</Text>
+          <Text style={styles.actionText}>{t('edit_shop')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

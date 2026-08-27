@@ -18,6 +18,8 @@ import ShareApp from '../screens/common/ShareApp';
 import CommonStack from './CommonStack';
 import LiveTracking from '../screens/customer/LiveTracking';
 import ForgotPassword from '../screens/auth/ForgotPassword';
+import AdminTranslations from '../screens/admin/AdminTranslations';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -30,13 +32,15 @@ function PendingScreen() {
       <Text style={pendingStyles.emoji}>⏳</Text>
       <Text style={pendingStyles.title}>{t('application_received')}</Text>
       <Text style={pendingStyles.subtitle}>
-        Karibu {user?.name}!{'\n\n'}Akaunti yako ya {user?.role?.toUpperCase()} 
-        {user?.vendorType ? ` (${user.vendorType === 'restaurant' ? '🍽 Restaurant' : '🏪 Duka'})` : ''} 
-        {'\n'}ipo kwenye uhakiki.
+        {t('pending_welcome', { name: user?.name || '' })}{'\n\n'}
+        {t('pending_account_review', { role: user?.role?.toUpperCase() || '' })}
+        {user?.vendorType
+          ? `\n${user.vendorType === 'restaurant' ? '🍽 ' + t('restaurant') : '🏪 ' + t('shop')}`
+          : ''}
       </Text>
       <Text style={pendingStyles.desc}>{t('wait_admin_approval')}</Text>
       <TouchableOpacity style={pendingStyles.logoutBtn} onPress={logout}>
-        <Text style={pendingStyles.logoutText}>{t('exit_try_later')}</Text>
+        <Text style={pendingStyles.logoutText}>{t('logout')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -44,6 +48,7 @@ function PendingScreen() {
 
 export default function AppNavigator() {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   console.log('CURRENT USER:', user);
 
@@ -79,6 +84,7 @@ export default function AppNavigator() {
       <Stack.Screen name="CommonStack" component={CommonStack} />
       <Stack.Screen name="LiveTracking" component={LiveTracking} options={{ headerShown: false, presentation: 'fullScreenModal' }} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="AdminTranslations" component={AdminTranslations} options={{ title: t('manage_translations') }} />
     </Stack.Navigator>
   );
 }

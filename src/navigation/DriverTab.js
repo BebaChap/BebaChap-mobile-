@@ -2,6 +2,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Screens
 import DriverHome from '../screens/driver/DriverHome';
@@ -23,6 +25,9 @@ const DriverHomeStack = () => {
 };
 
 export default function DriverTab() {
+  const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -30,13 +35,24 @@ export default function DriverTab() {
         tabBarActiveTintColor: '#007aff',
         tabBarInactiveTintColor: '#999',
         tabBarLabelStyle: { fontSize: 12 },
+        tabBarStyle: {
+          height: 62 + insets.bottom,
+          paddingTop: 8,
+          paddingBottom: Math.max(insets.bottom, 8),
+          backgroundColor: '#fff',
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 4,
+        },
       }}
     >
       <Tab.Screen 
         name="HomeTab"
         component={DriverHomeStack}
         options={{
-          tabBarLabel: 'Nyumbani',
+          tabBarLabel: t('nyumbani'),
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />
         }}
       />
@@ -44,7 +60,7 @@ export default function DriverTab() {
         name="RequestsTab"
         component={DriverRequests}
         options={{
-          tabBarLabel: 'Maombi',
+          tabBarLabel: t('requests_lbl'),
           tabBarIcon: ({ color, size }) => <Ionicons name="car-sport-outline" size={size} color={color} />,
           tabBarBadge: 3 // optional - inaonyesha maombi mapya 3
         }}
@@ -55,7 +71,7 @@ export default function DriverTab() {
         name="ProfileTab" 
         component={CommonStack} 
         options={{ 
-          tabBarLabel: 'Profile',
+          tabBarLabel: t('profile'),
           tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />
         }} 
       />

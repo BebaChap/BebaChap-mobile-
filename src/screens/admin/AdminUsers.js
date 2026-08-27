@@ -1,45 +1,48 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
-const PENDING_USERS = [
-  { id: '1', name: 'John Mwangi', role: 'driver', phone: '+255712345678', date: '16 Jun 2026', docs: 'Leseni, Bima' },
-  { id: '2', name: 'Neema Store', role: 'vendor', phone: '+255723456789', date: '15 Jun 2026', docs: 'Leseni Biashara' },
-  { id: '3', name: 'Moshi Garage', role: 'garage', phone: '+255734567890', date: '14 Jun 2026', docs: 'Cheti Gereji' },
+const PENDING_DISPUTES = [
+  { id: '1', customer: 'Juma M.', driver: 'John Mwangi', type: 'overcharge', status: 'open', date: '16 Jun 2026', desc: 'Dereva alitoza TSH 5000 zaidi' },
+  { id: '2', customer: 'Neema S.', vendor: 'Neema Store', type: 'wrong_item', status: 'open', date: '15 Jun 2026', desc: 'Bidhaa tofauti na iliyoagizwa' },
+  { id: '3', customer: 'Asha K.', driver: 'Ali J.', type: 'rude', status: 'pending', date: '14 Jun 2026', desc: 'Dereva alikuwa mjeuri' },
 ];
 
-const ROLE_ICONS = { driver: '🏍', vendor: '🏪', garage: '🔧' };
-const ROLE_NAMES = { driver: 'Dereva', vendor: 'Duka', garage: 'Gereji' };
+const TYPE_ICONS = { overcharge: '💰', wrong_item: '📦', rude: '😡', late: '⏰', other: '⚠️' };
 
-export default function UserManagement() {
-  const [users, setUsers] = useState(PENDING_USERS);
+export default function Disputes() {
+  const { t } = useLanguage();
+  const TYPE_NAMES = { overcharge: t('dispute_overcharge'), wrong_item: t('dispute_wrong_item'), rude: t('dispute_rude'), late: t('dispute_late'), other: t('dispute_other') };
+  const [disputes, setDisputes] = useState(PENDING_DISPUTES);
   const [filter, setFilter] = useState('all');
+  const [resolution, setResolution] = useState({});
 
-  const approveUser = (id) => {
-    Alert.alert('Idhinisha', 'Una uhakika unataka kumidhinisha?', [
-      { text: 'Ghairi' },
-      { text: 'Idhinisha', onPress: () => setUsers(users.filter(u => u.id!== id)) },
+  const resolveDispute = (id) => {
+    if(!resolution[id]?.trim()){
+      Alert.alert(t('error'), t('write_resolution'));
+      return;
+    }
+    Alert.alert(t('confirm'), t('confirm_resolve_dispute'), [
+      { text: t('cancel') },
+      { text: t('confirm'), onPress: () => {
+        setDisputes(disputes.filter(d => d.id!== id));
+        Alert.alert(t('success'), t('complaint_handled'));
+      }},
     ]);
   };
 
-  const rejectUser = (id) => {
-    Alert.alert('Kataa', 'Andika sababu ya kukataa', [
-      { text: 'Ghairi' },
-      { text: 'Kataa', style: 'destructive', onPress: () => setUsers(users.filter(u => u.id!== id)) },
-    ]);
-  };
-
-  const filtered = filter === 'all'? users : users.filter(u => u.role === filter);
+  const filtered = filter === 'all'? disputes : disputes.filter(d => d.status === filter);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Idhinisha Watumiaji</Text>
-      <Text style={styles.subtitle}>{users.length} Wanaosubiri</Text>
+      <Text style={styles.title}>{t('open_disputes')}</Text>
+      <Text style={styles.subtitle}>{disputes.length} {t('pending')}</Text>
 
       <View style={styles.filters}>
-        {['all', 'driver', 'vendor', 'garage'].map((f) => (
+        {['all', 'open', 'pending'].map((f) => (
           <TouchableOpacity key={f} style={[styles.filterBtn, filter === f && styles.filterActive]} onPress={() => setFilter(f)}>
             <Text style={[styles.filterText, filter === f && styles.filterTextActive]}>
-              {f === 'all'? 'Wote' : ROLE_NAMES[f]}
+              {f === 'all'? t('all') : f === 'open'? t('status_open') : t('pending')}
             </Text>
           </TouchableOpacity>
         ))}
@@ -49,24 +52,32 @@ export default function UserManagement() {
         data={filtered}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.userCard}>
-            <View style={styles.userHeader}>
-              <Text style={styles.userIcon}>{ROLE_ICONS[item.role]}</Text>
+          <View style={styles.card}>
+            <View style={styles.header}>
+              <Text style={styles.icon}>{TYPE_ICONS[item.type] || '⚠️'}</Text>
               <View style={{ flex: 1 }}>
-                <Text style={styles.userName}>{item.name}</Text>
-                <Text style={styles.userRole}>{ROLE_NAMES[item.role]} • {item.phone}</Text>
+                <Text style={styles.name}>{item.customer} → {item.driver || item.vendor}</Text>
+                <Text style={styles.type}>{TYPE_NAMES[item.type] || item.type} • {item.date}</Text>
               </View>
-              <Text style={styles.date}>{item.date}</Text>
+              <View style={[styles.statusBadge, { backgroundColor: item.status === 'open'? '#ffebee' : '#fff3e0' }]}>
+                <Text style={[styles.statusText, { color: item.status === 'open'? '#c62828' : '#e65100' }]}>{item.status.toUpperCase()}</Text>
+              </View>
             </View>
 
-            <Text style={styles.docsLabel}>Nyaraka: {item.docs}</Text>
+            <Text style={styles.desc}>{item.desc}</Text>
+
+            <Text style={styles.label}>{t('write_resolution')}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={t('write_resolution')}
+              value={resolution[item.id] || ''}
+              onChangeText={(v) => setResolution(prev => ({...prev, [item.id]: v }))}
+              multiline
+            />
 
             <View style={styles.btnRow}>
-              <TouchableOpacity style={styles.rejectBtn} onPress={() => rejectUser(item.id)}>
-                <Text style={styles.rejectText}>Kataa</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.approveBtn} onPress={() => approveUser(item.id)}>
-                <Text style={styles.approveText}>✓ Idhinisha</Text>
+              <TouchableOpacity style={styles.resolveBtn} onPress={() => resolveDispute(item.id)}>
+                <Text style={styles.resolveText}>✓ {t('complaint_handled')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -85,16 +96,17 @@ const styles = StyleSheet.create({
   filterActive: { backgroundColor: '#007aff' },
   filterText: { fontSize: 14, fontWeight: '600', color: '#666' },
   filterTextActive: { color: '#fff' },
-  userCard: { backgroundColor: '#fff', marginHorizontal: 20, marginBottom: 15, padding: 16, borderRadius: 12 },
-  userHeader: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
-  userIcon: { fontSize: 32, marginRight: 12 },
-  userName: { fontSize: 18, fontWeight: 'bold' },
-  userRole: { fontSize: 14, color: '#666', marginTop: 4 },
-  date: { fontSize: 12, color: '#999' },
-  docsLabel: { fontSize: 14, color: '#333', marginBottom: 12, backgroundColor: '#f5f5f5', padding: 8, borderRadius: 6 },
-  btnRow: { flexDirection: 'row', gap: 10 },
-  rejectBtn: { flex: 1, padding: 12, borderWidth: 1, borderColor: '#f44336', borderRadius: 8, alignItems: 'center' },
-  rejectText: { fontSize: 15, color: '#f44336', fontWeight: 'bold' },
-  approveBtn: { flex: 1, padding: 12, backgroundColor: '#4caf50', borderRadius: 8, alignItems: 'center' },
-  approveText: { fontSize: 15, color: '#fff', fontWeight: 'bold' },
+  card: { backgroundColor: '#fff', marginHorizontal: 20, marginBottom: 15, padding: 16, borderRadius: 12 },
+  header: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
+  icon: { fontSize: 28, marginRight: 12 },
+  name: { fontSize: 16, fontWeight: 'bold' },
+  type: { fontSize: 13, color: '#666', marginTop: 3 },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20 },
+  statusText: { fontSize: 10, fontWeight: '800' },
+  desc: { fontSize: 14, color: '#333', backgroundColor: '#f5f5f5', padding: 10, borderRadius: 8, marginBottom: 12 },
+  label: { fontSize: 12, fontWeight: '700', color: '#888', marginBottom: 6 },
+  input: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 10, minHeight: 60, textAlignVertical: 'top', marginBottom: 12 },
+  btnRow: { flexDirection: 'row' },
+  resolveBtn: { flex: 1, padding: 12, backgroundColor: '#4caf50', borderRadius: 8, alignItems: 'center' },
+  resolveText: { color: '#fff', fontWeight: 'bold' },
 });

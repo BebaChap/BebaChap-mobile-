@@ -1,18 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function ProductDetail({ route, navigation }) {
+  const { t } = useLanguage();
   const { item } = route?.params || {};
 
   const addToCart = () => {
-    Alert.alert('Imeongezwa', `${item?.name} imeongezwa kwenye kikapu`);
+    Alert.alert(t('added_to_cart'), t('added_to_cart_msg', { name: item?.name }));
     navigation.navigate('Cart');
   };
 
   if (!item) {
     return (
       <View style={styles.container}>
-        <Text style={styles.name}>Bidhaa haijapatikana</Text>
+        <Text style={styles.name}>{t('product_not_found')}</Text>
       </View>
     );
   }
@@ -22,9 +24,9 @@ export default function ProductDetail({ route, navigation }) {
       <Text style={styles.emoji}>{item.image}</Text>
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.price}>TSh {item.price}</Text>
-      <Text style={styles.desc}>Bidhaa bora kutoka dukani kwetu. Ubora wa hali ya juu.</Text>
+      <Text style={styles.desc}>{t('product_desc_sample')}</Text>
       <TouchableOpacity style={styles.button} onPress={addToCart}>
-        <Text style={styles.buttonText}>🛒 Ongeza Kikapuni</Text>
+        <Text style={styles.buttonText}>🛒 {t('add_to_cart')}</Text>
       </TouchableOpacity>
     </View>
   );

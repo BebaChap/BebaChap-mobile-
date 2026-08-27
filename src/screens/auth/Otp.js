@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const ALLOWED_ROLES = ['customer', 'driver', 'vendor', 'garage'];
 
@@ -8,6 +9,7 @@ export default function Otp({ navigation, route }) {
   const { name = '', phone = '', role = 'customer', vendorType = 'shop', isLogin = false } = route.params || {};
   const [otp, setOtp] = useState('');
   const { verifyOtp, loading, tempPhone } = useAuth();
+  const { t } = useLanguage();
   
   const displayPhone = phone || tempPhone || '';
   const safeRole = ALLOWED_ROLES.includes(role) ? role : 'customer';
@@ -17,12 +19,12 @@ export default function Otp({ navigation, route }) {
 
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
-      Alert.alert('Kosa', 'OTP lazima iwe tarakimu 6');
+      Alert.alert(t('error'), t('otp_required'));
       return;
     }
 
     console.log('>>> NINATUMA verifyOtp na role:', safeRole, 'vendorType:', safeVendorType);
-    
+
     const result = await verifyOtp(otp, {
       name: name || 'User',
       phone: displayPhone,
@@ -35,10 +37,10 @@ export default function Otp({ navigation, route }) {
     if (result.success) {
       if (!isLogin) {
         const typeLabel = safeRole === 'vendor' ? (safeVendorType === 'restaurant' ? 'RESTAURANT' : 'DUKA') : safeRole.toUpperCase();
-        Alert.alert('Hongera!', `Umejisajili kama ${typeLabel}`);
+        Alert.alert(t('congrats') + '!', `${t('registered_as')} ${typeLabel}`);
       }
     } else {
-      Alert.alert('Kosa', result.message || 'OTP sio sahihi');
+      Alert.alert(t('error'), result.message || t('otp_invalid'));
       setOtp('');
     }
   };
@@ -46,14 +48,14 @@ export default function Otp({ navigation, route }) {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-        <Text style={styles.backText}>← Badili Namba</Text>
+        <Text style={styles.backText}>← {t('change_number')}</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>Weka OTP</Text>
+      <Text style={styles.title}>{t('enter_otp')}</Text>
       <Text style={styles.subtitle}>
-        Tumetuma code kwenye {displayPhone}{'\n'}
-        {name ? `Jina: ${name} | ` : ''}Role: {safeRole.toUpperCase()}
-        {safeRole === 'vendor' ? ` (${safeVendorType === 'restaurant' ? '🍽️ Restaurant' : '🛒 Duka'})` : ''}
+        {`${t('otp_sent_to')} ${displayPhone}`}{'\n'}
+        {name ? `${t('full_name')}: ${name} | ` : ''}{t('role')}: {safeRole.toUpperCase()}
+        {safeRole === 'vendor' ? ` (${safeVendorType === 'restaurant' ? `🍽️ ${t('restaurant_fastfood')}` : `🛒 ${t('shop_title')}`})` : ''}
       </Text>
 
       <TextInput
@@ -72,10 +74,10 @@ export default function Otp({ navigation, route }) {
         onPress={handleVerifyOtp}
         disabled={loading || otp.length < 6}
       >
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Thibitisha</Text>}
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{t('confirm')}</Text>}
       </TouchableOpacity>
 
-      <Text style={styles.hint}>Weka namba 6 yoyote (mfano 123456)</Text>
+      <Text style={styles.hint}>{t('otp_hint_dev')}</Text>
     </View>
   );
 }

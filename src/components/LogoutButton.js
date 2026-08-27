@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useNavigation, CommonActions } from '@react-navigation/native';
 
 export default function LogoutButton({ label, style, textStyle }) {
   const { logout } = useAuth();
   const { t } = useLanguage();
-  const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
 
   const handleLogout = () => {
@@ -21,15 +19,12 @@ export default function LogoutButton({ label, style, textStyle }) {
           style: 'destructive',
           onPress: async () => {
             setLoading(true);
-            await logout();
-            setLoading(false);
-            // HII NDIO INAYOIFANYA IFANYE KAZI APP NZIMA
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{ name: 'Auth' }], // Badilisha kuwa 'Login' kama Auth haipo
-              })
-            );
+            try {
+              await logout();
+              // USIFANYE navigation.reset - App.js itabadilisha yenyewe kwenda AuthNavigator
+            } finally {
+              setLoading(false);
+            }
           }
         }
       ]

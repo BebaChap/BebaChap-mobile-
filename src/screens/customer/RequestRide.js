@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, Linking } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, Linking, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../theme/colors';
+import { supabase } from '../../lib/supabase';
+import { useLanguage } from '../../contexts/LanguageContext'; // <- ONGEZA HII
 
-const VEHICLES = [
+const VEHICLES_STATIC = [
   { 
     id: 'boda', 
     name: 'Bodaboda', 
@@ -43,20 +45,87 @@ const VEHICLES = [
     price: 'TSh 15,000', 
     time: '8-12 min',
     capacity: 'Mizigo',
-    image: require('../../../assets/icons/pickup.png'), // badilisha na picha ya pickup ukiwa nayo
+    image: require('../../../assets/icons/pickup.png'),
     color: '#E8F5E9',
     driver: 'Musa Pickup',
     phone: '0688123456'
   },
 ];
 
+const getFare = async (vehicleType, distanceKm = 3, durationMin = 10) => {
+  try {
+    const { data, error } = await supabase
+      .from('fare_settings')
+      .select('*')
+      .eq('vehicle_type', vehicleType)
+      .eq('is_active', true)
+      .single();
+    
+    if(error || !data) return null;
+    const fare = data.base_fare + (distanceKm * data.per_km) + (durationMin * data.per_minute);
+    return Math.max(fare, data.min_fare);
+  } catch (e) {
+    console.log("Fare error", e);
+    return null;
+  }
+};
+
 export default function RequestRide({ navigation }) {
+  const { t } = useLanguage(); // <- ONGEZA HII NDANI YA FUNCTION
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [selected, setSelected] = useState('bajaji');
   const [payment, setPayment] = useState('M-Pesa');
+  const [fareMap, setFareMap] = useState({});
+  const [loadingFares, setLoadingFares] = useState(true);
 
-  const selectedVehicle = VEHICLES.find(v => v.id === selected);
+  const selectedVehicle = VEHICLES_STATIC.find(v => v.id === selected);
+
+  const fetchFares = async () => {
+    setLoadingFares(true);
+    try {
+      const { data, error } = await supabase.from('fare_settings').select('*').eq('is_active', true);
+      if(!error && data){
+        const map = {};
+        data.forEach(f => {
+          map[f.vehicle_type] = f.min_fare;
+        });
+        setFareMap(map);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoadingFares(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFares();
+  }, []);
+
+  useEffect(() => {
+    if(from.trim() && to.trim()){
+      const recalc = async () => {
+        const newMap = {};
+        for(const v of VEHICLES_STATIC){
+          const fare = await getFare(v.id, 5, 15);
+          if(fare) newMap[v.id] = fare;
+        }
+        if(Object.keys(newMap).length > 0){
+          setFareMap(prev => ({...prev, ...newMap}));
+        }
+      };
+      recalc();
+    }
+  }, [from, to]);
+
+  const VEHICLES = VEHICLES_STATIC.map(v => ({
+    ...v,
+    displayPrice: fareMap[v.id] ? `TSh ${fareMap[v.id].toLocaleString()}` : v.price,
+    rawPrice: fareMap[v.id] || 0
+  }));
+
+  const selectedVehicleLive = VEHICLES.find(v => v.id === selected);
 
   return (
     <View style={styles.container}>
@@ -65,8 +134,8 @@ export default function RequestRide({ navigation }) {
           <Ionicons name="chevron-back" size={24} color="#111" />
         </TouchableOpacity>
         <View>
-          <Text style={styles.title}>Agiza Usafiri</Text>
-          <Text style={styles.subtitle}>Chagua usafiri unaopenda</Text>
+          <Text style={styles.title}>{t('request_ride')}</Text>
+          <Text style={styles.subtitle}>{t('choose_vehicle')} {loadingFares ? `(${t('loading_fares')})` : ''}</Text>
         </View>
         <View style={{width:40}} />
       </View>
@@ -76,8 +145,8 @@ export default function RequestRide({ navigation }) {
           <View style={styles.locationRow}>
             <View style={[styles.dot, {backgroundColor: '#22c55e'}]}><View style={styles.dotInner} /></View>
             <View style={{flex:1}}>
-              <Text style={styles.label}>Unatoka wapi?</Text>
-              <TextInput placeholder="mf: Mlimani City" placeholderTextColor="#999" style={styles.input} value={from} onChangeText={setFrom} />
+              <Text style={styles.label}>{t('where_from')}</Text>
+              <TextInput placeholder={t('placeholder_from')} placeholderTextColor="#999" style={styles.input} value={from} onChangeText={setFrom} />
             </View>
             <Ionicons name="location-sharp" size={20} color="#22c55e" />
           </View>
@@ -85,15 +154,14 @@ export default function RequestRide({ navigation }) {
           <View style={styles.locationRow}>
             <View style={[styles.dot, {backgroundColor: '#ef4444'}]}><Ionicons name="location" size={12} color="#fff" /></View>
             <View style={{flex:1}}>
-              <Text style={styles.label}>Unaenda wapi?</Text>
-              <TextInput placeholder="mf: Posta" placeholderTextColor="#999" style={styles.input} value={to} onChangeText={setTo} />
+              <Text style={styles.label}>{t('where_are_you_going')}</Text>
+              <TextInput placeholder={t('placeholder_to')} placeholderTextColor="#999" style={styles.input} value={to} onChangeText={setTo} />
             </View>
             <Ionicons name="map" size={20} color="#ef4444" />
           </View>
         </View>
 
-        {/* FRAME 4 ZA MRABA - 2 JUU 2 CHINI */}
-        <Text style={styles.sectionTitle}>Chagua gari 🛺</Text>
+        <Text style={styles.sectionTitle}>{t('choose_car')} 🛺</Text>
         <View style={styles.grid}>
           {VEHICLES.map((v) => {
             const isSelected = selected === v.id;
@@ -107,7 +175,7 @@ export default function RequestRide({ navigation }) {
                   <Image source={v.image} style={styles.squareImg} resizeMode="contain" />
                 </View>
                 <Text style={styles.squareName}>{v.name}</Text>
-                <Text style={styles.squarePrice}>{v.price}</Text>
+                {loadingFares ? <ActivityIndicator size="small" color={COLORS.primary} style={{marginTop:4}}/> : <Text style={styles.squarePrice}>{v.displayPrice}</Text>}
                 <View style={{flexDirection:'row', gap:4, marginTop:6}}>
                   <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{v.time}</Text></View>
                   <View style={styles.miniBadge}><Text style={styles.miniBadgeText}>{v.capacity}</Text></View>
@@ -118,33 +186,32 @@ export default function RequestRide({ navigation }) {
           })}
         </View>
 
-        {/* NAMBA YA SIMU YA DEREVA */}
-        {selectedVehicle && (
+        {selectedVehicleLive && (
           <View style={styles.driverCard}>
             <View style={styles.driverAvatar}>
               <Ionicons name="person" size={26} color={COLORS.primary} />
             </View>
             <View style={{flex:1}}>
-              <Text style={styles.driverLabel}>Dereva aliyechaguliwa</Text>
-              <Text style={styles.driverName}>{selectedVehicle.driver} • {selectedVehicle.name}</Text>
+              <Text style={styles.driverLabel}>{t('selected_driver')}</Text>
+              <Text style={styles.driverName}>{selectedVehicleLive.driver} • {selectedVehicleLive.name}</Text>
               <View style={{flexDirection:'row', alignItems:'center', gap:6, marginTop:2}}>
                 <Ionicons name="call" size={14} color="#22c55e" />
-                <Text style={styles.driverPhone}>{selectedVehicle.phone}</Text>
+                <Text style={styles.driverPhone}>{selectedVehicleLive.phone}</Text>
                 <View style={styles.onlineDot} />
-                <Text style={styles.onlineText}>Online</Text>
+                <Text style={styles.onlineText}>{t('online')}</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.callBtn} onPress={() => Linking.openURL(`tel:${selectedVehicle.phone}`)}>
+            <TouchableOpacity style={styles.callBtn} onPress={() => Linking.openURL(`tel:${selectedVehicleLive.phone}`)}>
               <Ionicons name="call" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
         )}
 
-        <Text style={styles.sectionTitle}>Lipa kwa 💳</Text>
+        <Text style={styles.sectionTitle}>{t('pay_with')} 💳</Text>
         <View style={styles.paymentRow}>
           {['M-Pesa', 'Tigo Pesa', 'Airtel', 'Azam Pesa', 'Cash'].map(p => (
             <TouchableOpacity key={p} onPress={() => setPayment(p)} style={[styles.payChip, payment === p && styles.payChipActive]}>
-              <Text style={[styles.payText, payment === p && styles.payTextActive]}>{p}</Text>
+              <Text style={[styles.payText, payment === p && styles.payTextActive]}>{p === 'Cash' ? t('word_cash') : p}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -152,11 +219,11 @@ export default function RequestRide({ navigation }) {
 
       <View style={styles.bottom}>
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Jumla • {selectedVehicle?.phone}</Text>
-          <Text style={styles.totalPrice}>{selectedVehicle?.price}</Text>
+          <Text style={styles.totalLabel}>{t('total')} • {selectedVehicleLive?.phone}</Text>
+          <Text style={styles.totalPrice}>{selectedVehicleLive?.displayPrice}</Text>
         </View>
-        <TouchableOpacity style={styles.orderBtn} onPress={() => navigation.navigate('LiveTracking', { vehicle: selectedVehicle, from, to, payment })}>
-          <Text style={styles.orderBtnText}>Agiza {selectedVehicle?.name} Sasa</Text>
+        <TouchableOpacity style={styles.orderBtn} onPress={() => navigation.navigate('LiveTracking', { vehicle: selectedVehicleLive, from, to, payment })}>
+          <Text style={styles.orderBtnText}>{t('order_now_vehicle', { name: selectedVehicleLive?.name })}</Text>
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -178,7 +245,6 @@ const styles = StyleSheet.create({
   input: { fontSize: 16, fontWeight: '600', color: '#111', paddingVertical: 4 },
   dashedLine: { height: 1, borderWidth: 1, borderColor: '#eee', borderStyle: 'dashed', marginVertical: 14, marginLeft: 14 },
   sectionTitle: { fontSize: 17, fontWeight: '800', marginTop: 10, marginBottom: 12, marginLeft: 16 },
-  // GRID 2x2
   grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, gap: 12, justifyContent: 'space-between' },
   squareCard: { width: '48%', backgroundColor: '#fff', borderRadius: 22, padding: 14, borderWidth: 1.5, borderColor: '#eee', alignItems: 'center', position: 'relative' },
   squareCardActive: { borderColor: COLORS.primary, backgroundColor: '#F0F7FF', borderWidth: 2, shadowColor: COLORS.primary, shadowOpacity: 0.15, shadowRadius: 10, elevation: 6 },
@@ -189,7 +255,6 @@ const styles = StyleSheet.create({
   miniBadge: { backgroundColor: '#F3F4F6', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
   miniBadgeText: { fontSize: 10, fontWeight: '600', color: '#666' },
   selectedTick: { position: 'absolute', top: 10, right: 10, width: 22, height: 22, borderRadius: 11, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center' },
-  // DEREVA CARD
   driverCard: { marginHorizontal: 16, marginTop: 18, backgroundColor: '#fff', borderRadius: 18, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12, borderWidth: 1, borderColor: '#eee', elevation: 3 },
   driverAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#EEF5FF', alignItems: 'center', justifyContent: 'center' },
   driverLabel: { fontSize: 11, color: '#888', fontWeight: '600' },

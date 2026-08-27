@@ -6,14 +6,12 @@ import { ActivityIndicator, View } from 'react-native';
 import Login from '../screens/auth/Login';
 import Otp from '../screens/auth/Otp';
 import Onboarding from '../screens/auth/Onboarding';
-import LanguageSelect from '../screens/common/LanguageSelect';
 import Register from '../screens/auth/Register';
 import ForgotPassword from '../screens/auth/ForgotPassword';
 
 const Stack = createNativeStackNavigator();
 
 export default function AuthNavigator() {
-  const [hasSelectedLanguage, setHasSelectedLanguage] = useState(null);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(null);
 
   useEffect(() => {
@@ -22,17 +20,14 @@ export default function AuthNavigator() {
 
   const checkInitial = async () => {
     try {
-      const lang = await AsyncStorage.getItem('hasSelectedLanguage');
       const onboarding = await AsyncStorage.getItem('hasSeenOnboarding');
-      setHasSelectedLanguage(lang === 'true');
       setHasSeenOnboarding(onboarding === 'true');
     } catch (e) {
-      setHasSelectedLanguage(false);
       setHasSeenOnboarding(false);
     }
   };
 
-  if (hasSelectedLanguage === null || hasSeenOnboarding === null) {
+  if (hasSeenOnboarding === null) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#007aff" />
@@ -40,19 +35,15 @@ export default function AuthNavigator() {
     );
   }
 
-  // LOGIC: Kama hajachagua lugha -> LanguageSelect
-  // Kama hajaona Onboarding -> Onboarding
-  // Kama ameona zote -> Login
-  let initialRoute = "Login";
-  if (!hasSelectedLanguage) initialRoute = "LanguageSelect";
-  else if (!hasSeenOnboarding) initialRoute = "Onboarding";
+  // LOGIC: Kama hajaona Onboarding -> Onboarding
+  // Kama ameona -> Login
+  const initialRoute = !hasSeenOnboarding ? "Onboarding" : "Login";
 
   return (
     <Stack.Navigator
       initialRouteName={initialRoute}
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="LanguageSelect" component={LanguageSelect} initialParams={{ firstTime: true }} />
       <Stack.Screen name="Onboarding" component={Onboarding} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />

@@ -2,17 +2,19 @@ import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StepButtons from '../../components/StepButtons';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const { width } = Dimensions.get('window');
 
 const SLIDES = [
-  { id: '1', title: 'Usafiri wa Haraka', desc: 'Pata bodaboda, bajaji, au teksi ndani ya dakika', emoji: '🏍' },
-  { id: '2', title: 'Duka Mtandaoni', desc: 'Nunua bidhaa kutoka maduka ya jirani na uletewe', emoji: '🛒' },
-  { id: '3', title: 'Gereji Mkononi', desc: 'Pata fundi wa kuaminika karibu nawe haraka', emoji: '🔧' },
-  { id: '4', title: 'Malipo Salama', desc: 'Lipa kwa M-Pesa, Tigo Pesa, Airtel Money au kadi', emoji: '💳' },
+  { id: '1', titleKey: 'ob_ride_title', descKey: 'ob_ride_desc', emoji: '🏍' },
+  { id: '2', titleKey: 'ob_shop_title', descKey: 'ob_shop_desc', emoji: '🛒' },
+  { id: '3', titleKey: 'ob_garage_title', descKey: 'ob_garage_desc', emoji: '🔧' },
+  { id: '4', titleKey: 'ob_pay_title', descKey: 'ob_pay_desc', emoji: '💳' },
 ];
 
 export default function Onboarding({ navigation }) {
+  const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef();
 
@@ -58,8 +60,8 @@ export default function Onboarding({ navigation }) {
         renderItem={({ item }) => (
           <View style={[styles.slide, { width }]}>
             <Text style={styles.emoji}>{item.emoji}</Text>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.desc}>{item.desc}</Text>
+            <Text style={styles.title}>{t(item.titleKey)}</Text>
+            <Text style={styles.desc}>{t(item.descKey)}</Text>
           </View>
         )}
       />
@@ -72,7 +74,7 @@ export default function Onboarding({ navigation }) {
         <StepButtons
           onNext={goNext}
           onBack={currentIndex > 0? goBack : null}
-          nextText={currentIndex === SLIDES.length - 1? 'Anza Sasa' : 'Next'}
+          nextText={currentIndex === SLIDES.length - 1 ? t('start_now') : t('next')}
         />
       </View>
     </View>

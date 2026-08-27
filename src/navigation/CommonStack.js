@@ -1,5 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // Common Screens
 import Profile from '../screens/common/Profile';
@@ -22,11 +23,13 @@ import AddProduct from '../screens/vendor/AddProduct';
 const Stack = createNativeStackNavigator();
 
 export default function CommonStack() {
+  const { t } = useLanguage();
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: true,
-        headerBackTitle: 'Nyuma',
+        headerBackTitle: t('back'),
         headerStyle: { backgroundColor: '#fff' },
         headerTintColor: '#000',
       }}
@@ -39,21 +42,21 @@ export default function CommonStack() {
       />
 
       {/* Screens za kila mtu */}
-      <Stack.Screen name="Settings" component={Settings} options={{ title: 'Mipangilio' }} />
-      <Stack.Screen name="Help" component={Help} options={{ title: 'Msaada' }} />
-      <Stack.Screen name="Notification" component={Notification} options={{ title: 'Taarifa' }} />
-      <Stack.Screen name="ShareApp" component={ShareApp} options={{ title: 'Share App' }} />
-      <Stack.Screen name="LanguageSelect" component={LanguageSelect} options={{ title: 'Lugha' }} />
-      <Stack.Screen name="Wallet" component={Wallet} options={{ title: 'Pochi' }} />
+      <Stack.Screen name="Settings" component={Settings} options={{ title: t('settings') }} />
+      <Stack.Screen name="Help" component={Help} options={{ title: t('help') }} />
+      <Stack.Screen name="Notification" component={Notification} options={{ title: t('notifications') }} />
+      <Stack.Screen name="ShareApp" component={ShareApp} options={{ title: t('share_app') }} />
+      <Stack.Screen name="LanguageSelect" component={LanguageSelect} options={{ title: t('language') }} />
+      <Stack.Screen name="Wallet" component={Wallet} options={{ title: t('pochi') }} />
 
       {/* Screens za Driver - zitaonekana tu kama role ni driver */}
-      <Stack.Screen name="DocumentsUploads" component={DocumentsUploads} options={{ title: 'Nyaraka Zangu' }} />
-      <Stack.Screen name="DriverEarnings" component={DriverEarnings} options={{ title: 'Mapato' }} />
+      <Stack.Screen name="DocumentsUploads" component={DocumentsUploads} options={{ title: t('my_documents') }} />
+      <Stack.Screen name="DriverEarnings" component={DriverEarnings} options={{ title: t('earnings_lbl') }} />
 
       {/* Screens za Vendor */}
-      <Stack.Screen name="ShopProfile" component={ShopProfile} options={{ title: 'Duka Langu' }} />
-      <Stack.Screen name="VendorProducts" component={VendorProducts} options={{ title: 'Bidhaa Zangu' }} />
-      <Stack.Screen name="VendorOrders" component={VendorOrders} options={{ title: 'Oda Zangu' }} />
+      <Stack.Screen name="ShopProfile" component={ShopProfile} options={{ title: t('my_shop') }} />
+      <Stack.Screen name="VendorProducts" component={VendorProducts} options={{ title: t('my_products') }} />
+      <Stack.Screen name="VendorOrders" component={VendorOrders} options={{ title: t('my_orders') }} />
       <Stack.Screen name="AddProduct" component={AddProduct} />
       
     </Stack.Navigator>

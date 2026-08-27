@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Switch, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import LogoutButton from '../../components/LogoutButton';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const FAKE_REQUESTS = [
   { id: '1', customer: 'Amina Juma', pickup: 'Sinza Mori', dropoff: 'Posta Mpya', price: 3500, distance: '4.2km', time: '8 min' },
@@ -10,18 +11,18 @@ const FAKE_REQUESTS = [
 
 export default function DriverDashboard() {
   const navigation = useNavigation();
+  const { t, language, changeLanguage } = useLanguage();
   const [isOnline, setIsOnline] = useState(false);
   const [requests, setRequests] = useState([]);
   const [todayEarnings, setTodayEarnings] = useState(45000);
   const [tripsToday, setTripsToday] = useState(8);
 
-  // ONGEZA HAPA - bila kuathiri code nyingine
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      headerRight: () => <LogoutButton label="Toka" style={{ marginRight: 15, backgroundColor: 'transparent' }} textStyle={{ color: '#007aff' }} />
+      headerRight: () => <LogoutButton label={t('logout')} style={{ marginRight: 15, backgroundColor: 'transparent' }} textStyle={{ color: '#007aff' }} />
     });
-  }, [navigation]);
+  }, [navigation, language]);
 
   // simulate requests coming in when online
   useEffect(() => {
@@ -48,9 +49,9 @@ export default function DriverDashboard() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Habari Dereva 👋</Text>
-          <Text style={styles.subtitle}>Leo: TSh {todayEarnings.toLocaleString()}</Text>
-          <Text style={styles.trips}>{tripsToday} Safari</Text>
+          <Text style={styles.title}>{t('hello')} {t('role_driver')} 👋</Text>
+          <Text style={styles.subtitle}>{t('today')}: TSh {todayEarnings.toLocaleString()}</Text>
+          <Text style={styles.trips}>{tripsToday} {t('word_trips')}</Text>
 
           {/* BUTTON MPYA YA TRIP HISTORY */}
           <TouchableOpacity
@@ -59,13 +60,13 @@ export default function DriverDashboard() {
               screen: 'Trips',
             })}
           >
-            <Text style={styles.historyBtnText}>📜 Historia ya Safari</Text>
+            <Text style={styles.historyBtnText}>📜 {t('trip_history')}</Text>
           </TouchableOpacity>
 
         </View>
         <View style={styles.onlineWrap}>
           <Text style={[styles.onlineText, { color: isOnline? '#4CAF50' : '#999' }]}>
-            {isOnline? 'Online' : 'Offline'}
+            {isOnline? t('online') : t('offline')}
           </Text>
           <Switch value={isOnline} onValueChange={setIsOnline} trackColor={{ true: '#4CAF50' }} />
         </View>
@@ -74,18 +75,18 @@ export default function DriverDashboard() {
       {!isOnline? (
         <View style={styles.offline}>
           <Text style={styles.offlineIcon}>📴</Text>
-          <Text style={styles.offlineText}>Uko Offline</Text>
-          <Text style={styles.offlineDesc}>Washa "Online" kupokea request za safari</Text>
+          <Text style={styles.offlineText}>{t('you_are_offline')}</Text>
+          <Text style={styles.offlineDesc}>{t('offline_desc')}</Text>
         </View>
       ) : requests.length === 0? (
         <View style={styles.offline}>
           <Text style={styles.offlineIcon}>⏳</Text>
-          <Text style={styles.offlineText}>Tunasaka Wateja...</Text>
-          <Text style={styles.offlineDesc}>Request zitakuja hapa</Text>
+          <Text style={styles.offlineText}>{t('searching_customers')}</Text>
+          <Text style={styles.offlineDesc}>{t('requests_will_appear')}</Text>
         </View>
       ) : (
         <>
-          <Text style={styles.sectionTitle}>Request Mpya ({requests.length})</Text>
+          <Text style={styles.sectionTitle}>{t('new_request', { count: requests.length })}</Text>
           <FlatList
             data={requests}
             keyExtractor={(item) => item.id}
@@ -107,10 +108,10 @@ export default function DriverDashboard() {
 
                 <View style={styles.btnRow}>
                   <TouchableOpacity style={styles.rejectBtn} onPress={() => rejectRequest(item.id)}>
-                    <Text style={styles.rejectText}>Kataa</Text>
+                    <Text style={styles.rejectText}>{t('reject')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.acceptBtn} onPress={() => acceptRequest(item)}>
-                    <Text style={styles.acceptText}>Kubali</Text>
+                    <Text style={styles.acceptText}>{t('accept')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>

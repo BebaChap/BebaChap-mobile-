@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../theme/colors';
 import SafariCard from '../../components/SafariCard';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const restaurants = [
   { id: '1', name: 'Lina Restaurant', category: 'Pilau', rating: 4.8, time: '20-30 min', deliveryFee: '1,500', image: require('../../../assets/icons/shop.png'), isOpen: true },
@@ -17,11 +18,12 @@ export default function RestaurantList({ navigation }) {
   const [search, setSearch] = useState('');
   const [activeCat, setActiveCat] = useState('Yote');
   const { logout } = useAuth();
+  const { t } = useLanguage();
 
   const handleLogout = () => {
-    Alert.alert("Toka","Una uhakika?",[
-      {text:"Ghairi",style:"cancel"},
-      {text:"Toka",style:"destructive",onPress:async()=>{
+    Alert.alert(t('logout'),t('logout_confirm'),[
+      {text:t('cancel'),style:"cancel"},
+      {text:t('logout'),style:"destructive",onPress:async()=>{
         await logout();
         navigation.reset({index:0,routes:[{name:'Login'}]})
       }}
@@ -40,7 +42,7 @@ export default function RestaurantList({ navigation }) {
         <TouchableOpacity style={styles.backCard} onPress={()=>navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Migahawa</Text>
+        <Text style={styles.headerTitle}>{t('restaurant_list')}</Text>
         <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="#ff3b30" />
         </TouchableOpacity>
@@ -49,7 +51,7 @@ export default function RestaurantList({ navigation }) {
       <View style={styles.searchBox}>
         <Ionicons name="search" size={18} color="#999" />
         <TextInput
-          placeholder="Tafuta mgahawa, chakula..."
+          placeholder={t('search_food')}
           style={styles.searchInput}
           value={search}
           onChangeText={setSearch}

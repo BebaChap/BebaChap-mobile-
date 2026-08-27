@@ -33,7 +33,7 @@ export default function MapScreen({ navigation }) {
   }, []);
 
   if (loading) {
-    return <View style={styles.center}><ActivityIndicator size="large" color="#007aff" /><Text style={{marginTop:10}}>Inatafuta eneo lako...</Text></View>;
+    return <View style={styles.center}><ActivityIndicator size="large" color="#007aff" /><Text style={{marginTop:10}}>{t('locating')}</Text></View>;
   }
 
   return (
@@ -51,15 +51,15 @@ export default function MapScreen({ navigation }) {
         showsUserLocation={true}
         showsMyLocationButton={false}
       >
-        {location && <Marker coordinate={location} title="Upo hapa" />}
+        {location && <Marker coordinate={location} title={t('your_location')} />}
       </MapView>
 
       {/* TOP SEARCH BAR */}
       <View style={styles.topContainer}>
         <View style={styles.searchBar}>
           <Ionicons name="search" size={20} color="#666" />
-          <TextInput 
-            placeholder="Unaenda wapi?" 
+          <TextInput
+            placeholder={t('where_are_you_going')}
             style={styles.searchInput}
             value={search}
             onChangeText={setSearch}
@@ -70,13 +70,13 @@ export default function MapScreen({ navigation }) {
         
         <View style={styles.chipsRow}>
           <TouchableOpacity style={[styles.chip, selectedService==='ride' && styles.chipActive]} onPress={()=>setSelectedService('ride')}>
-            <Text style={[styles.chipText, selectedService==='ride' && styles.chipTextActive]}>🏍 Boda</Text>
+            <Text style={[styles.chipText, selectedService==='ride' && styles.chipTextActive]}>🏍 {t('boda')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.chip, selectedService==='spare' && styles.chipActive]} onPress={()=>setSelectedService('spare')}>
-            <Text style={[styles.chipText, selectedService==='spare' && styles.chipTextActive]}>🔧 Spare</Text>
+            <Text style={[styles.chipText, selectedService==='spare' && styles.chipTextActive]}>🔧 {t('word_spare')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.chip, selectedService==='garage' && styles.chipActive]} onPress={()=>setSelectedService('garage')}>
-            <Text style={[styles.chipText, selectedService==='garage' && styles.chipTextActive]}>🏪 Gereji</Text>
+            <Text style={[styles.chipText, selectedService==='garage' && styles.chipTextActive]}>🏪 {t('garages')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -95,19 +95,18 @@ export default function MapScreen({ navigation }) {
         <View style={styles.serviceList}>
           <TouchableOpacity style={styles.serviceItem}>
             <View style={styles.serviceIcon}><Text>📍</Text></View>
-            <View style={{flex:1}}><Text style={styles.serviceTitle}>{t('nyumbani')}</Text><Text style={styles.serviceDesc}>Tabata, Dar es Salaam</Text></View>
+            <View style={{flex:1}}><Text style={styles.serviceTitle}>{t('nyumbani')}</Text><Text style={styles.serviceDesc}>{t('current_location')}</Text></View>
             <Ionicons name="chevron-forward" size={18} color="#ccc" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.serviceItem}>
             <View style={styles.serviceIcon}><Text>🛒</Text></View>
-            <View style={{flex:1}}><Text style={styles.serviceTitle}>{t('nearby_shop')}</Text><Text style={styles.serviceDesc}>Spare 5 ziko umbali wa 1.2km</Text></View>
-            <View style={styles.badge}><Text style={styles.badgeText}>OPEN</Text></View>
+            <View style={{flex:1}}><Text style={styles.serviceTitle}>{t('nearby_shop')}</Text><Text style={styles.serviceDesc}>{t('spare_open')}</Text></View>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.mainBtn} onPress={()=>navigation.navigate('CustomerApp')}>
-          <Text style={styles.mainBtnText}>Endelea</Text>
+          <Text style={styles.mainBtnText}>{t('next')}</Text>
         </TouchableOpacity>
       </View>
     </View>

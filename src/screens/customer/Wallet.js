@@ -20,11 +20,11 @@ export default function Wallet({ navigation }) {
           style={styles.topupBtn}
           onPress={() => navigation?.navigate('TopUp')}
         >
-          <Text style={styles.topupText}>+ Ongeza Pesa</Text>
+          <Text style={styles.topupText}>+ {t('add_money')}</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.title}>Miamala</Text>
+      <Text style={styles.title}>{t('transactions')}</Text>
       <FlatList
         data={TXNS}
         keyExtractor={(item) => item.id}

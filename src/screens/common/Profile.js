@@ -7,25 +7,25 @@ import { COLORS } from '../../theme/colors';
 
 const Profile = ({ navigation }) => {
   const auth = useAuth();
-  const { t } = useLanguage(); // <-- ONGEZA HII
+  const { t } = useLanguage();
   const user = auth?.user || null;
-  const role = auth?.role || user?.role || 'customer';
+  const role = user?.role || 'customer';
   const logout = auth?.logout || (() => {});
 
-  if (!user) {
-    return (
-      <View style={styles.center}>
-        <Text>Inapakia...</Text>
-      </View>
-    );
-  }
-
   const handleLogout = () => {
-    Alert.alert('Toka', 'Una uhakika unataka kutoka?', [
-      { text: 'Hapana', style: 'cancel' },
-      { text: 'Ndio', style: 'destructive', onPress: logout },
+    Alert.alert(t('logout'), t('logout_confirm'), [
+      { text: t('cancel'), style: 'cancel' },
+      {
+        text: t('confirm'),
+        style: 'destructive',
+        onPress: async () => {
+          await logout();
+        }
+      },
     ]);
   };
+
+  if (!user) return null;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -40,24 +40,24 @@ const Profile = ({ navigation }) => {
         </View>
       </View>
 
-      <MenuItem icon="settings-outline" label="Mipangilio" onPress={() => navigation.navigate('Settings')} />
-      <MenuItem icon="help-circle-outline" label="Msaada" onPress={() => navigation.navigate('Help')} />
-      <MenuItem icon="notifications-outline" label="Taarifa" onPress={() => navigation.navigate('Notification')} />
-      <MenuItem icon="share-social-outline" label="Share App" onPress={() => navigation.navigate('ShareApp')} />
+      <MenuItem icon="settings-outline" label={t('settings')} onPress={() => navigation.navigate('Settings')} />
+      <MenuItem icon="help-circle-outline" label={t('help')} onPress={() => navigation.navigate('Help')} />
+      <MenuItem icon="notifications-outline" label={t('notifications')} onPress={() => navigation.navigate('Notification')} />
+      <MenuItem icon="share-social-outline" label={t('share_app')} onPress={() => navigation.navigate('ShareApp')} />
 
       {role === 'driver' && (
         <>
-          <Text style={styles.sectionTitle}>Dereva</Text>
-          <MenuItem icon="document-text-outline" label="Nyaraka Zangu" onPress={() => navigation.navigate('DocumentsUploads')} />
-          <MenuItem icon="wallet-outline" label="Mapato Yangu" onPress={() => navigation.navigate('DriverEarnings')} />
+          <Text style={styles.sectionTitle}>{t('role_driver')}</Text>
+          <MenuItem icon="document-text-outline" label={t('my_documents')} onPress={() => navigation.navigate('DocumentsUploads')} />
+          <MenuItem icon="wallet-outline" label={t('my_earnings')} onPress={() => navigation.navigate('DriverEarnings')} />
         </>
       )}
 
       {role === 'vendor' && (
         <>
-          <Text style={styles.sectionTitle}>Muuzaji</Text>
-          <MenuItem icon="storefront-outline" label="Duka Langu" onPress={() => navigation.navigate('ShopProfile')} />
-          <MenuItem icon="cube-outline" label="Bidhaa Zangu" onPress={() => navigation.navigate('VendorProducts')} />
+          <Text style={styles.sectionTitle}>{t('role_vendor')}</Text>
+          <MenuItem icon="storefront-outline" label={t('my_shop')} onPress={() => navigation.navigate('ShopProfile')} />
+          <MenuItem icon="cube-outline" label={t('my_products')} onPress={() => navigation.navigate('VendorProducts')} />
         </>
       )}
 
@@ -79,7 +79,6 @@ const MenuItem = ({ icon, label, onPress }) => (
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: { alignItems: 'center', paddingTop: 60, paddingBottom: 25, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' },
   avatar: { width: 90, height: 90, borderRadius: 45, backgroundColor: COLORS?.primary || '#007aff', justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
   avatarText: { fontSize: 36, color: '#fff', fontWeight: 'bold' },

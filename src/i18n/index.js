@@ -1,5 +1,5 @@
 import en from '../locales/en.js';
-import sw from '../lib/sw.js';
+import sw from '../locales/sw.js';
 import fr from '../locales/fr.js';
 import ar from '../locales/ar.js';
 import zh from '../locales/zh.js';

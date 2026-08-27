@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const INITIAL_PRODUCTS = [
   { id: '1', name: 'Mchele 5kg', price: 12000, stock: 25, image: '🍚', active: true, type: 'shop' },
@@ -12,6 +13,7 @@ const INITIAL_PRODUCTS = [
 
 export default function ManageProducts({ route }) {
   const navigation = useNavigation();
+  const { t } = useLanguage();
   // Badilisha hapa 'shop' kuwa 'restaurant' ukitaka kuona view ya restaurant
   // Baadaye hii itatoka kwenye ShopProfile.js: route.params.vendorType
   const vendorType = route?.params?.vendorType || 'shop';
@@ -24,9 +26,9 @@ export default function ManageProducts({ route }) {
   };
 
   const deleteProduct = (id) => {
-    Alert.alert('Futa Bidhaa', 'Una uhakika?', [
-      { text: 'Ghairi' },
-      { text: 'Futa', style: 'destructive', onPress: () => setProducts(products.filter(p => p.id !== id)) },
+    Alert.alert(t('delete'), t('logout_confirm'), [
+      { text: t('cancel') },
+      { text: t('delete'), style: 'destructive', onPress: () => setProducts(products.filter(p => p.id !== id)) },
     ]);
   };
 
@@ -43,11 +45,11 @@ export default function ManageProducts({ route }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>{vendorType === 'restaurant' ? 'Menu ya Chakula' : 'Bidhaa Zangu'}</Text>
-          <Text style={styles.subtitle}>{dataToShow.length} {vendorType === 'restaurant' ? 'vyakula' : 'bidhaa'}</Text>
+          <Text style={styles.title}>{vendorType === 'restaurant' ? t('food_menu') : t('my_products')}</Text>
+          <Text style={styles.subtitle}>{dataToShow.length} {vendorType === 'restaurant' ? t('word_food') : t('word_product')}</Text>
         </View>
         <TouchableOpacity style={[styles.addBtn, vendorType === 'restaurant' && { backgroundColor: '#FF6B00' }]} onPress={() => navigation.navigate('AddProduct', { vendorType })}>
-          <Text style={styles.addText}>+ Ongeza</Text>
+          <Text style={styles.addText}>+ {t('add')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -71,7 +73,7 @@ export default function ManageProducts({ route }) {
                 </View>
               ) : (
                 <Text style={[styles.productStock, item.stock === 0 && styles.outOfStock]}>
-                  Stock: {item.stock} {item.stock === 0 ? '(Imeisha)' : ''}
+                  Stock: {item.stock} {item.stock === 0 ? `(${t('out_of_stock')})` : ''}
                 </Text>
               )}
             </View>

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { COLORS } from '../../theme/colors';
 
 const services = [
@@ -12,11 +13,12 @@ const services = [
 
 export default function GarageList({ navigation }) {
   const { logout } = useAuth();
+  const { t } = useLanguage();
 
   const handleLogout = () => {
-    Alert.alert("Toka","Una uhakika unataka kutoka?",[
-      {text:"Ghairi",style:"cancel"},
-      {text:"Toka",style:"destructive",onPress:async()=>{
+    Alert.alert(t('logout'),t('logout_confirm'),[
+      {text:t('cancel'),style:"cancel"},
+      {text:t('logout'),style:"destructive",onPress:async()=>{
         await logout();
         navigation.reset({index:0,routes:[{name:'Login'}]})
       }}
@@ -30,13 +32,13 @@ export default function GarageList({ navigation }) {
         <TouchableOpacity style={styles.backCard} onPress={()=>navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Gereji</Text>
+        <Text style={styles.headerTitle}>{t('garages')}</Text>
         <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="#ff3b30" />
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.title}>Huduma za Gereji</Text>
+      <Text style={styles.title}>{t('garage_services')}</Text>
       <FlatList
         data={services}
         keyExtractor={(item) => item.id}

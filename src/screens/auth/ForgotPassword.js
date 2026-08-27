@@ -1,35 +1,37 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function ForgotPassword({ navigation }) {
+  const { t } = useLanguage();
   const [phone, setPhone] = useState('');
 
   const handleReset = () => {
     if (phone.length < 9) {
-      Alert.alert('Kosa', 'Weka namba sahihi');
+      Alert.alert(t('error'), t('enter_valid_phone'));
       return;
     }
-    Alert.alert('OTP Imetumwa', 'Weka OTP kutengeneza nenosiri jipya');
-    navigation.navigate('OTP'); // reuse otp screen
+    Alert.alert(t('otp_sent'), t('otp_sent_message'));
+    navigation.navigate('OTP');
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sahau Nenosiri</Text>
-      <Text style={styles.subtitle}>Weka namba yako tutakutumia OTP</Text>
+      <Text style={styles.title}>{t('forgot_password_title')}</Text>
+      <Text style={styles.subtitle}>{t('forgot_password_subtitle')}</Text>
       <View style={styles.inputContainer}>
         <Text style={styles.prefix}>+255</Text>
-        <TextInput 
-          style={styles.input} 
-          placeholder="712345678" 
-          keyboardType="phone-pad" 
-          value={phone} 
-          onChangeText={setPhone} 
-          maxLength={9} 
+        <TextInput
+          style={styles.input}
+          placeholder="712345678"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={setPhone}
+          maxLength={9}
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={handleReset}>
-        <Text style={styles.buttonText}>Tuma OTP</Text>
+        <Text style={styles.buttonText}>{t('send_otp')}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,0 +1,4 @@
+src\screens\admin\AdminDashboard.js
+src\screens\admin\AdminTranslations.js
+src\screens\admin\AdminUsers.js
+src\screens\admin\Disputes.js

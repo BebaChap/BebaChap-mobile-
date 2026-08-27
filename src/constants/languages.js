@@ -1,8 +1,8 @@
 export const LANGUAGES = [
-  { code: 'sw', name: 'Swahili', flag: '🇹🇿' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'sw', name: 'Kiswahili', label: 'Swahili', flag: '🇹🇿' },
+  { code: 'en', name: 'English', label: 'English', flag: '🇬🇧' },
+  { code: 'fr', name: 'Français', label: 'French', flag: '🇫🇷' },
+  { code: 'ar', name: 'العربية', label: 'Arabic', flag: '🇸🇦' },
+  { code: 'zh', name: '中文', label: 'Chinese', flag: '🇨🇳' },
+  { code: 'hi', name: 'हिन्दी', label: 'Hindi', flag: '🇮🇳' },
 ];

@@ -13,9 +13,9 @@ export default function HomeScreen({ navigation }) {
   const [destination, setDestination] = useState('');
 
   const handleCancel = () => {
-    Alert.alert('Ghairi Safari', 'Una uhakika?', [
-      { text: 'Hapana' },
-      { text: 'Ndio Ghairi', style: 'destructive', onPress: () => setIsTracking(false) },
+    Alert.alert(t('cancel_ride'), t('logout_confirm'), [
+      { text: t('no') },
+      { text: t('yes_cancel'), style: 'destructive', onPress: () => setIsTracking(false) },
     ]);
   };
 
@@ -35,8 +35,8 @@ export default function HomeScreen({ navigation }) {
           longitudeDelta: 0.05,
         }}
       >
-        <Marker coordinate={{ latitude: -6.7924, longitude: 39.2083 }} title="Uko Hapa" description={pickup} />
-        {isTracking && <Marker coordinate={{ latitude: -6.7824, longitude: 39.2183 }} title="Unakoenda" description={destination || 'K/koo'} pinColor="blue" />}
+        <Marker coordinate={{ latitude: -6.7924, longitude: 39.2083 }} title={t('your_location')} description={pickup} />
+        {isTracking && <Marker coordinate={{ latitude: -6.7824, longitude: 39.2183 }} title={t('where_to')} description={destination || 'K/koo'} pinColor="blue" />}
       </MapView>
 
       {!isTracking && (
@@ -44,7 +44,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.searchBox}>
             <Ionicons name="search" size={20} color="#999" />
             <TextInput
-              placeholder="Unaenda wapi?"
+              placeholder={t('where_are_you_going')}
               placeholderTextColor="#999"
               style={styles.input}
               value={destination}
@@ -57,7 +57,7 @@ export default function HomeScreen({ navigation }) {
 
       {!showInfo && (
         <TouchableOpacity style={styles.fab} onPress={() => setShowInfo(true)}>
-          <Text style={styles.fabText}>▲ Ona Maelezo</Text>
+          <Text style={styles.fabText}>▲ {t('see_details')}</Text>
         </TouchableOpacity>
       )}
 
@@ -65,7 +65,7 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.bottomCard}>
           <TouchableOpacity onPress={() => setShowInfo(false)} style={styles.handleArea}>
             <View style={styles.line} />
-            <Text style={styles.hideTxt}>Ficha ▼</Text>
+            <Text style={styles.hideTxt}>{t('hide_text')}</Text>
           </TouchableOpacity>
 
           {!isTracking? (
@@ -86,18 +86,18 @@ export default function HomeScreen({ navigation }) {
                 <Text>🛒</Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.itemTitle}>{t('nearby_shop')}</Text>
-                  <Text style={styles.itemSub}>Spare 5 ziko umbali wa 1.2km</Text>
+                  <Text style={styles.itemSub}>{t('spare_open')}</Text>
                 </View>
                 <View style={styles.open}><Text style={styles.openText}>OPEN</Text></View>
               </View>
 
               <TouchableOpacity style={styles.btn} onPress={() => setIsTracking(true)}>
-                <Text style={styles.btnText}>Endelea</Text>
+                <Text style={styles.btnText}>{t('next')}</Text>
               </TouchableOpacity>
             </>
           ) : (
             <>
-              <Text style={styles.title}>Dereva Anakuja</Text>
+              <Text style={styles.title}>{t('driver_on_way')}</Text>
               <Text style={styles.driver}>Juma Dereva • 🏍 T123 ABC</Text>
               <Text style={styles.time}>Dakika 5 • 2.3km</Text>
 
@@ -107,7 +107,7 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.routeText}>🎯 {destination || 'K/koo'}</Text>
               </View>
 
-              <StepButtons onBack={handleCancel} backText="Ghairi Safari" onNext={handleTripComplete} nextText="Safari Imeisha" />
+              <StepButtons onBack={handleCancel} backText={t('cancel_ride')} onNext={handleTripComplete} nextText={t('trip_ended')} />
             </>
           )}
         </View>

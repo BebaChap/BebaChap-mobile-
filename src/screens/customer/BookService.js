@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import  StepButtons  from '../../components/StepButtons';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function BookService({ route, navigation }) {
+  const { t } = useLanguage();
   const { item } = route?.params || {};
   const [date, setDate] = useState('Leo 2:00 PM');
 
   const book = () => {
-    Alert.alert('Imehifadhiwa', `Huduma ya ${item?.name} imehifadhiwa ${date}. Deposit: TSh 10,000`, [
+    Alert.alert(t('saved'), t('service_saved_msg', { name: item?.name, date }), [
       { text: 'OK', onPress: () => navigation.goBack() }
     ]);
   };
@@ -15,28 +17,28 @@ export default function BookService({ route, navigation }) {
   if (!item) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Kosa: Hakuna huduma iliyochaguliwa</Text>
+        <Text style={styles.title}>{t('no_service_selected')}</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Hifadhi Huduma</Text>
+      <Text style={styles.title}>{t('save_service')}</Text>
       <View style={styles.card}>
         <Text style={styles.icon}>{item.icon}</Text>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.price}>TSh {item.price}</Text>
       </View>
 
-      <Text style={styles.label}>Chagua Muda</Text>
+      <Text style={styles.label}>{t('choose_time')}</Text>
       <TouchableOpacity style={styles.timeBtn}>
         <Text style={styles.timeText}>{date}</Text>
       </TouchableOpacity>
 
-      <Text style={styles.note}>Deposit ya TSh 10,000 italipwa kwa M-Pesa</Text>
+      <Text style={styles.note}>{t('deposit_note')}</Text>
 
-      <StepButtons onNext={book} onBack={() => navigation.goBack()} nextText="Lipa Deposit" />
+      <StepButtons onNext={book} onBack={() => navigation.goBack()} nextText={t('pay_deposit')} />
     </View>
   );
 }

@@ -26,14 +26,15 @@ export default function Register({ navigation, route }) {
   const [tin, setTin] = useState('');
   const [roleIndex, setRoleIndex] = useState(() => {
     const init = route.params?.role;
-    if(init === 'admin') return 0;
+    // ===== FIX YA USALAMA: Admin hawezi kujisajili hapa =====
+    if(!init || init === 'admin') return 0; // Lazimisha awe customer
     const idx = ROLES.findIndex(r => r.key === init);
     return idx >=0? idx : 0;
   });
   const [vendorType, setVendorType] = useState('shop');
   const [docs, setDocs] = useState({});
   const [loading, setLoading] = useState(false);
-  const { registerBusiness } = useAuth(); // OTP imeondolewa hapa
+  const { registerBusiness } = useAuth();
 
   const current = ROLES[roleIndex];
 
@@ -58,7 +59,7 @@ export default function Register({ navigation, route }) {
         const payload = {
           name,
           phone: cleanPhone,
-          role: 'customer',
+          role: 'customer', // Hii itatafsiriwa kama user_type = customer kwenye AuthContext
           vendorType: 'shop',
         };
         console.log("REGISTER PAYLOAD CUSTOMER:", payload);
@@ -78,7 +79,7 @@ export default function Register({ navigation, route }) {
       return;
     }
 
-    // BIASHARA - HAKUNA OTP, INAFUNGUKA MOJA KWA MOJA
+    // BIASHARA - HAKUNA OTP
     if (!email.includes('@')) return Alert.alert(t('error'), t('invalid_email'));
     if (nida.length < 15) return Alert.alert(t('error'), t('invalid_nida'));
     if (current.key === 'driver' && licenseNo.length < 5) return Alert.alert(t('error'), t('enter_license'));
@@ -87,10 +88,13 @@ export default function Register({ navigation, route }) {
 
     setLoading(true);
     try {
+      // ===== FIX YA USALAMA: Hakikisha role sio admin =====
+      const safeRole = current.key === 'admin'? 'customer' : current.key;
+
       const payload = {
         name, email: email.trim(), phone: cleanPhone,
-        role: current.key,
-        vendorType: current.key === 'vendor'? vendorType : 'shop',
+        role: safeRole,
+        vendorType: safeRole === 'vendor'? vendorType : 'shop',
         nida, licenseNo, tin, documents: docs
       };
       console.log("REGISTER PAYLOAD:", payload);
@@ -164,8 +168,8 @@ export default function Register({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container:{flex:1,backgroundColor:'#264d35',padding:20,paddingTop:50},
-  title:{fontSize:26,fontWeight:'bold',marginBottom:10},
-  label:{fontWeight:'600',marginTop:15,marginBottom:6},
+  title:{fontSize:26,fontWeight:'bold',marginBottom:10, color:'#fff'},
+  label:{fontWeight:'600',marginTop:15,marginBottom:6, color:'#fff'},
   input:{borderWidth:1,borderColor:'#ddd',borderRadius:10,padding:14,backgroundColor:'#ffffff'},
   roleBox:{flexDirection:'row',alignItems:'center',padding:14,borderWidth:1.5,borderColor:'#007aff',borderRadius:12,backgroundColor:'#e3f2fd'},
   emoji:{fontSize:24,marginRight:10}, roleText:{fontWeight:'700',flex:1}, badge:{fontSize:10,color:'#007aff'},
@@ -175,8 +179,8 @@ const styles = StyleSheet.create({
   typeEmoji:{fontSize:28,marginBottom:4},
   typeLabel:{fontSize:12,fontWeight:'600',textAlign:'center',color:'#666'},
   typeLabelActive:{color:'#007AFF'},
-  section:{marginTop:20,fontWeight:'800',fontSize:15},
-  docBtn:{borderWidth:1,borderColor:'#ccc',borderStyle:'dashed',padding:14,borderRadius:10,marginTop:8,alignItems:'center'},
+  section:{marginTop:20,fontWeight:'800',fontSize:15, color:'#fff'},
+  docBtn:{borderWidth:1,borderColor:'#ccc',borderStyle:'dashed',padding:14,borderRadius:10,marginTop:8,alignItems:'center', backgroundColor:'#fff'},
   button:{backgroundColor:'#007aff',padding:16,borderRadius:12,marginTop:30,alignItems:'center'},
   btnText:{color:'#fff',fontWeight:'bold',fontSize:16}
 });

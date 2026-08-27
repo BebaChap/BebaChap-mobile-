@@ -3,6 +3,7 @@ import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import { LanguageProvider, useLanguage } from './src/contexts/LanguageContext';
 import AppNavigator from './src/navigation/AppNavigator';
@@ -28,7 +29,10 @@ function RootNavigation() {
 }
 
 function RootNavigationWrapper() {
-  const { language } = useLanguage();
+  const { language, loading } = useLanguage();
+  if (loading) {
+    return <Splash />;
+  }
   return (
     <NavigationContainer key={language}>
       <RootNavigation />
@@ -39,11 +43,13 @@ function RootNavigationWrapper() {
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <LanguageProvider>
-        <AuthProvider>
-          <RootNavigationWrapper />
-        </AuthProvider>
-      </LanguageProvider>
+      <SafeAreaProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <RootNavigationWrapper />
+          </AuthProvider>
+        </LanguageProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

@@ -18,9 +18,9 @@ export default function AddProduct({ navigation }) {
 
   return (
     <View style={{ padding: 20 }}>
-      <Input placeholder="Jina la Bidhaa" value={name} onChangeText={setName} />
+      <Input placeholder={t('product_name')} value={name} onChangeText={setName} />
       <Input placeholder={t('price')} value={price} onChangeText={setPrice} keyboardType="numeric" />
-      <Button title="Chagua Picha" onPress={pickImage} />
+      <Button title={t('choose_photo')} onPress={pickImage} />
       {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
       <Button title={t('next')} onPress={() => {}} />
       <Button title={t('back')} onPress={() => navigation.goBack()} type="outline" />

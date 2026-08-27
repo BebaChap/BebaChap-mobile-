@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export default function DocumentsUpload({ navigation }) {
+  const { t } = useLanguage();
   const [docs, setDocs] = useState({
     license: false,
     insurance: false,
@@ -9,63 +11,63 @@ export default function DocumentsUpload({ navigation }) {
   });
 
   const uploadDoc = (type) => {
-    Alert.alert('Upload', `Chagua picha ya ${type}`, [
-      { text: 'Ghairi' },
-      { text: 'Piga Picha', onPress: () => setDocs({...docs, [type]: true }) },
-      { text: 'Chagua Gallery', onPress: () => setDocs({...docs, [type]: true }) },
+    Alert.alert(t('upload_btn'), t('choose_photo_of', { type }), [
+      { text: t('cancel') },
+      { text: t('take_photo'), onPress: () => setDocs({...docs, [type]: true }) },
+      { text: t('choose_gallery'), onPress: () => setDocs({...docs, [type]: true }) },
     ]);
   };
 
   const submitDocs = () => {
     if (!docs.license ||!docs.insurance ||!docs.vehicle) {
-      Alert.alert('Kosa', 'Tafadhali pakia nyaraka zote');
+      Alert.alert(t('error'), t('upload_all_first'));
       return;
     }
-    Alert.alert('Imefanikiwa', 'Nyaraka zimewasilishwa. Tunasubiri verification.', [
+    Alert.alert(t('success'), t('docs_submitted'), [
       { text: 'OK', onPress: () => navigation?.navigate('Dashboard') }
     ]);
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Pakia Nyaraka</Text>
-      <Text style={styles.subtitle}>Tunahitaji nyaraka hizi kuthibitisha akaunti yako</Text>
+      <Text style={styles.title}>{t('attach_documents')}</Text>
+      <Text style={styles.subtitle}>{t('docs_needed')}</Text>
 
       <View style={styles.docCard}>
         <Text style={styles.docIcon}>📄</Text>
         <View style={{ flex: 1 }}>
-          <Text style={styles.docTitle}>Leseni ya Udereva</Text>
-          <Text style={styles.docStatus}>{docs.license? '✓ Imepakuliwa' : 'Haijapakuliwa'}</Text>
+          <Text style={styles.docTitle}>{t('driving_license')}</Text>
+          <Text style={styles.docStatus}>{docs.license? `✓ ${t('uploaded')}` : t('not_uploaded')}</Text>
         </View>
         <TouchableOpacity style={styles.uploadBtn} onPress={() => uploadDoc('license')}>
-          <Text style={styles.uploadText}>{docs.license? 'Badili' : 'Pakia'}</Text>
+          <Text style={styles.uploadText}>{docs.license? t('replace_btn') : t('upload_btn')}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.docCard}>
         <Text style={styles.docIcon}>🛡️</Text>
         <View style={{ flex: 1 }}>
-          <Text style={styles.docTitle}>Bima ya Gari</Text>
-          <Text style={styles.docStatus}>{docs.insurance? '✓ Imepakuliwa' : 'Haijapakuliwa'}</Text>
+          <Text style={styles.docTitle}>{t('vehicle_insurance')}</Text>
+          <Text style={styles.docStatus}>{docs.insurance? `✓ ${t('uploaded')}` : t('not_uploaded')}</Text>
         </View>
         <TouchableOpacity style={styles.uploadBtn} onPress={() => uploadDoc('insurance')}>
-          <Text style={styles.uploadText}>{docs.insurance? 'Badili' : 'Pakia'}</Text>
+          <Text style={styles.uploadText}>{docs.insurance? t('replace_btn') : t('upload_btn')}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.docCard}>
         <Text style={styles.docIcon}>🚗</Text>
         <View style={{ flex: 1 }}>
-          <Text style={styles.docTitle}>Picha ya Gari</Text>
-          <Text style={styles.docStatus}>{docs.vehicle? '✓ Imepakuliwa' : 'Haijapakuliwa'}</Text>
+          <Text style={styles.docTitle}>{t('vehicle_photo')}</Text>
+          <Text style={styles.docStatus}>{docs.vehicle? `✓ ${t('uploaded')}` : t('not_uploaded')}</Text>
         </View>
         <TouchableOpacity style={styles.uploadBtn} onPress={() => uploadDoc('vehicle')}>
-          <Text style={styles.uploadText}>{docs.vehicle? 'Badili' : 'Pakia'}</Text>
+          <Text style={styles.uploadText}>{docs.vehicle? t('replace_btn') : t('upload_btn')}</Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.submitBtn} onPress={submitDocs}>
-        <Text style={styles.submitText}>Wasilisha Nyaraka</Text>
+        <Text style={styles.submitText}>{t('submit_docs')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
